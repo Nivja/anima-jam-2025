@@ -1,0 +1,1 @@
+lovec --fused . --log --speed

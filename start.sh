@@ -1,0 +1,1 @@
+love --fused . --log --speed
