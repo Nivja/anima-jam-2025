@@ -13,7 +13,7 @@ jobs:
     - uses: engineersmith/love-build@master
       id: love-build
       with:
-        app_name: 'jingle-jam-game-jam-2024'
+        app_name: 'anima-jam-2025'
         love_version: ${{ matrix.love_version }}
     - uses: actions/upload-artifact@v4
       with:
