@@ -90,7 +90,6 @@ love.conf = function(t)
   t.appendidentity = true
   t.accelerometerjoystick = false
   t.highdpi = true
-  t.gammacorrect = true
 
   t.window.title = windowTitle
   t.window.icon  = nil
@@ -105,6 +104,8 @@ love.conf = function(t)
   t.window.vsync = settings.client.vsync
   t.window.depth = true
   t.usedpiscale = true
+
+  t.graphics.gammacorrect = true
 
   t.audio.mic = false
   t.audio.mixwithsystem = true
