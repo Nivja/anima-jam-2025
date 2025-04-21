@@ -7,7 +7,7 @@ local input = {
   baton = baton.new({
     controls = settings.client.input,
     pairs = {
-      move = { "moveLeft", "moveRight", "moveUp", "moveDown" },
+      move = { "moveRight", "moveLeft", "moveUp", "moveDown" },
     },
     joystick = joystick,
     deadzone = settings.client.deadzone,

@@ -49,7 +49,8 @@ local defaultSettings = {
       volume = { -- update \ui\menu\settings\init.lua#load -> audio
         master = 0.8,
         music = 0.6,
-        ui = 0.8,
+        ui = 0.8, 
+        sfx = 0.8,
       },
     },
   }

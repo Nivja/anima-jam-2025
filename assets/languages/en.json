@@ -52,6 +52,7 @@
   "settings.audio.master": "Master",
   "settings.audio.music": "Music",
   "settings.audio.ui": "UI",
+  "settings.audio.sfx": "SFX",
 
   "settings.controls.keyboard": "Keyboard",
   "settings.controls.gamepad": "Gamepad",

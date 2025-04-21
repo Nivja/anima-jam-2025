@@ -40,6 +40,10 @@ cursor.switch = function(cursorType)
   if isCursorSupported then
     if cursorType == nil then cursorType = "arrow" end
     local c = type(cursorType) == "string" and cursors[cursor.type][cursorType] or cursorType
+    if type(c) == "string" then
+      print("Unsupported cursor requested:", cursor.type, ":", cursorType)
+      c = cursors.system.arrow
+    end
     if type(c) == "table" then
       c = c[cursor.scale]
     end

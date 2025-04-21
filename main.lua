@@ -10,6 +10,7 @@ local le, lg, ltr, lfs, lw = love.event, love.graphics, love.timer, love.filesys
 require("errorhandler")
 require("util.logSystemInfo")
 
+lg.setDefaultFilter("nearest", "nearest")
 local assetManager = require("util.assetManager")
 assetManager.register("assets/")
 

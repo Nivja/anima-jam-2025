@@ -86,7 +86,7 @@ audioManager.play = function(assetKey)
     logger.warn("Tried to play", assetKey, "but that asset hasn't been registered with the audio manager!")
     return
   end
-  if audioInfo.audioType == "ui" then
+  if audioInfo.audioType == "ui" or audioInfo.audioType == "sfx" then
     local s = audioInfo[love.math.random(1, #audioInfo)]
     s.asset:play()
     s.asset = s.asset:clone()
@@ -101,7 +101,9 @@ audioManager.setVolumeAll = function()
     if type(audioInfo) == "table" then
       local level = audioManager.volume.master * audioManager.volume[audioInfo.audioType]
       for _, source in ipairs(audioInfo) do
-        source.asset:setVolume(level * source.volume)
+        if source.asset then
+          source.asset:setVolume(level * source.volume)
+        end
       end
     end
   end

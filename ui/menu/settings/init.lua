@@ -87,6 +87,7 @@ settingsMenu.load = function()
       audioSliderFactory("master"),
       audioSliderFactory("music"),
       audioSliderFactory("ui"),
+      audioSliderFactory("sfx"),
     }
 
     -- Accessibility
