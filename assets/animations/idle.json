@@ -1,0 +1,43 @@
+{
+  "sequences": [
+    {
+      "name": "Head",
+      "tweens": [
+        {
+          "length": 0.3,
+          "part": "Head",
+          "transform": {
+            "y": -0.1
+          }
+        },
+        {
+          "length": 0.3,
+          "part": "Head",
+          "transform": {
+            "y": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "Arms",
+      "tweens": [
+        {
+          "length": 0.4,
+          "parts": [ "Arm.Right", "Arm.Left" ],
+          "transform": {
+            "y": 0.1
+          }
+        },
+        {
+          "length": 0.3,
+          "ease": "linear",
+          "parts": [ "Arm.Right", "Arm.Left" ],
+          "transform": {
+            "y": 0
+          }
+        }
+      ]
+    }
+  ]
+}

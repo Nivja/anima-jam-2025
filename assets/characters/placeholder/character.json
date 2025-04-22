@@ -2,9 +2,6 @@
   "transform": {
     "scale": 1
   },
-  "animations": [
-    "NONE"
-  ],
   "parts": [
     {
       "name": "Head",
@@ -12,7 +9,7 @@
       "parent": "Torso",
       "pivot": [ 50, 100 ],
       "offset": [ 0, 130 ],
-      "zOffset": 1
+      "zOffset": 0.5
     },
     {
       "name": "Torso",
@@ -25,7 +22,7 @@
       "texture": "arm_right.png",
       "parent": "Torso",
       "pivot": [ 60, 15 ],
-      "offset": [ 20, 40 ],
+      "offset": [ 35, 40 ],
       "zOffset": 1
     },
     {
@@ -33,7 +30,7 @@
       "texture": "arm_left.png",
       "parent": "Torso",
       "pivot": [ 40, 15 ],
-      "offset": [ -20, 40 ],
+      "offset": [ -35, 40 ],
       "zOffset": 1
     },
     {
