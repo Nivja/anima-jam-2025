@@ -35,7 +35,7 @@ character.new = function(directory, dirName, definition)
     end
 
     local part = {
-      name = partDefinition.name, -- useful for debug
+      name = partDefinition.name,
       x = 0, y = 0, r = 0,
       scale = 1,
       children = { } -- populated later
@@ -95,7 +95,7 @@ character.new = function(directory, dirName, definition)
   c.dirName = dirName
   c.root = root
 
-  -- Debug
+  -- -- Debug
   for _, part in ipairs(root.children) do
     local a, b
     a = function()

@@ -33,7 +33,7 @@ updateCamera()
 scene.load = function(restart)
   cursor.switch("arrow")
 
-  characterManager.load("assets/character/")
+  characterManager.load("assets/characters/")
 end
 
 scene.unload = function()
