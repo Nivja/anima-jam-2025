@@ -211,9 +211,8 @@ local mainButtons = {
       suit:setGamepadPosition(1)
     end),
   mainButtonFactory("menu.new_game", function()
-      logger.warn("TODO new game button")
       --changeMenu("game")
-      --sceneManager.changeScene("scenes.game")
+      require("util.sceneManager").changeScene("scenes.game")
     end),
 }
 

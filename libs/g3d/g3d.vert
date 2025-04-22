@@ -1,9 +1,10 @@
 // written by groverbuger for g3d
 // september 2021
+// + edited by EngineerSmith 2025
 // MIT license
 
 // this vertex shader is what projects 3d vertices in models onto your 2d screen
-
+#ifdef VERTEX
 uniform mat4 projectionMatrix; // handled by the camera
 uniform mat4 viewMatrix;       // handled by the camera
 uniform mat4 modelMatrix;      // models send their own model matrices when drawn
@@ -29,7 +30,17 @@ vec4 position(mat4 transformProjection, vec4 vertexPosition) {
     mat3 normalMatrix = transpose(inverse(mat3(modelMatrix)));
     vertexNormal = normalize(normalMatrix * VertexNormal);
 
-    vertexColor = VertexColor;
-
     return screenPosition;
 }
+#endif
+
+
+#ifdef PIXEL
+vec4 effect(vec4 color, Image tex, vec2 texture_coords, vec2 screen_coords)
+{
+    vec4 texturecolor = Texel(tex, texture_coords);
+    if (texturecolor.a < 0.00001)
+        discard;
+    return texturecolor * color;
+}
+#endif

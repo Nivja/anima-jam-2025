@@ -1,0 +1,56 @@
+{
+  "transform": {
+    "scale": 1
+  },
+  "animations": [
+    "NONE"
+  ],
+  "parts": [
+    {
+      "name": "Head",
+      "texture": "head.png",
+      "parent": "Torso",
+      "pivot": [ 50, 100 ],
+      "offset": [ 0, 130 ],
+      "zOffset": 1
+    },
+    {
+      "name": "Torso",
+      "texture": "torso.png",
+      "parent": null,
+      "pivot": [ 50, 90 ]
+    },
+    {
+      "name": "Arm.Right",
+      "texture": "arm_right.png",
+      "parent": "Torso",
+      "pivot": [ 60, 15 ],
+      "offset": [ 20, 40 ],
+      "zOffset": 1
+    },
+    {
+      "name": "Arm.Left",
+      "texture": "arm_left.png",
+      "parent": "Torso",
+      "pivot": [ 40, 15 ],
+      "offset": [ -20, 40 ],
+      "zOffset": 1
+    },
+    {
+      "name": "Leg.Right",
+      "texture": "leg_right.png",
+      "parent": "Torso",
+      "pivot": [ 60, 15 ],
+      "offset": [ 35, -30 ],
+      "zOffset": 1
+    },
+    {
+      "name": "Leg.Left",
+      "texture": "leg_left.png",
+      "parent": "Torso",
+      "pivot": [ 40, 15 ],
+      "offset": [ -35, -30 ],
+      "zOffset": 1
+    }
+  ]
+}
