@@ -1,5 +1,6 @@
 {
   "transform": {
+    "y": 2,
     "scale": 1
   },
   "parts": [
@@ -9,7 +10,7 @@
       "parent": "Torso",
       "pivot": [ 50, 100 ],
       "offset": [ 0, 130 ],
-      "zOffset": 0.5
+      "zOffset": 1
     },
     {
       "name": "Torso",
@@ -21,17 +22,17 @@
       "name": "Arm.Right",
       "texture": "arm_right.png",
       "parent": "Torso",
-      "pivot": [ 60, 15 ],
-      "offset": [ 35, 40 ],
-      "zOffset": 1
+      "pivot": [ 40, 15 ],
+      "offset": [ -35, 40 ],
+      "zOffset": 1.5
     },
     {
       "name": "Arm.Left",
       "texture": "arm_left.png",
       "parent": "Torso",
-      "pivot": [ 40, 15 ],
-      "offset": [ -35, 40 ],
-      "zOffset": 1
+      "pivot": [ 60, 15 ],
+      "offset": [ 35, 40 ],
+      "zOffset": 1.5
     },
     {
       "name": "Leg.Right",

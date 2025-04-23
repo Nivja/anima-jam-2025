@@ -17,6 +17,7 @@ local lang = require("util.lang")
 local ui = require("util.ui")
 
 local characterManager = require("src.characterManager")
+local world = require("src.world")
 
 local scene = {
   posX = 0,
@@ -33,6 +34,8 @@ updateCamera()
 scene.load = function(restart)
   cursor.switch("arrow")
   characterManager.load("assets/animations", "assets/characters/")
+
+  scene.playerChar = characterManager.characters["player"]
 end
 
 scene.unload = function()
@@ -66,6 +69,7 @@ scene.update = function(dt)
   characterManager.update(dt)
 
   local dx, dy = input.baton:get("move")
+
   scene.posX, scene.posY = scene.posX + dx * 5 * dt, scene.posY + -dy * 5 * dt
   updateCamera()
   --logger.info("Pos", scene.posX, scene.posY)
@@ -76,6 +80,7 @@ scene.draw = function()
   lg.origin()
   -- World
   lg.push("all")
+  world.draw()
   characterManager.draw()
   lg.pop()
   -- UI
