@@ -41,12 +41,8 @@ return {
   { "setCharacter", "oldlady" },
   "Well, this is quite stylish, you know, I do have a few heirloom fabrics just sitting around my place, I think you might be the person to make good use of them. Can't wait to see what you will make."
   { "addItem", 
-    {
-      name = "Old Lady's Heirloom fabric 1"
-    },
-    {
-      name = "Old Lady's Heirloom fabric 2"
-    },
+    { name = "Old Lady's Heirloom fabric 1" },
+    { name = "Old Lady's Heirloom fabric 2" },
   }
   { "end" },
   { "tag", "option_two" },
