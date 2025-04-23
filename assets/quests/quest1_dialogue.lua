@@ -6,10 +6,10 @@ return {
   { "setCharacter", "oldlady" },
   "Oh, but Rosetta is the one who made this garment for me, I have been wearing it to my council meetings.",
   { "choice",
-    { "and she did a fine job! Please let me have a look.", "option_one" },
-    { "If you would rather wait, Rosetta will be here for the evening shift.", "option_two" },
+    { "and she did a fine job! Please let me have a look.", --[[ goto ]] "option_one" },
+    { "If you would rather wait, Rosetta will be here for the evening shift.", --[[ goto ]] "option_two" },
   },
-  { "tag", "option_one" },
+  { "tag", "option_one" }, -- [[ Declare a point which can be 'goto'ed ]]
   { "addItem",
     { name = "Childish Fabric", tags = { "fabric", "use-patch" }, patchType = "silly", },
     { name = "Neutral Fabric", tags = { "fabric", "use-patch" }, patchType = "neutral", },
@@ -23,12 +23,12 @@ return {
       --[[ item details... ]]
     },
   },
-  { "inspectItem", "lastAdded" }, -- Makes item pop up on user's screen
+  { "inspectItem", "lastAdded" }, -- Makes item pop up on user's screen - might be scoped out
   { "minigame", "patch", "lastAdded" }, -- 3rd arg is optionally, skip inventory screen to given item  (lastAdded being a keyword)
-  { "if", "item", "lastAdded", "hasTag", "patched.silly", "silly_design" },
+  { "if", "item", "lastAdded", "hasTag", "patched.silly", "silly_design" }, -- So the patching minigame would add the "patched.<patchType>" tag to the dress
   { "if", "item", "lastAdded", "hasTag", "patched.neutral", "neutral_design" },
   { "if", "item", "lastAdded", "hasTag", "patched.fancy", "fancy_design" },
-  { "end" } -- catch
+  { "end" } -- Shouldn't reach this point, i.e. if the dress has none of those above tags; but we handle it by ending the conversion
   { "tag", "silly_design" },
   { "setCharacter", "oldlady" },
   "Rosetta will hear about this!",
