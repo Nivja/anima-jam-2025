@@ -11,6 +11,7 @@ return {
   },
   { "tag", "option_one" }, -- [[ Declare a point which can be 'goto'ed ]]
   { "addItem",
+  -- Add items required for the mini game
     { name = "Childish Fabric", tags = { "fabric", "use-patch" }, patchType = "silly", },
     { name = "Neutral Fabric", tags = { "fabric", "use-patch" }, patchType = "neutral", },
     { name = "Fancy Fabric", tags = { "fabric", "use-patch" }, patchType = "fancy", },
