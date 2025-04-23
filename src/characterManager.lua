@@ -3,6 +3,7 @@ local lg = love.graphics
 
 local logger = require("util.logger")
 local json = require("util.json")
+local file = require("util.file")
 
 local animation = require("src.animation")
 local character = require("src.character")
@@ -10,14 +11,15 @@ local character = require("src.character")
 local characterManager = { }
 
 local loadAnimations = function(dir)
-  for _, animationName in ipairs(lfs.getDirectionPitch(dir)) do
-    local animationPath = dir .. animationName
-    if lfs.getInfo(animationPath, "file") do
+  for _, animationName in ipairs(lfs.getDirectoryItems(dir)) do
+    local animationPath = dir .. "/" .. animationName
+    if lfs.getInfo(animationPath, "file") then
       local success, animationDefinition = json.decode(animationPath)
       if success then
         local a = animation.new(animationDefinition)
-        characterManager.animations[animationName] = a
-        logger.info("Added animation:", animationName)
+        local name = file.getFileName(animationName)
+        characterManager.animations[name] = a
+        logger.info("Added animation:", name)
       else
         logger.warn("Could not decode animation json:", animationPath, ". Reason:", animationDefinition)
       end
@@ -46,10 +48,27 @@ local loadCharacters = function(dir)
   end
 end
 
+local initState = function()
+  for _, character in pairs(characterManager.characters) do
+    local checkAnimationState
+    checkAnimationState = function()
+      anim = characterManager.animations[character.state or ""]
+      if anim then
+        anim:applyToCharacter(character, checkAnimationState)
+      else
+        logger.warn("Character[", character.dirName,"] Couldn't find animation for state:", character.state, "[type:".. type(character.state) .. "]")
+      end
+    end
+    checkAnimationState()
+  end
+end
+
 characterManager.load = function(animationDir, characterDir)
   characterManager.unload()
   loadAnimations(animationDir)
   loadCharacters(characterDir)
+
+  initState()
 end
 
 characterManager.unload = function()

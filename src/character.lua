@@ -16,6 +16,7 @@ character.new = function(directory, dirName, definition)
     x = 0, y = 0, z = 5,
     rotation = 0,
     scale = 1,
+    state = "idle"
   }
 
   if definition.transform then
@@ -36,8 +37,8 @@ character.new = function(directory, dirName, definition)
 
     local part = {
       name = partDefinition.name,
-      x = 0, y = 0, r = 0,
-      scale = 1,
+      x = 0, y = 0, r = 0, scale = 1, -- Defaults are actually set later for these values
+      ax = 0, ay = 0, ar = 0, ascale = 1, -- Used for animation
       children = { } -- populated later
     }
     partLookup[partDefinition.name] = part
@@ -70,6 +71,18 @@ character.new = function(directory, dirName, definition)
     part.zOffset = partDefinition.zOffset
     if type(part.zOffset) ~= "number" then part.zOffset = 0 end
 
+    part.x = partDefinition.x
+    if type(part.x) ~= "number" then part.x = 0 end
+
+    part.y = partDefinition.y
+    if type(part.y) ~= "number" then part.y = 0 end
+
+    part.r = partDefinition.r
+    if type(part.r) ~= "number" then part.r = 0 end
+
+    part.scale = partDefinition.scale
+    if type(part.scale) ~= "number" then part.scale = 1 end
+
     ::continue::
   end
 
@@ -92,24 +105,9 @@ character.new = function(directory, dirName, definition)
     end
   end
 
+  c.partLookup = partLookup
   c.dirName = dirName
   c.root = root
-
-  -- -- Debug
-  for _, part in ipairs(root.children) do
-    local a, b
-    a = function()
-      flux.to(part, 2, {
-        r = math.rad(-45),
-      }):oncomplete(b)
-    end
-    b = function()
-      flux.to(part, 2, {
-        r = math.rad( 45),
-      }):oncomplete(a)
-    end
-    a()
-  end
 
   return setmetatable(c, character)
 end
@@ -120,16 +118,16 @@ end
 
 local drawPart
 drawPart = function(part, transform)
-  transform:scale(part.scale) -- this doesn't set the Z axis to scale; but we don't care about it
+  transform:scale(part.scale * part.ascale) -- this doesn't set the Z axis to scale; but we don't care about it
   local v01, v02, _, _, v05, v06 = transform:getMatrix()
   local scaleX, scaleY = math.sqrt(v01^2 + v05^2), math.sqrt(v02^2 + v06^2)
   local offsetX, offsetY = ((part.offset[1]/100)) * scaleX, ((part.offset[2]/100)) * scaleY
   local pivotX, pivotY = ((part.pivot[1]/100)-0.5) * scaleX, ((part.pivot[2]/100)-0.5) * scaleY
   -- logger.info(part.name, pivotX, pivotY)
 
-  transform:translate(part.x + offsetX, part.y + offsetY)
+  transform:translate(part.x + part.ax + offsetX, part.y + part.ay + offsetY)
   transform:translate(-pivotX, -pivotY)
-  transform:rotate(part.r)
+  transform:rotate(part.r + part.ar)
   transform:translate(pivotX, pivotY)
 
   local v01, v02, v03, v04,
