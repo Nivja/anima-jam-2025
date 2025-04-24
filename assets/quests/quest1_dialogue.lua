@@ -1,9 +1,9 @@
 return {
-  { "setCharacter", "oldlady" },
+  { "setCharacter", "Zyla" },
   "Good morning, I am here to see Rosetta. Is she around? I need my dress fixed.",
   { "setCharacter", "player" },
   "Rosetta is not here this morning. I am here to help with all sewing and mending and would love to help",
-  { "setCharacter", "oldlady" },
+  { "setCharacter", "Zyla" },
   "Oh, but Rosetta is the one who made this garment for me, I have been wearing it to my council meetings.",
   { "choice",
     { "and she did a fine job! Please let me have a look.", --[[ goto ]] "option_one" },
@@ -16,7 +16,7 @@ return {
     { name = "Neutral Fabric", tags = { "fabric", "use-patch" }, patchType = "neutral", },
     { name = "Fancy Fabric", tags = { "fabric", "use-patch" }, patchType = "fancy", },
     {
-      name = "Old Lady's Dress",
+      name = "Zyla's Dress",
       issue = { {
         --[[ issue details for minigame... ]]
       } },
@@ -31,19 +31,19 @@ return {
   { "if", "item", "lastAdded", "hasTag", "patched.fancy", "fancy_design" },
   { "end" } -- Shouldn't reach this point, i.e. if the dress has none of those above tags; but we handle it by ending the conversion
   { "tag", "silly_design" },
-  { "setCharacter", "oldlady" },
+  { "setCharacter", "Zyla" },
   "Rosetta will hear about this!",
   { "end" },
   { "tag", "neutral_design" },
-  { "setCharacter", "oldlady" },
+  { "setCharacter", "Zyla" },
   "This will do, thank you for your service, young man",
   { "end" },
   { "tag", "fancy_design" },
-  { "setCharacter", "oldlady" },
+  { "setCharacter", "Zyla" },
   "Well, this is quite stylish, you know, I do have a few heirloom fabrics just sitting around my place, I think you might be the person to make good use of them. Can't wait to see what you will make."
   { "addItem", 
-    { name = "Old Lady's Heirloom fabric 1" },
-    { name = "Old Lady's Heirloom fabric 2" },
+    { name = "Zyla's Heirloom fabric 1" },
+    { name = "Zyla's Heirloom fabric 2" },
   }
   { "end" },
   { "tag", "option_two" },
