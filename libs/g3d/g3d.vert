@@ -39,8 +39,9 @@ vec4 position(mat4 transformProjection, vec4 vertexPosition) {
 vec4 effect(vec4 color, Image tex, vec2 texture_coords, vec2 screen_coords)
 {
     vec4 texturecolor = Texel(tex, texture_coords);
-    if (texturecolor.a < 0.00001)
+    vec4 outColor = texturecolor * color;
+    if (outColor.a < 0.000001)
         discard;
-    return texturecolor * color;
+    return outColor;
 }
 #endif

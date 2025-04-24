@@ -1,0 +1,253 @@
+{
+  "spritesheet": "SpriteSheet.png",
+  "transform": {
+    "y": 1.4
+  },
+  "parts": [
+    {
+      "name": "Torso",
+      "parent": null,
+      "texture": {
+        "x": 995,
+        "y": 1071,
+        "width": 476,
+        "height": 382
+      },
+      "pixelPivot": [ 1250, 1325 ]
+    },
+    {
+      "name": "Pants",
+      "parent": "Torso",
+      "texture": {
+        "x": 1671,
+        "y": 1052,
+        "width": 391,
+        "height": 190
+      },
+      "pixelPivot": [ 1860, 1130 ],
+      "offset": [ 5, -16.5 ],
+      "zOffset": -0.2
+    },
+    {
+      "name": "Leg.Right",
+      "parent": "Pants",
+      "texture": {
+        "x": 2295,
+        "y": 1267,
+        "width": 136,
+        "height": 137
+      },
+      "pixelPivot": [ 2360, 1235 ],
+      "offset": [ 12, -26 ],
+      "zOffset": -0.15
+    },
+    {
+      "name": "Pants.Right",
+      "parent": "Leg.Right",
+      "texture": {
+        "x": 1684,
+        "y": 1235,
+        "width": 231,
+        "height": 200
+      },
+      "pixelPivot": [ 1800, 1330 ],
+      "offset": [ -1, -61.5 ],
+      "zOffset": 0.25
+    },
+    {
+      "name": "Shoe.Right",
+      "parent": "Leg.Right",
+      "texture": {
+        "x": 2205,
+        "y": 1034,
+        "width": 211,
+        "height": 132
+      },
+      "pixelPivot": [ 2300, 1070 ],
+      "offset": [ -5, -86.5 ],
+      "zOffset": 0.1
+    },
+    {
+      "name": "Leg.Left",
+      "parent": "Pants",
+      "texture": {
+        "x": 2457,
+        "y": 1254,
+        "width": 154,
+        "height": 169
+      },
+      "pixelPivot": [ 2530, 1235 ],
+      "offset": [ -12, -30 ],
+      "zOffset": -0.2
+    },
+    {
+      "name": "Pants.Left",
+      "parent": "Leg.Left",
+      "texture": {
+        "x": 1983,
+        "y": 1268,
+        "width": 255,
+        "height": 172
+      },
+      "pixelPivot": [ 2110, 1350 ],
+      "offset": [ -5, -45 ],
+      "zOffset": 0.1
+    },
+    {
+      "name": "Shoe.Left",
+      "parent": "Leg.Left",
+      "texture": {
+        "x": 2430,
+        "y": 1040,
+        "width": 200,
+        "height": 128
+      },
+      "pixelPivot": [ 2523, 1070 ],
+      "offset": [ -5, -71 ],
+      "zOffset": 0.025
+    },
+    {
+      "name": "Head",
+      "parent": "Torso",
+      "texture": {
+        "x": 1688,
+        "y": 141,
+        "width": 571,
+        "height": 508
+      },
+      "pixelPivot": [ 2015, 645 ],
+      "offset": [ 11, 94 ],
+      "zOffset": 0.5
+    },
+    {
+      "name": "Scarf",
+      "parent": "Torso",
+      "texture": {
+        "x": 1760,
+        "y": 760,
+        "width": 427,
+        "height": 170
+      },
+      "pixelPivot": [ 2015, 865 ],
+      "offset": [ 20, 45 ],
+      "zOffset": 0.6
+    },
+    {
+      "name": "Hat",
+      "parent": "Head",
+      "texture": {
+        "x": 950,
+        "y": 156,
+        "width": 664,
+        "height": 362
+      },
+      "pixelPivot": [ 1066, 403 ],
+      "offset": [ 10, 75 ],
+      "zOffset": 0.1
+    },
+    {
+      "name": "Hair.Right",
+      "parent": "Head",
+      "texture": {
+        "x": 2300,
+        "y": 378,
+        "width": 260,
+        "height": 237
+      },
+      "pixelPivot": [ 2520, 450 ],
+      "offset": [ 53.5, 28 ],
+      "zOffset": -0.1
+    },
+    {
+      "name": "Hair.Left",
+      "parent": "Head",
+      "texture": {
+        "x": 2644,
+        "y": 267,
+        "width": 395,
+        "height": 360
+      },
+      "pixelPivot": [ 2765, 390 ],
+      "offset": [ -35.5, 60 ],
+      "zOffset": -0.1
+    },
+    {
+      "name": "Arm.Right",
+      "parent": "Torso",
+      "texture": {
+        "x": 1121,
+        "y": 695,
+        "width": 137,
+        "height": 291
+      },
+      "pixelPivot": [ 1200, 725 ],
+      "offset": [ 42, 4.5 ],
+      "zOffset": 0.1
+    },
+    {
+      "name": "Shoulder.Right",
+      "parent": "Arm.Right",
+      "texture": {
+        "x": 870,
+        "y": 665,
+        "width": 183,
+        "height": 199
+      },
+      "pixelPivot": [ 957, 698 ],
+      "offset": [ 7, -24 ],
+      "zOffset": 0.2
+    },
+    {
+      "name": "BagStrap.Right",
+      "parent": "Torso",
+      "texture": {
+        "x": 2270,
+        "y": 743,
+        "width": 160,
+        "height": 183
+      },
+      "pixelPivot": [ 2325, 830 ],
+      "offset": [ 34.5, 28 ],
+      "zOffset": 0.1
+    },
+    {
+      "name": "Arm.Left",
+      "parent": "Torso",
+      "texture": {
+        "x": 1545,
+        "y": 689,
+        "width": 148,
+        "height": 293
+      },
+      "pixelPivot": [ 1578, 717 ],
+      "offset": [ -25, 7 ],
+      "zOffset": -0.4
+    },
+    {
+      "name": "Shoulder.Left",
+      "parent": "Arm.Left",
+      "texture": {
+        "x": 1314,
+        "y": 661,
+        "width": 188,
+        "height": 203
+      },
+      "pixelPivot": [ 1363, 702 ],
+      "offset": [ -25.7, -23 ],
+      "zOffset": 0.1
+    },
+    {
+      "name": "BagStrap.Left",
+      "parent": "Torso",
+      "texture": {
+        "x": 2587,
+        "y": 751,
+        "width": 70,
+        "height": 108
+      },
+      "pixelPivot": [ 2575, 800 ],
+      "offset": [ -20.6, 32.5 ],
+      "zOffset": 0.1
+    }
+  ]
+}

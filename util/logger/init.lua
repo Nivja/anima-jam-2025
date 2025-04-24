@@ -150,7 +150,7 @@ logger.fatal = function(name, ...)
        (love and love._os == "Windows") or
        (jit and jit.os == "Windows")
       then
-      message = message .. "    SDL2_Fix\0"
+      message = message .. "    SDL2_Fix_ignore\0"
     end
     love.window.showMessageBox("Error occurred: "..name, message, "error", true)
     if love.event then

@@ -84,9 +84,11 @@ end
 
 characterManager.draw = function()
   -- debug, pick a random first one
-  for _, character in pairs(characterManager.characters) do
-    character:draw()
-    break
+  for index, character in pairs(characterManager.characters) do
+    if index == "player" then
+      character:draw()
+      break
+    end
   end
 end
 

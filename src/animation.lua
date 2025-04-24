@@ -34,11 +34,11 @@ animation.new = function(definition)
 end
 
 animation.applyToCharacter = function(self, character, finishCallback)
-  local count = 0
+  local count, tweenCount = 0, 0
   local finished
   finished = function()
     count = count + 1
-    if count == #self.sequences then
+    if count == tweenCount then
       if type(finishCallback) == "function" then
         finishCallback()
       end
@@ -50,6 +50,7 @@ animation.applyToCharacter = function(self, character, finishCallback)
 
     local part = character.partLookup[sequence.part]
     if part then
+      tweenCount = tweenCount + 1
       local fluxTween = flux.to(part, tween.length or 0, tween.transform or { }):ease(tween.ease or "linear")
 
       tween = tween.next

@@ -21,7 +21,7 @@ function camera.newCamera()
 
     self.fov = math.pi/2
     self.nearClip = 0.01
-    self.farClip = 1000
+    self.farClip = 200
     self.aspectRatio = love.graphics.getWidth()/love.graphics.getHeight()
     self.position = {0,0,0}
     self.target = {1,0,0}

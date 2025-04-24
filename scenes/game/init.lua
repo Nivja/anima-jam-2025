@@ -21,8 +21,8 @@ local dialogueManager = require("src.dialogueManager")
 local world = require("src.world")
 
 local scene = {
-  posX = 0,
-  posY = 3,
+  posX = -0.5,
+  posY = 2.6,
   posZ = 0, -- shouldn't be touched realistically, added if needed later -- It was needed, thank you past Paul
   lookAt = { 0, -5, 25 }, -- Look at positive Z; Y is set to small amount as there is a issue with g3d
 }
@@ -38,16 +38,16 @@ scene.load = function(restart)
   -- This should be replaced by quest load; which specifies what dialogue to load
   dialogueManager.load("assets/quests")
 
-  for name, dialogue in pairs(dialogueManager.dialogue) do
-    print(">", name)
-    while not dialogue.isFinished do
-      local text = dialogue:next()
-      if text == nil and dialogue.isFinished then
-        break
-      end
-      logger.info(dialogue.speaker, ">", text)
-    end
-  end
+  -- for name, dialogue in pairs(dialogueManager.dialogue) do
+  --   print(">", name)
+  --   while not dialogue.isFinished do
+  --     local text = dialogue:next()
+  --     if text == nil and dialogue.isFinished then
+  --       break
+  --     end
+  --     logger.info(dialogue.speaker, ">", text)
+  --   end
+  -- end
 
   scene.playerChar = characterManager.characters["player"]
 end
@@ -90,7 +90,7 @@ scene.update = function(dt)
 end
 
 scene.draw = function()
-  lg.clear()
+  lg.clear(.5, 1, 1, 1)
   lg.origin()
   -- World
   lg.push("all")
