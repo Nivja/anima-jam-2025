@@ -9,14 +9,13 @@ item.newFromDefinition = function(definition)
 
 end
 
-item.hasTag = function(self, tag)
-
-end
-
-item.draw = function(self)
-  lg.push()
-  lg.draw(itemIcons[self.type] or itemIcons["unknown"])
-  lg.pop()
+item.hasTag = function(self, tagToFind)
+  for _, tag in ipairs(self.tags) do
+    if tag == tagToFind then
+      return true
+    end
+  end
+  return false
 end
 
 return item

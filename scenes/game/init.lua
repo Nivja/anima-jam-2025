@@ -17,6 +17,7 @@ local lang = require("util.lang")
 local ui = require("util.ui")
 
 local characterManager = require("src.characterManager")
+local dialogueManager = require("src.dialogueManager")
 local world = require("src.world")
 
 local scene = {
@@ -34,6 +35,19 @@ updateCamera()
 scene.load = function(restart)
   cursor.switch("arrow")
   characterManager.load("assets/animations", "assets/characters/")
+  -- This should be replaced by quest load; which specifies what dialogue to load
+  dialogueManager.load("assets/quests")
+
+  for name, dialogue in pairs(dialogueManager.dialogue) do
+    print(">", name)
+    while not dialogue.isFinished do
+      local text = dialogue:next()
+      if text == nil and dialogue.isFinished then
+        break
+      end
+      logger.info(dialogue.speaker, ">", text)
+    end
+  end
 
   scene.playerChar = characterManager.characters["player"]
 end

@@ -29,7 +29,7 @@ return {
   { "if", "item", "lastAdded", "hasTag", "patched.silly", "silly_design" }, -- So the patching minigame would add the "patched.<patchType>" tag to the dress
   { "if", "item", "lastAdded", "hasTag", "patched.neutral", "neutral_design" },
   { "if", "item", "lastAdded", "hasTag", "patched.fancy", "fancy_design" },
-  { "end" } -- Shouldn't reach this point, i.e. if the dress has none of those above tags; but we handle it by ending the conversion
+  { "end" }, -- Shouldn't reach this point, i.e. if the dress has none of those above tags; but we handle it by ending the conversion
   { "tag", "silly_design" },
   { "setCharacter", "oldlady" },
   "Rosetta will hear about this!",
@@ -40,11 +40,11 @@ return {
   { "end" },
   { "tag", "fancy_design" },
   { "setCharacter", "oldlady" },
-  "Well, this is quite stylish, you know, I do have a few heirloom fabrics just sitting around my place, I think you might be the person to make good use of them. Can't wait to see what you will make."
+  "Well, this is quite stylish, you know, I do have a few heirloom fabrics just sitting around my place, I think you might be the person to make good use of them. Can't wait to see what you will make.",
   { "addItem", 
     { name = "Old Lady's Heirloom fabric 1" },
     { name = "Old Lady's Heirloom fabric 2" },
-  }
+  },
   { "end" },
   { "tag", "option_two" },
   { "setCharacter", "oldlady" },

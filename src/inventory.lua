@@ -8,4 +8,8 @@ inventory.get = function(id)
   return inventory.lookup[id]
 end
 
+inventory.addItem = function(item)
+  
+end
+
 return inventory
