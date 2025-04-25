@@ -33,10 +33,4 @@ return {
    { "setCharacter", "sami" },
    "In anticipation of the many more falls to come..."
 
-
-
-
-
-
-
   }
