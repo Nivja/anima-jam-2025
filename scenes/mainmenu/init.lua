@@ -212,7 +212,7 @@ local mainButtons = {
     end),
   mainButtonFactory("menu.new_game", function()
       --changeMenu("game")
-      require("util.sceneManager").changeScene("scenes.game")
+      require("util.sceneManager").changeScene("scenes.game", suit.gamepadActive)
     end),
 }
 

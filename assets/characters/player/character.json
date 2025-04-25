@@ -1,7 +1,7 @@
 {
   "spritesheet": "SpriteSheet.png",
   "transform": {
-    "y": 1
+    "y": 0.7
   },
   "parts": [
     {
@@ -64,7 +64,7 @@
         "height": 137
       },
       "pivot": [ 2360, 1235 ],
-      "offset": [ -125, 85 ],
+      "offset": [ -105, 85 ],
       "zOffset": -0.25
     },
     {
@@ -77,7 +77,7 @@
         "height": 132
       },
       "pivot": [ 2300, 1070 ],
-      "offset": [ 10, 140 ],
+      "offset": [ 0, 140 ],
       "zOffset": 0.1
     },
     {
@@ -90,7 +90,7 @@
         "height": 169
       },
       "pivot": [ 2530, 1235 ],
-      "offset": [ 45, 95 ],
+      "offset": [ 15, 97 ],
       "zOffset": -0.4
     },
     {
@@ -103,7 +103,7 @@
         "height": 128
       },
       "pivot": [ 2523, 1070 ],
-      "offset": [ 5, 115 ],
+      "offset": [ 5, 120 ],
       "zOffset": 0.025
     },
     {

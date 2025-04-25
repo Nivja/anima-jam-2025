@@ -61,10 +61,12 @@ character.__index = character
 
 character.new = function(directory, dirName, definition)
   local self = {
-    x = 0, y = 0, z = 3,
+    x = 0, y = 0, z = 4,
     rotation = 0,
     scale = 1,
     state = "idle",
+    animations = { },
+    animationTweens = { },
   }
 
   if definition.transform then
@@ -97,7 +99,9 @@ character.new = function(directory, dirName, definition)
     local part = {
       name = partDefinition.name,
       x = 0, y = 0, r = 0, scale = 1, -- Defaults are actually set later for these values
-      ax = 0, ay = 0, ar = 0, ascale = 1, -- Used for animation
+      a0x = 0, a0y = 0, a0r = 0, a0scale = 1, -- Used for animation
+      a1x = 0, a1y = 0, a1r = 0, a1scale = 1,
+      a2x = 0, a2y = 0, a2r = 0, a2scale = 1,
       children = { } -- populated later
     }
     partLookup[partDefinition.name] = part
@@ -197,6 +201,24 @@ character.new = function(directory, dirName, definition)
   return setmetatable(self, character)
 end
 
+character.setState = function(self, newState)
+  if self.state ~= newState then
+    local anim = require("src.characterManager").animations[newState]
+    if anim then
+      anim:apply(self)
+    else
+      logger.warn("Character[", self.dirName,"] Couldn't find animation for state:", self.state, "[type:".. type(self.state) .. "]")
+    end
+    self.state = newState
+    print(newState)
+  end
+end
+
+character.moveX = function(self, deltaX)
+  self.x = self.x + deltaX
+  self:setState(math.abs(deltaX) > 0 and "walk" or "idle")
+end
+
 character.update = function(self, dt)
   -- self.root.y = self.root.y + dt
   -- self.root.scale = self.root.scale + dt * 0.5
@@ -211,9 +233,15 @@ collectDrawItems = function(part, transform, z, drawingQueue, spritesheet)
   local offsetX, offsetY = unpack(part.offset)
   local pivotX, pivotY = unpack(part.pivot)
 
-  transform:translate(part.x + part.ax + offsetX, part.y + part.ay + offsetY)
-  transform:scale(part.scale * part.ascale)
-  transform:rotate(part.r + math.rad(part.ar))
+  -- Animated layers
+  local ax = part.a0x + part.a1x + part.a2x
+  local ay = part.a0y + part.a1y + part.a2y
+  local ar = math.rad(part.a0r + part.a1r + part.a2r)
+  local ascale = part.a0scale * part.a1scale * part.a2scale
+
+  transform:translate(part.x + ax + offsetX, part.y + ay + offsetY)
+  transform:scale(part.scale * ascale)
+  transform:rotate(part.r + ar)
 
   z = z + part.zOffset
 

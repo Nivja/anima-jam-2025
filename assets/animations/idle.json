@@ -1,5 +1,6 @@
 {
-  "sequences": [
+  "track": 1,
+  "loop": [
     {
       "part": "Hat",
       "tweens": [
