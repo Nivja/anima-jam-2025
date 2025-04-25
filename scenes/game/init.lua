@@ -21,8 +21,8 @@ local dialogueManager = require("src.dialogueManager")
 local world = require("src.world")
 
 local scene = {
-  posX = -0.5,
-  posY = 2.6,
+  posX = 0,
+  posY = 2.3,
   posZ = 0, -- shouldn't be touched realistically, added if needed later -- It was needed, thank you past Paul
   lookAt = { 0, -5, 25 }, -- Look at positive Z; Y is set to small amount as there is a issue with g3d
 }
@@ -87,6 +87,9 @@ scene.update = function(dt)
   scene.posX, scene.posY = scene.posX + dx * 5 * dt, scene.posY + -dy * 5 * dt
   updateCamera()
   --logger.info("Pos", scene.posX, scene.posY)
+
+  love.mouse.setRelativeMode(false)
+  love.mouse.setVisible(true)
 end
 
 scene.draw = function()
