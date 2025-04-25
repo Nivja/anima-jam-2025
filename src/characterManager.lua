@@ -16,9 +16,8 @@ local loadAnimations = function(dir)
     if lfs.getInfo(animationPath, "file") then
       local success, animationDefinition = json.decode(animationPath)
       if success then
-        local a = animation.new(animationDefinition)
         local name = file.getFileName(animationName)
-        characterManager.animations[name] = a
+        characterManager.animations[name] = animation.new(animationDefinition, name)
         logger.info("Added animation:", name)
       else
         logger.warn("Could not decode animation json:", animationPath, ". Reason:", animationDefinition)
@@ -36,8 +35,7 @@ local loadCharacters = function(dir)
     if lfs.getInfo(characterDirectory, "directory") and lfs.getInfo(characterJson) then
       local success, characterDefinition = json.decode(characterJson)
       if success then
-        local c = character.new(characterDirectory, characterName, characterDefinition)
-        characterManager.characters[characterName] = c
+        characterManager.characters[characterName] = character.new(characterDirectory, characterName, characterDefinition)
         logger.info("Added character:", characterName)
       else
         logger.warn("Could not decode character json:", characterJson, ". Reason:", characterDefinition)
@@ -50,16 +48,12 @@ end
 
 local initState = function()
   for _, character in pairs(characterManager.characters) do
-    local checkAnimationState
-    checkAnimationState = function()
-      anim = characterManager.animations[character.state or ""]
-      if anim then
-        anim:applyToCharacter(character, checkAnimationState)
-      else
-        logger.warn("Character[", character.dirName,"] Couldn't find animation for state:", character.state, "[type:".. type(character.state) .. "]")
-      end
+    anim = characterManager.animations[character.state or ""]
+    if anim then
+      anim:apply(character)
+    else
+      logger.warn("Character[", character.dirName,"] Couldn't find animation for state:", character.state, "[type:".. type(character.state) .. "]")
     end
-    checkAnimationState()
   end
 end
 

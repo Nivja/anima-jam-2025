@@ -3,6 +3,8 @@ local lg = love.graphics
 local audioManager = require("util.audioManager")
 audioManager.setVolumeAll()
 
+local flux = require("libs.flux")
+
 local g3d = require("libs.g3d")
 local cam = g3d.camera:current()
 cam.fov = math.rad(70)
@@ -21,10 +23,11 @@ local dialogueManager = require("src.dialogueManager")
 local world = require("src.world")
 
 local scene = {
-  posX = -0.5,
-  posY = 2.6,
+  posX = 0,
+  posY = 3,
   posZ = 0, -- shouldn't be touched realistically, added if needed later -- It was needed, thank you past Paul
-  lookAt = { 0, -5, 25 }, -- Look at positive Z; Y is set to small amount as there is a issue with g3d
+  lookAt = { 0, -4.3, 25 }, -- Look at positive Z; Y is set to small amount as there is a issue with g3d
+  gamepadActive = false,
 }
 
 local updateCamera = function()
@@ -32,7 +35,9 @@ local updateCamera = function()
 end
 updateCamera()
 
-scene.load = function(restart)
+scene.load = function(gpMode)
+  scene.gamepadActive = gpMode
+
   cursor.switch("arrow")
   characterManager.load("assets/animations", "assets/characters/")
   -- This should be replaced by quest load; which specifies what dialogue to load
@@ -79,14 +84,60 @@ scene.resize = function(w, h)
   cam:updateProjectionMatrix()
 end
 
+local zProgress = 0
 scene.update = function(dt)
   characterManager.update(dt)
 
   local dx, dy = input.baton:get("move")
 
-  scene.posX, scene.posY = scene.posX + dx * 5 * dt, scene.posY + -dy * 5 * dt
+  if math.abs(dx) <= 0.2 then
+    dx = 0
+  end
+  scene.playerChar:moveX(dx * 5 * dt)
+
+  if math.abs(dy) > 0.3 then
+    local speed = 8
+    if scene.playerChar.zTween and scene.playerChar.zTween.progress < 1 then
+      speed = 4
+    end
+    zProgress = zProgress + dy * speed * dt
+  else
+    zProgress = 0
+  end
+  if zProgress >= 1 or zProgress <= -1 then
+    local level = zProgress >= 1 and 0.5 or -0.5
+    zProgress = 0
+    local target = scene.playerChar.z - level 
+    target = math.max(3, math.min(5, target)) --todo replace with HC collision
+    if scene.playerChar.z ~= target then
+      if scene.playerChar.zTween and scene.playerChar.zTween.progress < 1 then
+        target = scene.playerChar.zTarget - level
+        target = math.max(3, math.min(5, target))
+        if scene.playerChar.zTarget ~= target then
+          scene.playerChar.zTween = scene.playerChar.zTween:after(scene.playerChar, 0.3, {
+            z = target
+          }):ease("cubicout")
+        end
+      else
+        scene.playerChar.zTween = flux.to(scene.playerChar, 0.3, {
+          z = target
+        }):ease("cubicout")
+      end
+      scene.playerChar.zTarget = target
+    end
+  end
+
+  scene.posX = scene.playerChar.x
+  scene.posZ = 0.5 * scene.playerChar.z - 2
   updateCamera()
-  --logger.info("Pos", scene.posX, scene.posY)
+
+  if scene.gamepadActive then
+    love.mouse.setRelativeMode(true)
+    love.mouse.setVisible(false)
+  else
+    love.mouse.setRelativeMode(false)
+    love.mouse.setVisible(true)
+  end
 end
 
 scene.draw = function()
@@ -102,5 +153,33 @@ scene.draw = function()
 
   lg.pop()
 end
+
+local inputDetected = function(inputType)
+  scene.gamepadActive = inputType == "gamepad"
+end
+
+scene.keypressed = function()
+  inputDetected("keyboard")
+end
+
+scene.mousepressed = function()
+  inputDetected("mouse")
+end
+
+scene.touchedpressed = scene.mousepressed
+
+scene.mousemoved = function()
+  inputDetected("mouse")
+end
+
+scene.wheelmoved = function()
+  inputDetected("mouse")
+end
+
+scene.gamepadpressed = function()
+  inputDetected("gamepad")
+end
+scene.joystickpressed = scene.gamepadpressed
+scene.joystickaxis = scene.gamepadpressed
 
 return scene

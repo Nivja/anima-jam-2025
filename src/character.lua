@@ -43,7 +43,7 @@ local createModelForQuad = function(quadX, quadY, quadW, quadH, texture)
   local success, errorMessage = love.filesystem.write(tempFileName, objString)
 
   if success then
-    local model = g3d.newModel(tempFileName)
+    local model = g3d.newModel(tempFileName, texture)
     local success, errorMessage = love.filesystem.remove(tempFileName)
     if not success then
       logger.warn("Could not remove .temp file created for model generation")
@@ -65,6 +65,8 @@ character.new = function(directory, dirName, definition)
     rotation = 0,
     scale = 1,
     state = "idle",
+    animations = { },
+    animationTweens = { },
   }
 
   if definition.transform then
@@ -82,6 +84,8 @@ character.new = function(directory, dirName, definition)
     else
       error("Couldn't find spritesheet path:", path)
     end
+  else
+    error("Character is missing spritesheet, of:", dirName)
   end
 
   local partLookup = { }
@@ -95,50 +99,35 @@ character.new = function(directory, dirName, definition)
     local part = {
       name = partDefinition.name,
       x = 0, y = 0, r = 0, scale = 1, -- Defaults are actually set later for these values
-      ax = 0, ay = 0, ar = 0, ascale = 1, -- Used for animation
+      a0x = 0, a0y = 0, a0r = 0, a0scale = 1, -- Used for animation
+      a1x = 0, a1y = 0, a1r = 0, a1scale = 1,
+      a2x = 0, a2y = 0, a2r = 0, a2scale = 1,
       children = { } -- populated later
     }
     partLookup[partDefinition.name] = part
 
+    part.shouldDraw = not (partDefinition.draw == false)
     if self.spritesheet and type(partDefinition.texture) == "table" then
       local t = partDefinition.texture
       local x, y, w, h = t.x, t.y, t.width, t.height
-      part.model = createModelForQuad(x, y, w, h, self.spritesheet)
+      part.quad = lg.newQuad(x, y, w, h, self.spritesheet)
     else
-      if partDefinition.texture then
-        local path = directory .. "/" .. partDefinition.texture
-        if lfs.getInfo(path, "file") then
-          part.texture = lg.newImage(path)
-        else
-          logger.warn("Character", dirName, "part[", partDefinition.name,"] couldn't find texture file:", path)
-        end
-      else
-        logger.warn("Character", dirName, "has a part[", partDefinition.name,"] with a missing texture")
-      end
-      if not part.texture then
-        logger.warn("Character", dirName, "part[", partDefinition.name,"] idn't load a texture, setting missing texture")
-        part.texture = missingTexture
-      end
+      error("Missing texture property of part:", partDefinition.name, "of", dirName)
     end
 
-    if partDefinition.pivot then
-      part.pivot = partDefinition.pivot
-    elseif partDefinition.pixelPivot and type(partDefinition.texture) == "table" then
-      local x, y = unpack(partDefinition.pixelPivot)
-      x, y = x or 0, y or 0
-      local t = partDefinition.texture
-      x = ((x - t.x) / t.width) * 100
-      y = ((y - t.y) / t.height) * 100
-      part.pivot = { x, y }
-    end
-    if type(part.pivot) ~= "table" then part.pivot = { 50, 50 } end
-    if type(part.pivot[1]) ~= "number" then part.pivot[1] = 50 end
-    if type(part.pivot[2]) ~= "number" then part.pivot[2] = 50 end
+    part.pivot = partDefinition.pivot
+    local t = partDefinition.texture
+    if type(part.pivot) ~= "table" then part.pivot = { t.x + t.width/2, t.y + t.height/2 } end
+    if type(part.pivot[1]) ~= "number" then part.pivot[1] = t.x + t.width/2 end
+    if type(part.pivot[2]) ~= "number" then part.pivot[2] = t.y + t.height/2 end
+
+    part.pivot[1] = part.pivot[1] - t.x
+    part.pivot[2] = part.pivot[2] - t.y
 
     part.offset = partDefinition.offset
-    if type(part.offset) ~= "table" then part.offset = { .5, .5 } end
-    if type(part.offset[1]) ~= "number" then part.offset[1] = .5 end
-    if type(part.offset[2]) ~= "number" then part.offset[2] = .5 end
+    if type(part.offset) ~= "table" then part.offset = { 0, 0 } end
+    if type(part.offset[1]) ~= "number" then part.offset[1] = 0 end
+    if type(part.offset[2]) ~= "number" then part.offset[2] = 0 end
 
     part.zOffset = partDefinition.zOffset
     if type(part.zOffset) ~= "number" then part.zOffset = 0 end
@@ -184,7 +173,7 @@ character.new = function(directory, dirName, definition)
   -- debug
   local f
   f = function(part, deg)
-    if part.name ~= "Scarf" then
+    if part.name == "Scarf" then
       deg = deg / 1.5
     end
     local a, b
@@ -198,7 +187,7 @@ character.new = function(directory, dirName, definition)
         ar = math.rad( deg),
       }):oncomplete(a)
     end
-    if part.name ~= "BagStrap.Left" and part.name ~= "BagStrap.Right" then
+    if part.name ~= "BagStrap.Left" and part.name ~= "BagStrap.Right" and part.name ~= "Shoulder.Right" and part.name ~= "Shoulder.Left" then
       a()
     end
     deg = deg / 1.5
@@ -206,94 +195,105 @@ character.new = function(directory, dirName, definition)
       f(part, deg)
     end
   end
-  f(root, 90)
+  -- f(root, 50)
+  -- f(root, 15)
 
   return setmetatable(self, character)
 end
 
+character.setState = function(self, newState)
+  if self.state ~= newState then
+    local anim = require("src.characterManager").animations[newState]
+    if anim then
+      anim:apply(self)
+    else
+      logger.warn("Character[", self.dirName,"] Couldn't find animation for state:", self.state, "[type:".. type(self.state) .. "]")
+    end
+    self.state = newState
+    print(newState)
+  end
+end
+
+character.moveX = function(self, deltaX)
+  self.x = self.x + deltaX
+  self:setState(math.abs(deltaX) > 0 and "walk" or "idle")
+end
+
 character.update = function(self, dt)
-  -- self.y = self.y + dt
+  -- self.root.y = self.root.y + dt
+  -- self.root.scale = self.root.scale + dt * 0.5
 end
 
 local collectDrawItems
-collectDrawItems = function(part, transform, drawingQueue, spritesheet)
-  transform:scale(part.scale * part.ascale) -- this doesn't set the Z axis to scale; but we don't care about it
-  local model = part.model or plane
-  local v01, v02, _, _, v05, v06 = transform:getMatrix()
-  local scaleX, scaleY = math.sqrt(v01^2 + v05^2), math.sqrt(v02^2 + v06^2)
-  local offsetX, offsetY = ((part.offset[1]/100)) * scaleX, ((part.offset[2]/100)) * scaleY
-  local pivotX, pivotY = ((part.pivot[1]/100)-0.5) * scaleX, ((part.pivot[2]/100)-0.5) * scaleY
-  -- logger.info(part.name, pivotX, pivotY)
+collectDrawItems = function(part, transform, z, drawingQueue, spritesheet)
+  if not part.shouldDraw then
+    return
+  end
 
-  transform:translate(part.x + part.ax + offsetX, part.y + part.ay + offsetY)
+  local offsetX, offsetY = unpack(part.offset)
+  local pivotX, pivotY = unpack(part.pivot)
+
+  -- Animated layers
+  local ax = part.a0x + part.a1x + part.a2x
+  local ay = part.a0y + part.a1y + part.a2y
+  local ar = math.rad(part.a0r + part.a1r + part.a2r)
+  local ascale = part.a0scale * part.a1scale * part.a2scale
+
+  transform:translate(part.x + ax + offsetX, part.y + ay + offsetY)
+  transform:scale(part.scale * ascale)
+  transform:rotate(part.r + ar)
+
+  z = z + part.zOffset
+
   transform:translate(-pivotX, -pivotY)
-  transform:rotate(part.r + part.ar)
+  table.insert(drawingQueue, {
+    name = part.name,
+    texture = part.texture or spritesheet,
+    quad = part.quad,
+    transform = transform:clone(),
+    zPosition = z,
+  })
   transform:translate(pivotX, pivotY)
 
-  local v01, v02, v03, v04,
-        v05, v06, v07, v08,
-        v09, v10, v11, v12,
-        v13, v14, v15, v16 = transform:getMatrix()
-
-  v12 = v12 + -(part.zOffset/100)
-
-  local finalMatrix = {
-    v01, v02, v03, v04,
-    v05, v06, v07, v08,
-    v09, v10, v11, v12,
-    v13, v14, v15, v16,
-  }
-
-  transform:setMatrix(v01, v02, v03, v04,
-                      v05, v06, v07, v08,
-                      v09, v10, v11, v12,
-                      v13, v14, v15, v16)
-
-  table.insert(drawingQueue, {
-    model = model,
-    texture = spritesheet or part.texture,
-    matrix = finalMatrix,
-    zPosition = v12,
-  })
-
-  transform:translate(-pivotX, -pivotY)
   for _, child in ipairs(part.children) do
-    collectDrawItems(child, transform:clone(), drawingQueue, spritesheet)
+    collectDrawItems(child, transform:clone(), z, drawingQueue, spritesheet)
   end
 end
+
+local characterCanvasSize = 1700
+local characterCanvas = lg.newCanvas(characterCanvasSize, characterCanvasSize)
+local characterCanvasPlane = createModelForQuad(0, 0, characterCanvasSize, characterCanvasSize, characterCanvas)
 
 character.draw = function(self)
   local drawingQueue = { }
 
-  lg.push()
-  local pivotX, pivotY = (self.root.pivot[1]/100) * self.scale, (self.root.pivot[2]/100) * self.scale
-  local transform = love.math.newTransform(0, 0,self.rotation, self.scale, self.scale, pivotX, pivotY)
-  transform:translate(self.x, self.y)
+  collectDrawItems(self.root, love.math.newTransform(), 0, drawingQueue, self.spritesheet)
+  table.sort(drawingQueue, function(a, b) return a.zPosition < b.zPosition end)
 
-  local v01, v02, v03, v04,
-        v05, v06, v07, v08,
-        v09, v10, v11, v12,
-        v13, v14, v15, v16 = transform:getMatrix()
-
-  v12 = v12 + self.z
-  -- print("'ere", v04, v08)
-
-  transform:setMatrix(v01, v02, v03, v04,
-                      v05, v06, v07, v08,
-                      v09, v10, v11, v12,
-                      v13, v14, v15, v16)
-
-
-  collectDrawItems(self.root, transform, drawingQueue, self.spritesheet)
-
-  table.sort(drawingQueue, function(a, b) return a.zPosition > b.zPosition end)
-
+  lg.push("all")
+  lg.origin()
+  lg.setCanvas(characterCanvas)
+  lg.clear(0, 0, 0, 0)
+  local w, h = characterCanvas:getDimensions()
+  lg.translate(w/2, h/2)
+  -- lg.scale(-1, 1) -- flip
   for _, item in ipairs(drawingQueue) do
-    item.model.matrix = item.matrix
-    item.model.mesh:setTexture(item.texture)
-    item.model:draw()
-  end
+    lg.push()
+    lg.applyTransform(item.transform)
 
+    if item.quad then
+      lg.draw(item.texture, item.quad)
+    else
+      lg.draw(item.texture)
+    end
+    lg.pop()
+  end
+  lg.pop()
+
+  
+  lg.push()
+  characterCanvasPlane:setTranslation(self.x, self.y, self.z)
+  characterCanvasPlane:draw()
   lg.pop()
 end
 
