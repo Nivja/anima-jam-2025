@@ -27,7 +27,7 @@ animation.new = function(definition, name)
             -- Append "a" for animation for the part
             local transform = { }
             for key, value in pairs(tween.transform) do
-              -- TODO don't forget to add more part.a<num><var> if you want more tracks
+              -- TODO don't forget to add more part.a<track><var> if you want more tracks
               local newKey = "a" .. tostring(a.track) .. key
               transform[newKey] = value
             end
@@ -42,7 +42,7 @@ animation.new = function(definition, name)
 end
 
 local runSequences = function(sequences, partLookup, finishCB)
-  local tweens = { } -- list of first tweens
+  local tweens, tweenCount = { }, 0
   for _, sequence in ipairs(sequences) do
     local part = partLookup[sequence.part]
     if part then
@@ -61,25 +61,32 @@ local runSequences = function(sequences, partLookup, finishCB)
           local tweenEase = tween.ease or "linear"
           if not fluxTween then
             fluxTween = flux.to(part, tweenLength, tweenTransform):ease(tweenEase)
-            table.insert(tweens, fluxTween)
           else
             fluxTween = fluxTween:after(tweenLength, tweenTransform):ease(tweenEase)
           end
+          table.insert(tweens, fluxTween)
           if accumulatedDelay then
             fluxTween:delay(accumulatedDelay)
             accumulatedDelay = nil
           end
         end
       end
+      if fluxTween then
+        tweenCount = tweenCount + 1
+      end
       if fluxTween and finishCB then
         fluxTween:oncomplete(finishCB)
       end
     end
   end
-  return tweens
+  return tweens, tweenCount
 end
 
 animation.applyLoop = function(self, character)local cb
+  if character.animations[self.name] then
+    character.animations[self.name] = false
+    return -- it's already currently playing
+  end
   local count, tweenCount = 0, 0
   cb = function()
     count = count + 1
@@ -88,14 +95,12 @@ animation.applyLoop = function(self, character)local cb
     end
     if character.animations[self.name] then
       character.animations[self.name] = false
-      print("BROKE LOOP")
+      print("BROKE LOOP", self.name)
       return -- break loop
     end
-    character.animationTweens[self.track] = runSequences(self.loop, character.partLookup, cb)
-    tweenCount = #character.animationTweens[self.track]
+    character.animationTweens[self.track], tweenCount = runSequences(self.loop, character.partLookup, cb)
     count = 0
   end
-  character.animations[self.name] = false
   tweenCount = 1 -- so we can call cb directly to start it
   cb()
 end
@@ -111,26 +116,29 @@ animation.applyFinish = function(self, character, callback)
       callback()
     end
   end
-  character.animationTweens[self.track] = runSequences(self.finish, character.partLookup, finish)
-  tweenCount = #character.animationTweens[self.track]
+  character.animationTweens[self.track], tweenCount = runSequences(self.finish, character.partLookup, finished)
 end
 
 animation.apply = function(self, character)
   if character.animations[self.track] then
     local currentAnim = character.animations[self.track]
     if currentAnim == self then
-      logger.warn("Tried to apply the same animation twice")
+      logger.warn("Tried to apply the same animation twice", self.name)
       return
     end
     if currentAnim.finish then
       currentAnim:applyFinish(character, function()
+        print("Finished", currentAnim.name, "->", self.name)
+        local currentAnim = character.animations[self.track]
         character.animations[self.track] = nil
-        self:apply(character)
+        currentAnim:apply(character)
       end)
+      print("SET2", self.name)
+      character.animations[self.track] = self
       return
     else
-      character.animations[self.name] = true
-      character.animations[self.track] = nil
+      -- Let the current Animation's loop end
+      character.animations[currentAnim.name] = true
     end
   end
   if self.start then
@@ -141,11 +149,11 @@ animation.apply = function(self, character)
         self:applyLoop(character)
       end
     end
-    character.animationTweens[self.track] = runSequences(self.start, character.partLookup, finished)
-    tweenCount = #character.animationTweens[self.track]
+    character.animationTweens[self.track], tweenCount = runSequences(self.start, character.partLookup, finished)
   else
     self:applyLoop(character)
   end
+  print("SET", self.name)
   character.animations[self.track] = self
 end
 

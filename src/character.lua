@@ -64,7 +64,7 @@ character.new = function(directory, dirName, definition)
     x = 0, y = 0, z = 4,
     rotation = 0,
     scale = 1,
-    state = "idle",
+    state = nil, -- default state set in characterManager.load --> .initState 
     animations = { },
     animationTweens = { },
   }
@@ -210,7 +210,6 @@ character.setState = function(self, newState)
       logger.warn("Character[", self.dirName,"] Couldn't find animation for state:", self.state, "[type:".. type(self.state) .. "]")
     end
     self.state = newState
-    print(newState)
   end
 end
 

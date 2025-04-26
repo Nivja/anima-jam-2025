@@ -48,12 +48,7 @@ end
 
 local initState = function()
   for _, character in pairs(characterManager.characters) do
-    anim = characterManager.animations[character.state or ""]
-    if anim then
-      anim:apply(character)
-    else
-      logger.warn("Character[", character.dirName,"] Couldn't find animation for state:", character.state, "[type:".. type(character.state) .. "]")
-    end
+    character.setState("idle")
   end
 end
 
