@@ -66,7 +66,9 @@ character.new = function(directory, dirName, definition)
     scale = 1,
     state = nil, -- default state set in characterManager.load --> .initState 
     animations = { },
+    animationTrackState = { },
     animationTweens = { },
+    animationRequestQueue = { },
   }
 
   if definition.transform then

@@ -5,44 +5,7 @@
       "part": "Leg.Right",
       "tweens": [
         {
-          "length": 0.3,
-          "transform": { "r": 15 }
-        },
-        { "delay": 0.3 }
-      ]
-    },
-    {
-      "part": "Leg.Left",
-      "tweens": [
-        { "delay": 0.3 },
-        {
-          "length": 0.3,
-          "transform": { "r": -15 }
-        }
-      ]
-    }
-  ],
-  "loop": [
-    {
-      "part": "Leg.Right",
-      "tweens": [
-        {
-          "length": 0.3,
-          "transform": { "r": 0 }
-        },
-        { "delay": 0.1 },
-        {
-          "length": 0.3,
-          "transform": { "r": -15 }
-        },
-        { "delay": 0.1 },
-        {
-          "length": 0.3,
-          "transform": { "r": 0 }
-        },
-        { "delay": 0.1 },
-        {
-          "length": 0.3,
+          "length": 0.1,
           "transform": { "r": 15 }
         },
         { "delay": 0.1 }
@@ -53,22 +16,59 @@
       "tweens": [
         { "delay": 0.1 },
         {
-          "length": 0.3,
+          "length": 0.1,
+          "transform": { "r": -15 }
+        }
+      ]
+    }
+  ],
+  "loop": [
+    {
+      "part": "Leg.Right",
+      "tweens": [
+        {
+          "length": 0.1,
           "transform": { "r": 0 }
         },
         { "delay": 0.1 },
         {
-          "length": 0.3,
+          "length": 0.1,
+          "transform": { "r": -15 }
+        },
+        { "delay": 0.1 },
+        {
+          "length": 0.1,
+          "transform": { "r": 0 }
+        },
+        { "delay": 0.1 },
+        {
+          "length": 0.1,
+          "transform": { "r": 15 }
+        },
+        { "delay": 0.1 }
+      ]
+    },
+    {
+      "part": "Leg.Left",
+      "tweens": [
+        { "delay": 0.1 },
+        {
+          "length": 0.1,
+          "transform": { "r": 0 }
+        },
+        { "delay": 0.1 },
+        {
+          "length": 0.1,
           "transform": { "r": 15 }
         },
         { "delay": 0.1 },
         {
-          "length": 0.3,
+          "length": 0.1,
           "transform": { "r": 0 }
         },
         { "delay": 0.1 },
         {
-          "length": 0.3,
+          "length": 0.1,
           "transform": { "r": -15 }
         }
       ]

@@ -6,8 +6,8 @@ local animation = { }
 animation.__index = animation
 
 animation.new = function(definition, name)
-  local a = {
-    -- TODO don't forget to add more part.a<num><var> if you want more tracks
+  local self = {
+    -- TODO don't forget to add more part.a<num><var> if you want more track s
     track = definition.track or 0,
     start = definition.start,
     loop = definition.loop,
@@ -15,34 +15,85 @@ animation.new = function(definition, name)
     name = name,
   }
 
-  if not a.loop then
+  if not self.loop then
     error("Animation must have a loop sequence")
   end
+  if not self.finish then
+    error("Animation must have a finish sequence")
+  end
 
-  for index, sequences in pairs(a) do
-    if type(sequences) == "table" then
-      for _, sequence in ipairs(sequences) do
-        for index, tween in ipairs(sequence.tweens) do
-          if not tween.delay and tween.transform then
-            -- Append "a" for animation for the part
-            local transform = { }
-            for key, value in pairs(tween.transform) do
-              -- TODO don't forget to add more part.a<track><var> if you want more tracks
-              local newKey = "a" .. tostring(a.track) .. key
-              transform[newKey] = value
+  for _, seq_name in ipairs({"start", "loop", "finish" }) do
+    local sequences = self[seq_name]
+    if sequences then
+      if type(sequences) ~= "table" then
+        error("Animation '" .. name .. "' sequence '" .. seq_name .. "' must be a table")
+      end
+      for i, sequence in ipairs(sequences) do
+        if type(sequence) ~= "table" or not sequence.part or not sequence.tweens then
+          error("Animation '" .. name .. "' sequence '" .. seq_name .. "' item " .. i .. " is malformed")
+        end
+        if type(sequence.tweens) ~= "table" then
+          error("Animation '" .. name .. "' sequence '" .. seq_name .. "' item " .. i .. "'s tweens must be a table")
+        end
+        for j, tween in ipairs(sequence.tweens) do
+          if type(tween) ~= "table" then
+              error("Animation '" .. name .. "' sequence '" .. seq_name .. "' item " .. i .. "'s tween " .. j .. " is malformed")
+          end
+          if tween.transform then
+            if type(tween.transform) ~= "table" then
+              error("Animation '" .. name .. "' sequence '" .. seq_name .. "' item " .. i .. "'s tween " .. j .. "'s transform must be a table")
+            else
+              local transform = { }
+              for _, key in ipairs({ "x", "y", "r", "scale" }) do
+                local value = tween.transform[key]
+                if type(value) == "number" then
+                  -- TODO don't forget to add more part.a<track><var> if you want more track s
+                  local newKey = "a" .. tostring(self.track) .. tostring(key)
+                  transform[newKey] = value
+                end
+              end
+              tween.transform = transform
             end
-            tween.transform = transform
           end
         end
       end
     end
   end
 
-  return setmetatable(a, animation)
+  return setmetatable(self, animation)
 end
 
+local stopTrackTweens = function(trackState)
+  if trackState and trackState.tweens then
+    for _, tween in ipairs(trackState.tweens) do
+      tween:stop()
+    end
+    trackState.tweens = nil
+  end
+end
+
+local blankFinishCB = function() end
 local runSequences = function(sequences, partLookup, finishCB)
-  local tweens, tweenCount = { }, 0
+  local tweens = { }
+  local tweenCount = 0
+  local completedCount = 0
+  
+  if not sequences or #sequences == 0 then
+    if finishCB then
+      finishCB()
+    end
+    return tweens, 0
+  end
+
+  local onTweenComplete = not finishCB and blankFinishCB or function()
+    completedCount = completedCount + 1
+    if completedCount == tweenCount then
+      if finishCB then
+        finishCB()
+      end
+    end
+  end
+
   for _, sequence in ipairs(sequences) do
     local part = partLookup[sequence.part]
     if part then
@@ -73,88 +124,138 @@ local runSequences = function(sequences, partLookup, finishCB)
       end
       if fluxTween then
         tweenCount = tweenCount + 1
-      end
-      if fluxTween and finishCB then
-        fluxTween:oncomplete(finishCB)
+        fluxTween:oncomplete(onTweenComplete)
       end
     end
   end
-  return tweens, tweenCount
+
+  if tweenCount == 0 then
+    if finishCB then
+      finishCB()
+    end
+  end
+
+  return tweens
 end
 
-animation.applyLoop = function(self, character)local cb
-  if character.animations[self.name] then
-    character.animations[self.name] = false
-    return -- it's already currently playing
+local processTrackRequestQueue
+
+local startFinishPhase = function(self, character)
+  local trackState = character.animationTrackState[self.track]
+
+  if trackState.animation ~= self or trackState.phase ~= "looping" then
+    processTrackRequestQueue(character, self.track)
+    return
   end
-  local count, tweenCount = 0, 0
-  cb = function()
-    count = count + 1
-    if count ~= tweenCount then
-      return
-    end
-    if character.animations[self.name] then
-      character.animations[self.name] = false
-      print("BROKE LOOP", self.name)
-      return -- break loop
-    end
-    character.animationTweens[self.track], tweenCount = runSequences(self.loop, character.partLookup, cb)
-    count = 0
-  end
-  tweenCount = 1 -- so we can call cb directly to start it
-  cb()
+
+  trackState.phase = "finishing"
+  stopTrackTweens(trackState)
+
+  trackState.tweens = runSequences(self.finish, character.partLookup, function()
+    trackState.phase = "idle"
+    trackState.animation = nil
+    stopTrackTweens(trackState)
+    processTrackRequestQueue(character, self.track)
+  end)
 end
 
-animation.applyFinish = function(self, character, callback)
-  for _, tween in ipairs(character.animationTweens[self.track]) do
-    tween:stop() -- stops tween mid-transition; doesn't call complete callback
+local startLoopPhase = function(self, character)
+  local trackState = character.animationTrackState[self.track]
+
+  if trackState.animation ~= self or trackState.phase ~= "starting" then
+    processTrackRequestQueue(character, self.track)
+    return
   end
-  local count, tweenCount = 0, 0
-  local finished = function()
-    count = count + 1
-    if count == tweenCount then
-      callback()
+
+  trackState.phase = "looping"
+  if self.loop then
+    local onLoopIterationComplete
+    onLoopIterationComplete = function()
+      if trackState.animation ~= self or trackState.phase ~= "looping" then
+        return
+      end
+      stopTrackTweens(trackState) -- stop any old tweens laying around
+      trackState.tweens = runSequences(self.loop, character.partLookup, onLoopIterationComplete)
     end
+    onLoopIterationComplete()
+  else
+    startFinishPhase(self, character)
   end
-  character.animationTweens[self.track], tweenCount = runSequences(self.finish, character.partLookup, finished)
+end
+
+local startStartPhase = function(self, character)
+  local trackState = character.animationTrackState[self.track]
+
+  if trackState.animation ~= self or trackState.phase ~= "idle" then
+    processTrackRequestQueue(character, self.track)
+    return
+  end
+
+  trackState.phase = "starting"
+
+  if animation.start then
+    trackState.tweens = runSequences(animation.start, character.partLookup, function()
+      if trackState.animation == self and trackState.phase == "starting" then
+        startLoopPhase(self, character)
+      end
+    end)
+  else -- If this animation doesn't have a start sequence; skip to loop
+    startLoopPhase(self, character)
+  end
+end
+
+processTrackRequestQueue = function(character, track)
+  local trackState = character.animationTrackState[track]
+  local nextAnimation = character.animationRequestQueue[track]
+
+  if not nextAnimation or trackState.phase == "starting" or trackState.phase == "finishing" then
+    return -- Nothing to process
+  end
+
+  local currentAnimation = trackState.animation
+  if trackState.phase == "looping" and currentAnimation ~= nextAnimation then
+    startFinishPhase(currentAnimation, character, function()
+      processTrackRequestQueue(character, track)
+    end)
+    return
+  end
+
+  if trackState.phase == "idle" then
+    character.animationRequestQueue[track] = nil
+    trackState.animation = nextAnimation
+    stopTrackTweens(trackState) -- Ensure any old tweens are stopped
+    startStartPhase(nextAnimation, character)
+    return
+  end
+
+  logger.warn("ProcessTrackRequestQueue reached where it shouldn't. The trackState phase was:", trackState.phase)
 end
 
 animation.apply = function(self, character)
-  if character.animations[self.track] then
-    local currentAnim = character.animations[self.track]
-    if currentAnim == self then
-      logger.warn("Tried to apply the same animation twice", self.name)
-      return
-    end
-    if currentAnim.finish then
-      currentAnim:applyFinish(character, function()
-        print("Finished", currentAnim.name, "->", self.name)
-        local currentAnim = character.animations[self.track]
-        character.animations[self.track] = nil
-        currentAnim:apply(character)
-      end)
-      print("SET2", self.name)
-      character.animations[self.track] = self
-      return
-    else
-      -- Let the current Animation's loop end
-      character.animations[currentAnim.name] = true
-    end
+  local trackState = character.animationTrackState[self.track]
+
+  if not trackState then
+    trackState = {
+      phase = "idle",
+      animation = nil,
+      tweens = nil,
+    }
+    character.animationTrackState[self.track] = trackState
   end
-  if self.start then
-    local count, tweenCount = 0, 0
-    local finished = function()
-      count = count + 1
-      if count == tweenCount then
-        self:applyLoop(character)
-      end
-    end
-    character.animationTweens[self.track], tweenCount = runSequences(self.start, character.partLookup, finished)
-  else
-    self:applyLoop(character)
+
+  if trackState.animation == self and (trackState.phase == "starting" or trackState.phase == "looping") then
+    logger.warn("Tried to apply the same animation that is already playing:", self, "on track", self.track)
+    return
   end
-  print("SET", self.name)
-  character.animations[self.track] = self
+
+  if character.animationRequestQueue[self.track] == self then
+    logger.warn("Tried to apply the same animation that is already requested:", self, "on track", self.track)
+    return
+  end
+
+  character.animationRequestQueue[self.track] = self
+
+  processTrackRequestQueue(character, self.track)
 end
 
 return animation
