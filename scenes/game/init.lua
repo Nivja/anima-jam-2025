@@ -117,11 +117,13 @@ scene.update = function(dt)
           scene.playerChar.zTween = scene.playerChar.zTween:after(scene.playerChar, 0.3, {
             z = target
           }):ease("cubicout")
+          characterManager.animations["zjump"]:apply(scene.playerChar)
         end
       else
         scene.playerChar.zTween = flux.to(scene.playerChar, 0.3, {
           z = target
         }):ease("cubicout")
+        characterManager.animations["zjump"]:apply(scene.playerChar)
       end
       scene.playerChar.zTarget = target
     end

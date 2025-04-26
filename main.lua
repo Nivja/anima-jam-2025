@@ -7,7 +7,7 @@ StartTime, endTime = nil, nil
 local love = love
 local le, lg, ltr, lfs, lw = love.event, love.graphics, love.timer, love.filesystem, love.window
 
-lg.setMeshCullMode("back")
+-- lg.setMeshCullMode("back")
 
 require("errorhandler")
 require("util.logSystemInfo")

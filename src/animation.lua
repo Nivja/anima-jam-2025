@@ -15,9 +15,6 @@ animation.new = function(definition, name)
     name = name,
   }
 
-  if not self.loop then
-    error("Animation must have a loop sequence")
-  end
   if not self.finish then
     error("Animation must have a finish sequence")
   end
@@ -171,6 +168,7 @@ local startLoopPhase = function(self, character)
   if self.loop then
     local onLoopIterationComplete
     onLoopIterationComplete = function()
+      processTrackRequestQueue(character, self.track)
       if trackState.animation ~= self or trackState.phase ~= "looping" then
         return
       end
@@ -193,8 +191,9 @@ local startStartPhase = function(self, character)
 
   trackState.phase = "starting"
 
-  if animation.start then
-    trackState.tweens = runSequences(animation.start, character.partLookup, function()
+  if self.start then
+    trackState.tweens = runSequences(self.start, character.partLookup, function()
+      processTrackRequestQueue(character, self.track)
       if trackState.animation == self and trackState.phase == "starting" then
         startLoopPhase(self, character)
       end
@@ -244,12 +243,12 @@ animation.apply = function(self, character)
   end
 
   if trackState.animation == self and (trackState.phase == "starting" or trackState.phase == "looping") then
-    logger.warn("Tried to apply the same animation that is already playing:", self, "on track", self.track)
+    -- logger.warn("Tried to apply the same animation that is already playing:", self.name, "on track", self.track)
     return
   end
 
   if character.animationRequestQueue[self.track] == self then
-    logger.warn("Tried to apply the same animation that is already requested:", self, "on track", self.track)
+    -- logger.info("Tried to apply the same animation that is already requested:", self.name, "on track", self.track, "currently in phase", trackState.phase)
     return
   end
 

@@ -64,6 +64,8 @@ character.new = function(directory, dirName, definition)
     x = 0, y = 0, z = 4,
     rotation = 0,
     scale = 1,
+    flip = false,
+    flipRZ = 0,
     state = nil, -- default state set in characterManager.load --> .initState 
     animations = { },
     animationTrackState = { },
@@ -204,20 +206,34 @@ character.new = function(directory, dirName, definition)
 end
 
 character.setState = function(self, newState)
-  if self.state ~= newState then
-    local anim = require("src.characterManager").animations[newState]
-    if anim then
-      anim:apply(self)
-    else
-      logger.warn("Character[", self.dirName,"] Couldn't find animation for state:", self.state, "[type:".. type(self.state) .. "]")
-    end
-    self.state = newState
+  local anim = require("src.characterManager").animations[newState]
+  if anim then
+    anim:apply(self)
+  else
+    logger.warn("Character[", self.dirName, "] Couldn't find animation for state:", newState, "[type:".. type(newState) .. "]")
   end
 end
 
 character.moveX = function(self, deltaX)
   self.x = self.x + deltaX
-  self:setState(math.abs(deltaX) > 0 and "walk" or "idle")
+  local state = math.abs(deltaX) > 0 and "walk" or "idle"
+  self:setState(state)
+  if state == "walk" then
+    local currentFlip = self.flip
+    self.flip = deltaX > 0
+    if currentFlip ~= self.flip then
+      if self.flipTween then
+        self.flipTween:stop()
+      end
+      if self.flip then
+        self.flipRZ = math.rad(0)
+        self.flipTween = flux.to(self, 0.1, { flipRZ = math.rad(-180) })
+      else
+        self.flipRZ = math.rad(-180)
+        self.flipTween = flux.to(self, 0.1, { flipRZ = math.rad(0) })
+      end
+    end
+  end
 end
 
 character.update = function(self, dt)
@@ -277,7 +293,9 @@ character.draw = function(self)
   lg.clear(0, 0, 0, 0)
   local w, h = characterCanvas:getDimensions()
   lg.translate(w/2, h/2)
-  -- lg.scale(-1, 1) -- flip
+  if self.flip then
+    -- lg.scale(-1, 1)
+  end
   for _, item in ipairs(drawingQueue) do
     lg.push()
     lg.applyTransform(item.transform)
@@ -294,6 +312,7 @@ character.draw = function(self)
   
   lg.push()
   characterCanvasPlane:setTranslation(self.x, self.y, self.z)
+  characterCanvasPlane:setRotation(0, self.flipRZ, 0)
   characterCanvasPlane:draw()
   lg.pop()
 end

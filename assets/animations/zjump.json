@@ -1,0 +1,180 @@
+{
+  "track": 2,
+  "finish": [
+    {
+      "part": "Leg.Right",
+      "tweens": [
+        {
+          "length": 0.2,
+          "ease": "quadout",
+          "transform": {
+            "r": 15,
+            "y": 8 
+          }
+        },
+        {
+          "length": 0.1,
+          "ease": "quadin",
+          "transform": {
+            "r": 0,
+            "y": 0
+          }
+        }
+      ]
+    },
+    {
+      "part": "Leg.Left",
+      "tweens": [
+        {
+          "length": 0.2,
+          "ease": "quadout",
+          "transform": {
+            "r": -15,
+            "y": 8 
+          }
+        },
+        {
+          "length": 0.1,
+          "ease": "quadin",
+          "transform": {
+            "r": 0,
+            "y": 0
+          }
+        }
+      ]
+    },
+    {
+      "part": "Arm.Right",
+      "tweens": [
+        {
+          "length": 0.2,
+          "ease": "quadout",
+          "transform": {
+            "r": 55,
+            "y": -15
+          }
+        },
+        {
+          "length": 0.1,
+          "ease":"quadin",
+          "transform": {
+            "r": 0,
+            "y": 0
+          }
+        }
+      ]
+    },
+    {
+      "part": "Arm.Left",
+      "tweens": [
+        {
+          "length": 0.2,
+          "ease": "quadout",
+          "transform": {
+            "r": -40,
+            "y": -15
+          }
+        },
+        {
+          "length": 0.1,
+          "ease":"quadin",
+          "transform": {
+            "r": 0,
+            "y": 0
+          }
+        }
+      ]
+    },
+    {
+      "part": "Torso",
+      "tweens": [
+        { "length": 0.2, "ease": "quadout", "transform": { "y": -5 } },
+        { "length": 0.1, "ease": "quadin", "transform": { "y": 0 } }
+      ]
+    },
+    {
+      "part": "Hat",
+      "tweens": [
+        { "delay": 0.02 },
+        {
+          "length": 0.2,
+          "ease": "quadout",
+          "transform": {
+            "r": 2,
+            "y": -3
+          }
+        },
+        {
+          "length": 0.1,
+          "ease": "quadin",
+          "transform": {
+            "r": 0,
+            "y": 0
+          }
+        }
+      ]
+    },
+    {
+      "part": "Hair.Right",
+      "tweens": [
+        { "delay": 0.05 },
+        { "length": 0.2, "ease": "quadout", "transform": { "r": 10 } },
+        { "length": 0.1, "ease": "quadin", "transform": { "r": 0 } }
+      ]
+    },
+    {
+      "part": "Hair.Left",
+      "tweens": [
+        { "delay": 0.05 },
+        { "length": 0.2, "ease": "quadout", "transform": { "r": -8 } },
+        { "length": 0.1, "ease": "quadin", "transform": { "r": 0 } }
+      ]
+    },
+    {
+      "part": "Scarf",
+      "tweens": [
+        { "delay": 0.08 },
+        {
+          "length": 0.2,
+          "ease": "backout",
+          "transform": {
+            "r": 8,
+            "y": -10
+          }
+        },
+        {
+          "length": 0.1,
+          "ease": "quadin",
+          "transform": {
+            "r": 0,
+            "y": 0
+          }
+        }
+      ]
+    },
+    {
+      "part": "Pants",
+      "tweens": [
+        { "delay": 0.08 },
+        { "length": 0.2, "ease": "backout", "transform": { "y": 5 } },
+        { "length": 0.1, "ease": "quadin", "transform": { "y": 0 } }
+      ]
+    },
+    {
+      "part": "Pants.Right",
+      "tweens": [
+        { "delay": 0.04 },
+        { "length": 0.2, "ease": "quadout", "transform": { "r": -3 } },
+        { "length": 0.1, "ease": "quadin", "transform": { "r": 0 } }
+      ]
+    },
+    {
+      "part": "Pants.Left",
+      "tweens": [
+        { "delay": 0.04 },
+        { "length": 0.2, "ease": "quadout", "transform": { "r": 3 } },
+        { "length": 0.1, "ease": "quadin", "transform": { "r": 0 } }
+      ]
+    }
+  ]
+}

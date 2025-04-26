@@ -48,7 +48,7 @@ end
 
 local initState = function()
   for _, character in pairs(characterManager.characters) do
-    character.setState("idle")
+    character:setState("idle")
   end
 end
 

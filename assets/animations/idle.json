@@ -25,139 +25,71 @@
     {
       "part": "Hair.Right",
       "tweens": [
-        {
-          "length": 0.4,
-          "ease": "quadout",
-          "transform": { "r": 2 }
-        },
-        {
-          "length": 0.4,
-          "ease": "quadout",
-          "transform": { "r": 0 }
-        }
+        { "length": 0.4, "ease": "quadout", "transform": { "r": 2 } },
+        { "length": 0.4, "ease": "quadout", "transform": { "r": 0 } }
       ]
     },
     {
       "part": "Hair.Left",
       "tweens": [
-        {
-          "length": 0.5,
-          "ease": "quadin",
-          "transform": { "r": -4 }
-        },
-        {
-          "length": 0.3,
-          "ease": "quadin",
-          "transform": { "r": 0 }
-        }
+        { "length": 0.5, "ease": "quadin", "transform": { "r": -4 } },
+        { "length": 0.3, "ease": "quadin", "transform": { "r": 0 } }
       ]
     },
     {
       "part": "Scarf",
       "tweens": [
         { "delay": 0.1 },
-        {
-          "length": 0.6,
-          "ease": "backout",
-          "transform": { "y": -5 }
-        },
-        {
-          "length": 0.6,
-          "ease": "backinout",
-          "transform": { "y": 0 }
-        }
+        { "length": 0.6, "ease": "backout", "transform": { "y": -5 } },
+        { "length": 0.6, "ease": "backinout", "transform": { "y": 0 } }
       ]
     },
     {
       "part": "Pants",
       "tweens": [
         { "delay": 0.2 },
-        {
-          "length": 0.7,
-          "transform": { "y": -4 }
-        },
-        {
-          "length": 0.2,
-          "ease": "linear",
-          "transform": { "y": 0 }
-        }
+        { "length": 0.7, "transform": { "y": -4 } },
+        { "length": 0.2, "transform": { "y": 0 } }
       ]
     },
     {
       "part": "Arm.Right",
       "tweens": [
         { "delay": 0.3 },
-        {
-          "length": 0.6,
-          "ease": "backout",
-          "transform": { "y": -5 }
-        },
-        {
-          "length": 0.4,
-          "ease": "quintin",
-          "transform": { "y": 0 }
-        }
+        { "length": 0.6, "ease": "backout", "transform": { "y": -5 } },
+        { "length": 0.4, "ease": "quintin", "transform": { "y": 0 } }
       ]
     },
     {
       "part": "Arm.Left",
       "tweens": [
         { "delay": 0.3 },
-        {
-          "length": 0.6,
-          "ease": "backout",
-          "transform": { "y": -5 }
-        },
-        {
-          "length": 0.4,
-          "ease": "quintin",
-          "transform": { "y": 0 }
-        }
+        { "length": 0.6, "ease": "backout", "transform": { "y": -5 } },
+        { "length": 0.4, "ease": "quintin", "transform": { "y": 0 } }
       ]
     },
     {
       "part": "Torso",
       "tweens": [
         { "delay": 0.2 },
-        {
-          "length": 0.4,
-          "transform": { "y": -5 }
-        },
-        {
-          "length": 0.3,
-          "ease": "quintin",
-          "transform": { "y": 0 }
-        }
+        { "length": 0.4, "transform": { "y": -5 } },
+        { "length": 0.3, "ease": "quintin", "transform": { "y": 0 } }
       ]
     },
     {
       "part": "Leg.Right",
       "tweens": [
         { "delay": 0.2 },
-        {
-          "length": 0.4,
-          "transform": { "y": 5 }
-        },
-        {
-          "length": 0.3,
-          "ease": "quintin",
-          "transform": { "y": 0 }
-        }
+        { "length": 0.4, "transform": { "y": 5 } },
+        { "length": 0.3, "ease": "quintin", "transform": { "y": 0 } }
       ]
     },
     {
       "part": "Leg.Left",
       "tweens": [
         { "delay": 0.2 },
-        {
-          "length": 0.4,
-          "transform": { "y": 5 }
-        },
-        {
-          "length": 0.3,
-          "ease": "quintin",
-          "transform": { "y": 0 }
-        }
+        { "length": 0.4, "transform": { "y": 5 } },
+        { "length": 0.3, "ease": "quintin", "transform": { "y": 0 } }
       ]
     }
   ],
@@ -177,82 +109,55 @@
     {
       "part": "Hair.Right",
       "tweens": [
-        {
-          "length": 0.05,
-          "transform": { "r": 0 }
-        }
+        { "length": 0.05, "transform": { "r": 0 } }
       ]
     },
     {
       "part": "Hair.Left",
       "tweens": [
-        {
-          "length": 0.05,
-          "transform": { "r": 0 }
-        }
+        { "length": 0.05, "transform": { "r": 0 } }
       ]
     },
     {
       "part": "Scarf",
       "tweens": [
-        {
-          "length": 0.05,
-          "transform": { "y": 0 }
-        }
+        { "length": 0.05, "transform": { "y": 0 } }
       ]
     },
     {
       "part": "Pants",
       "tweens": [
-        {
-          "length": 0.05,
-          "transform": { "y": 0 }
-        }
+        { "length": 0.05, "transform": { "y": 0 } }
       ]
     },
     {
       "part": "Arm.Right",
       "tweens": [
-        {
-          "length": 0.05,
-          "transform": { "y": 0 }
-        }
+        { "length": 0.05, "transform": { "y": 0 } }
       ]
     },
     {
       "part": "Arm.Left",
       "tweens": [
-        {
-          "length": 0.05,
-          "transform": { "y": 0 }
-        }
+        { "length": 0.05, "transform": { "y": 0 } }
       ]
     },
     {
       "part": "Torso",
       "tweens": [
-        {
-          "length": 0.05,
-          "transform": { "y": 0 }
-        }
+        { "length": 0.05, "transform": { "y": 0 } }
       ]
     },
     {
       "part": "Leg.Right",
       "tweens": [
-        {
-          "length": 0.05,
-          "transform": { "y": 0 }
-        }
+        { "length": 0.05, "transform": { "y": 0 } }
       ]
     },
     {
       "part": "Leg.Left",
       "tweens": [
-        {
-          "length": 0.05,
-          "transform": { "y": 0 }
-        }
+        { "length": 0.05, "transform": { "y": 0 } }
       ]
     }
   ]
