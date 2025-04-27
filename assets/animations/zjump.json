@@ -164,7 +164,7 @@
       "part": "Pants.Right",
       "tweens": [
         { "delay": 0.04 },
-        { "length": 0.2, "ease": "quadout", "transform": { "r": -3 } },
+        { "length": 0.2, "ease": "quadout", "transform": { "r": 3 } },
         { "length": 0.1, "ease": "quadin", "transform": { "r": 0 } }
       ]
     },
@@ -172,7 +172,7 @@
       "part": "Pants.Left",
       "tweens": [
         { "delay": 0.04 },
-        { "length": 0.2, "ease": "quadout", "transform": { "r": 3 } },
+        { "length": 0.2, "ease": "quadout", "transform": { "r": -3 } },
         { "length": 0.1, "ease": "quadin", "transform": { "r": 0 } }
       ]
     }

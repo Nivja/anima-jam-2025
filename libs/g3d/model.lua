@@ -140,6 +140,21 @@ function model:updateMatrix()
     self.matrix:setTransformationMatrix(self.translation, self.rotation, self.scale)
 end
 
+-- align's the model matrix to a given point
+ -- up vector is assumed to be normalized
+ function model:lookAtFrom(pos, target, up)
+    local pos = pos or self.translation
+    local cam = cam or camera.current()
+    up = up or (cam and cam.up or { 0, 0, 1})
+    self.matrix:lookAtFrom(pos, target, up, self.scale)
+end
+
+function model:lookAt(target, up)
+    local cam = cam or camera.current()
+    up = up or (cam and cam.up or { 0, 0, 1})
+    self.matrix:lookAtFrom(self.translation, target, up, self.scale)
+end
+
 -- draw the model
 function model:draw(shader, cam)
     local shader = shader or self.shader
