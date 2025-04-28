@@ -201,7 +201,7 @@ character.moveZ = function(self, deltaZ)
     require("src.worldManager").checkForDoor(self, "z")
     return
   end
-  target = math.max(2.5, math.min(5, target))
+  target = math.max(2, math.min(5, target))
   if self.z == target then
     return
   end
@@ -210,7 +210,7 @@ character.moveZ = function(self, deltaZ)
   if not self.zTween or self.zTween.progress >= 1 then
     newTween = flux.to(self, 0.3, { z = target })
   else
-    target = math.max(2.5, math.min(5, self.zTarget - deltaZ))
+    target = math.max(2, math.min(5, self.zTarget - deltaZ))
     if self.zTarget ~= target then
       newTween = self.zTween:after(self, 0.3, { z = target })
     end
@@ -223,12 +223,7 @@ character.moveZ = function(self, deltaZ)
   end
 end
 
-character.setWorld = function(self, world, x, z, flipped)
-  self.world = world
-  local min, max = require("src.worldManager").getWorldLimit(self.world)
-  if x == min then x = x + 1 end
-  if x == max then x = x - 1 end
-  self.x, self.z = x, z
+character.setFlip = function(self, flipped)
   self.flip = flipped == nil and self.flip or flipped
   -- update flipRY; so both flipping systems show the correct direction
   if self.flip then
@@ -236,6 +231,15 @@ character.setWorld = function(self, world, x, z, flipped)
   else
     self.flipRY = math.rad(0)
   end
+end
+
+character.setWorld = function(self, world, x, z, flipped)
+  self.world = world
+  local min, max = require("src.worldManager").getWorldLimit(self.world)
+  if x == min then x = x + 1 end
+  if x == max then x = x - 1 end
+  self.x, self.z = x, z
+  self:setFlip(flipped)
 end
 
 character.update = function(self, dt)

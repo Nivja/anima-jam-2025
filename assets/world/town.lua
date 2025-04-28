@@ -12,12 +12,14 @@ player.x, player.z = 0, 4
 
 local child = characterManager.get("child")
 child.x, child.z = -5, 5
+child:setFlip(true)
 
 local electrician = characterManager.get("electrician")
 electrician.x, electrician.z = -3, 5
 
 local sami = characterManager.get("sami")
 sami.x, sami.z = 3, 5
+sami:setFlip(true)
 
 local zyla = characterManager.get("zyla")
 zyla.x, zyla.z = 5, 5

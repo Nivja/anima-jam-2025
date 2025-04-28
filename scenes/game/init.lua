@@ -111,30 +111,11 @@ scene.update = function(dt)
     local level = zProgress >= 1 and 0.5 or -0.5
     zProgress = 0
     scene.playerChar:moveZ(level)
-    -- local target = scene.playerChar.z - level 
-    -- target = math.max(3, math.min(5, target)) --todo replace with HC collision
-    -- if scene.playerChar.z ~= target then
-    --   if scene.playerChar.zTween and scene.playerChar.zTween.progress < 1 then
-    --     target = scene.playerChar.zTarget - level
-    --     target = math.max(3, math.min(5, target))
-    --     if scene.playerChar.zTarget ~= target then
-    --       scene.playerChar.zTween = scene.playerChar.zTween:after(0.3, {
-    --         z = target
-    --       }):ease("cubicout")
-    --       characterManager.animations["zjump"]:apply(scene.playerChar)
-    --     end
-    --   else
-    --     scene.playerChar.zTween = flux.to(scene.playerChar, 0.3, {
-    --       z = target
-    --     }):ease("cubicout")
-    --     characterManager.animations["zjump"]:apply(scene.playerChar)
-    --   end
-    --   scene.playerChar.zTarget = target
-    -- end
   end
 
   local min, max = worldManager.getWorldLimit(scene.playerChar.world)
-  scene.posX = math.max(min+5, math.min(max-5, scene.playerChar.x))
+  local cameraDrag = 4 - math.max(-1, 5 - scene.playerChar.z)
+  scene.posX = math.max(min+cameraDrag, math.min(max-cameraDrag, scene.playerChar.x))
   scene.posZ = 0.5 * scene.playerChar.z - 2
   updateCamera()
 
