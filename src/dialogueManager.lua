@@ -108,9 +108,9 @@ dialogueManager.parse = function(definition, dirName)
     end
   end
 
-  for index, command in ipairs(definition) do
+  -- for index, command in ipairs(definition) do
 
-  end
+  -- end
 
   return parsedDialogue
 end

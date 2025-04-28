@@ -54,6 +54,13 @@ scene.load = function(gpMode)
   --   end
   -- end
 
+  local loadTown, errorMessage = love.filesystem.load("assets/world/town.lua")
+  if not loadTown then
+    error("Error loading town: "..tostring(errorMessage))
+    return
+  end
+  loadTown()
+
   scene.playerChar = characterManager.characters["player"]
 end
 

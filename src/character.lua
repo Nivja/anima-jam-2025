@@ -59,7 +59,7 @@ end
 local character = { }
 character.__index = character
 
-character.new = function(directory, dirName, definition)
+character.new = function(directory, dirName, definition, spritesheetDir)
   local self = {
     x = 0, y = 0, z = 4,
     rotation = 0,
@@ -71,6 +71,7 @@ character.new = function(directory, dirName, definition)
     animationTrackState = { },
     animationTweens = { },
     animationRequestQueue = { },
+    shouldDraw = true,
   }
 
   if definition.transform then
@@ -82,14 +83,14 @@ character.new = function(directory, dirName, definition)
   end
 
   if definition.spritesheet then
-    local path = directory .. "/" .. definition.spritesheet
+    local path = (spritesheetDir and spritesheetDir or directory) .. "/" .. definition.spritesheet
     if lfs.getInfo(path, "file") then
       self.spritesheet = lg.newImage(path)
     else
-      error("Couldn't find spritesheet path:", path)
+      error("Couldn't find spritesheet path:"..path)
     end
   else
-    error("Character is missing spritesheet, of:", dirName)
+    error("Character is missing spritesheet, of:"..dirName)
   end
 
   local partLookup = { }
@@ -174,33 +175,8 @@ character.new = function(directory, dirName, definition)
   self.dirName = dirName
   self.root = root
 
-  -- debug
-  local f
-  f = function(part, deg)
-    if part.name == "Scarf" then
-      deg = deg / 1.5
-    end
-    local a, b
-    a = function()
-      flux.to(part, 1, {
-        ar = math.rad(-deg),
-      }):oncomplete(b)
-    end
-    b = function()
-      flux.to(part, 1, {
-        ar = math.rad( deg),
-      }):oncomplete(a)
-    end
-    if part.name ~= "BagStrap.Left" and part.name ~= "BagStrap.Right" and part.name ~= "Shoulder.Right" and part.name ~= "Shoulder.Left" then
-      a()
-    end
-    deg = deg / 1.5
-    for _, part in ipairs(part.children) do
-      f(part, deg)
-    end
-  end
-  -- f(root, 50)
-  -- f(root, 15)
+  -- directory
+
 
   return setmetatable(self, character)
 end
@@ -227,10 +203,10 @@ character.moveX = function(self, deltaX)
       end
       if self.flip then
         self.flipRZ = math.rad(0)
-        self.flipTween = flux.to(self, 0.1, { flipRZ = math.rad(-180) })
+        self.flipTween = flux.to(self, 0.15, { flipRZ = math.rad(-180) })
       else
         self.flipRZ = math.rad(-180)
-        self.flipTween = flux.to(self, 0.1, { flipRZ = math.rad(0) })
+        self.flipTween = flux.to(self, 0.15, { flipRZ = math.rad(0) })
       end
     end
   end

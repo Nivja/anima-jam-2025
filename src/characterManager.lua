@@ -32,8 +32,9 @@ local loadCharacters = function(dir)
   for _, characterName in ipairs(lfs.getDirectoryItems(dir)) do
     local characterDirectory = dir .. characterName
     local characterJson = characterDirectory .. "/character.json"
+    local success, characterDefinition
     if lfs.getInfo(characterDirectory, "directory") and lfs.getInfo(characterJson) then
-      local success, characterDefinition = json.decode(characterJson)
+      success, characterDefinition = json.decode(characterJson)
       if success then
         characterManager.characters[characterName] = character.new(characterDirectory, characterName, characterDefinition)
         logger.info("Added character:", characterName)
@@ -41,7 +42,13 @@ local loadCharacters = function(dir)
         logger.warn("Could not decode character json:", characterJson, ". Reason:", characterDefinition)
       end
     else
-      logger.warn("Found invalid character:", characterDirectory)
+      success, characterDefinition = json.decode(dir .. "player/character.json")
+      if success then
+        characterManager.characters[characterName] = character.new(characterDirectory, characterName, characterDefinition, dir .. "player")
+        logger.warn("Added character; given player texture due to missing character.json:", characterName)
+      else
+        logger.warn("Could not add character; couldn't decode default character(player) json. Reason:", characterDefinition)
+      end
     end
   end
 end
@@ -72,12 +79,29 @@ characterManager.update = function(dt)
 end
 
 characterManager.draw = function()
-  -- debug, pick a random first one
-  for index, character in pairs(characterManager.characters) do
-    if index == "player" then
-      character:draw()
-      break
+  local drawCharacters = { }
+  for _, character in pairs(characterManager.characters) do
+    if character.shouldDraw then
+      table.insert(drawCharacters, character)
     end
+  end
+
+  table.sort(drawCharacters, function(a, b)
+    if a.z ~= b.z then
+      return a.z > b.z
+    end
+
+    local aIsPlayer = a.dirName == "player"
+    local bIsPlayer = b.dirName == "player"
+
+    if aIsPlayer and not bIsPlayer then return false end
+    if not aIsPlayer and bIsPlayer then return true end
+
+    return a.dirName < b.dirName
+  end)
+
+  for _, character in ipairs(drawCharacters) do
+    character:draw()
   end
 end
 
