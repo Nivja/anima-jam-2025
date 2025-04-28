@@ -190,12 +190,10 @@ character.moveZ = function(self, deltaZ)
   end
   if math.abs(deltaZ) > moveUnitZ then
     local direction = math.sign(deltaZ) -- 1 or -1
-    print("enter")
     while math.abs(deltaZ) >= moveUnitZ - moveUnitZEpsilon do
       self:moveZ(moveUnitZ * direction)
       deltaZ = deltaZ - moveUnitZ * direction
     end
-    print("exit")
     return
   end
   local target = self.z - deltaZ
