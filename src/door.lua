@@ -66,6 +66,12 @@ door.draw = function(self, world)
   local position = world == self.worldA and self.drawA or self.drawB
   self.model:setTranslation(position[1], 0, position[2])
   self.model:setRotation(0, position[3], 0)
+  if position[3] ~= 0 then
+    print(position[3])
+    self.model:setScale(0.4, 1, 1)
+  else
+    self.model:setScale(1,1,1,1)
+  end
   self.model:draw()
   lg.setColor(1,1,1,1)
   lg.pop()

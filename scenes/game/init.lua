@@ -96,7 +96,7 @@ scene.update = function(dt)
   if math.abs(dx) <= 0.2 then
     dx = 0
   end
-  scene.playerChar:moveX(dx * 5 * dt)
+  scene.playerChar:moveX(dx * 4 * dt)
 
   if math.abs(dy) > 0.3 then
     local speed = 8

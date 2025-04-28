@@ -203,7 +203,7 @@ character.moveZ = function(self, deltaZ)
     require("src.worldManager").checkForDoor(self, "z")
     return
   end
-  target = math.max(3, math.min(5, target))
+  target = math.max(2.5, math.min(5, target))
   if self.z == target then
     return
   end
@@ -212,7 +212,7 @@ character.moveZ = function(self, deltaZ)
   if not self.zTween or self.zTween.progress >= 1 then
     newTween = flux.to(self, 0.3, { z = target })
   else
-    target = math.max(3, math.min(5, self.zTarget - deltaZ))
+    target = math.max(2.5, math.min(5, self.zTarget - deltaZ))
     if self.zTarget ~= target then
       newTween = self.zTween:after(self, 0.3, { z = target })
     end
