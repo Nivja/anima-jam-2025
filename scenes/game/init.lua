@@ -20,7 +20,7 @@ local ui = require("util.ui")
 
 local characterManager = require("src.characterManager")
 local dialogueManager = require("src.dialogueManager")
-local world = require("src.world")
+local worldManager = require("src.worldManager")
 
 local scene = {
   posX = 0,
@@ -54,14 +54,10 @@ scene.load = function(gpMode)
   --   end
   -- end
 
-  local loadTown, errorMessage = love.filesystem.load("assets/world/town.lua")
-  if not loadTown then
-    error("Error loading town: "..tostring(errorMessage))
-    return
-  end
-  loadTown()
+  worldManager.load("assets/world")
 
-  scene.playerChar = characterManager.characters["player"]
+  scene.playerChar = characterManager.get("player")
+  scene.playerChar.world = "town"
 end
 
 scene.unload = function()
@@ -154,8 +150,7 @@ scene.draw = function()
   lg.origin()
   -- World
   lg.push("all")
-  world.draw()
-  characterManager.draw()
+  worldManager.draw(scene.playerChar.world or "town")
   lg.pop()
   -- UI
   lg.push("all")

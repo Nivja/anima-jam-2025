@@ -30,13 +30,14 @@ model.shader = g3d.shader
 -- this returns a new instance of the model class
 -- a model must be given a .obj file or equivalent lua table, and a texture
 -- translation, rotation, and scale are all 3d vectors and are all optional
-local function newModel(verts, texture, translation, rotation, scale)
+local function newModel(verts, texture, translation, rotation, scale, uFlip, vFlip, fileName)
     local self = setmetatable({}, model)
 
     -- if verts is a string, use it as a path to a .obj file
     -- otherwise verts is a table, use it as a model defintion
     if type(verts) == "string" then
-        verts = loadObjFile(verts)
+        fileName = require("util.file").getFileName(verts)
+        verts = loadObjFile(verts, uFlip, vFlip)
     end
 
     -- if texture is a string, use it as a path to an image file
@@ -46,6 +47,7 @@ local function newModel(verts, texture, translation, rotation, scale)
     end
 
     -- initialize my variables
+    self.name = fileName
     self.verts = verts
     self.texture = texture
     self.mesh = love.graphics.newMesh(self.vertexFormat, self.verts, "triangles")
@@ -233,6 +235,19 @@ end
 
 function model:capsuleIntersection(...)
     return collisions.capsuleIntersection(self.verts, self, ...)
+end
+
+function model:clone()
+    return newModel(
+        self.verts,
+        self.texture,
+        self.translation and {unpack(self.translation)},
+        self.rotation and {unpack(self.rotation)},
+        self.scale and {unpack(self.scale)},
+        nil,
+        nil,
+        self.fileName
+    )
 end
 
 return newModel

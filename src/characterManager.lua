@@ -53,18 +53,20 @@ local loadCharacters = function(dir)
   end
 end
 
-local initState = function()
+local initCharacterState = function()
   for _, character in pairs(characterManager.characters) do
     character:setState("idle")
+    character.isPlayer = character.dirName == "player"
   end
 end
 
 characterManager.load = function(animationDir, characterDir)
   characterManager.unload()
+  logger.info("Loading Animations")
   loadAnimations(animationDir)
+  logger.info("Loading Characters")
   loadCharacters(characterDir)
-
-  initState()
+  initCharacterState()
 end
 
 characterManager.unload = function()
@@ -78,30 +80,17 @@ characterManager.update = function(dt)
   end
 end
 
-characterManager.draw = function()
-  local drawCharacters = { }
+characterManager.get = function(id)
+  return characterManager.characters[id]
+end
+
+characterManager.getCharactersInWorld = function(world, outCharacters)
+  world = type(world) == "table" and world.name or world
+  outCharacters = outCharacters or { }
   for _, character in pairs(characterManager.characters) do
-    if character.shouldDraw then
-      table.insert(drawCharacters, character)
+    if character.world == world then
+      table.insert(outCharacters, character)
     end
-  end
-
-  table.sort(drawCharacters, function(a, b)
-    if a.z ~= b.z then
-      return a.z > b.z
-    end
-
-    local aIsPlayer = a.dirName == "player"
-    local bIsPlayer = b.dirName == "player"
-
-    if aIsPlayer and not bIsPlayer then return false end
-    if not aIsPlayer and bIsPlayer then return true end
-
-    return a.dirName < b.dirName
-  end)
-
-  for _, character in ipairs(drawCharacters) do
-    character:draw()
   end
 end
 

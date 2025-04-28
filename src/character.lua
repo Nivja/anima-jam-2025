@@ -2,59 +2,8 @@ local lfs, lg = love.filesystem, love.graphics
 
 local logger = require("util.logger")
 local flux = require("libs.flux")
-local g3d = require("libs.g3d")
 
-local missingTexture = lg.newImage("assets/missingTexture.png")
-missingTexture:setWrap("repeat")
-
-local plane = g3d.newModel("assets/models/plane.obj")
-
-local pixelToUnitScale = 500 -- 500x500 = 1:1
-
-local objVFormat = "v %.6f %.6f %.6f\n"
-local objVTFormat = "vt %.6f %.6f\n"
-local objVNFormat = "vn %.6f %.6f %.6f\n"
-local createModelForQuad = function(quadX, quadY, quadW, quadH, texture)
-  local objString = ""
-
-  local halfW, halfH = (quadW / pixelToUnitScale) / 2, (quadH / pixelToUnitScale) / 2
-
-  objString = objString .. objVFormat:format( halfW, -halfH, 0.0)
-  objString = objString .. objVFormat:format(-halfW, -halfH, 0.0)
-  objString = objString .. objVFormat:format( halfW,  halfH, 0.0)
-  objString = objString .. objVFormat:format(-halfW,  halfH, 0.0)
-
-  local textureWidth, textureHeight = texture:getDimensions()
-  local u1 = quadX / textureWidth -- left U
-  local v1 = quadY / textureHeight -- Bottom V
-  local u2 = (quadX + quadW) / textureWidth -- Right U
-  local v2 = (quadY + quadH) / textureHeight -- Top V
-
-  objString = objString .. objVTFormat:format(u2, v2)
-  objString = objString .. objVTFormat:format(u1, v1)
-  objString = objString .. objVTFormat:format(u1, v2)
-  objString = objString .. objVTFormat:format(u2, v1)
-
-  objString = objString .. objVNFormat:format(0.0, 0.0, -1.0)
-
-  objString = objString .. "f 2/1/1 3/2/1 1/3/1\nf 2/1/1 4/4/1 3/2/1"
-
-  local tempFileName = ".temp_quad_model.obj"
-  local success, errorMessage = love.filesystem.write(tempFileName, objString)
-
-  if success then
-    local model = g3d.newModel(tempFileName, texture)
-    local success, errorMessage = love.filesystem.remove(tempFileName)
-    if not success then
-      logger.warn("Could not remove .temp file created for model generation")
-    end
-    return model
-  else
-    logger.fatal("OBJ TEMP FILE", "Unable to write to file[", love.filesystem.getSaveDirectory().."/"..tempFileName, "], reason:", errorMessage)
-    error("Unable to create temp file used for OBJ generation")
-    return nil
-  end
-end
+local createPlaneForQuad = require("src.createPlaneForQuad")
 
 local character = { }
 character.__index = character
@@ -72,6 +21,8 @@ character.new = function(directory, dirName, definition, spritesheetDir)
     animationTweens = { },
     animationRequestQueue = { },
     shouldDraw = true,
+    isCharacter = true,
+    world = "town",
   }
 
   if definition.transform then
@@ -107,7 +58,7 @@ character.new = function(directory, dirName, definition, spritesheetDir)
       a0x = 0, a0y = 0, a0r = 0, a0scale = 1, -- Used for animation
       a1x = 0, a1y = 0, a1r = 0, a1scale = 1,
       a2x = 0, a2y = 0, a2r = 0, a2scale = 1,
-      children = { } -- populated later
+      children = { }, -- populated later
     }
     partLookup[partDefinition.name] = part
 
@@ -192,6 +143,25 @@ end
 
 character.moveX = function(self, deltaX)
   self.x = self.x + deltaX
+
+  if deltaX ~= 0 then
+    local min, max = require("src.worldManager").getWorldLimit(self.world)
+    local hit = false
+    if self.x > max then
+      self.x = max
+      hit = true
+    end
+    if self.x < min then
+      self.x = min
+      hit = true
+    end
+    if hit then
+      self:setState("idle")
+      return
+    end
+  end
+
+
   local state = math.abs(deltaX) > 0 and "walk" or "idle"
   self:setState(state)
   if state == "walk" then
@@ -209,6 +179,18 @@ character.moveX = function(self, deltaX)
         self.flipTween = flux.to(self, 0.15, { flipRZ = math.rad(0) })
       end
     end
+  end
+end
+
+character.setPosition = function(self, world, x, z, flipped)
+  self.world = world
+  self.x, self.z = x, z
+  self.flip = flipped == nil and self.flip or flipped
+  -- update flipRZ; so both flipping systems show the correct direction
+  if self.flip then
+    self.flipRZ = math.rad(-180)
+  else
+    self.flipRZ = math.rad(0)
   end
 end
 
@@ -255,7 +237,7 @@ end
 
 local characterCanvasSize = 1700
 local characterCanvas = lg.newCanvas(characterCanvasSize, characterCanvasSize)
-local characterCanvasPlane = createModelForQuad(0, 0, characterCanvasSize, characterCanvasSize, characterCanvas)
+local characterCanvasPlane = createPlaneForQuad(0, 0, characterCanvasSize, characterCanvasSize, characterCanvas)
 
 character.draw = function(self)
   local drawingQueue = { }

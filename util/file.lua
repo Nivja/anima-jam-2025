@@ -22,14 +22,14 @@ file.canBeMounted = function(path)
   return info and (info.type == "directory" or (info.type == "file" and file.getFileExtension(path) == "zip"))
 end
 
-file.iterateDirectory = function(dir, path, callback, seperator)
-  seperator = seperator or "/"
+file.iterateDirectory = function(dir, path, callback, separator)
+  separator = separator or "/"
   local items = lfs.getDirectoryItems(dir)
   for _, item in ipairs(items) do
     local loc = dir.."/"..item
     local info = lfs.getInfo(loc)
     if info.type == "directory" then
-      file.iterateDirectory(loc, (path..item..seperator):lower(), callback)
+      file.iterateDirectory(loc, (path..item..separator):lower(), callback)
     elseif info.type == "file" then
       callback(loc, (path..item):lower())
     end

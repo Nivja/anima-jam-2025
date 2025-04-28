@@ -87,7 +87,7 @@ love.errorhandler = function(message)
     end
     draw()
     if love.timer then
-    love.timer.sleep(0.1)
+      love.timer.sleep(1/60)
     end
   end
 end
