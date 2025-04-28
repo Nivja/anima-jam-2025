@@ -14,7 +14,8 @@ character.new = function(directory, dirName, definition, spritesheetDir)
     rotation = 0,
     scale = 1,
     flip = false,
-    flipRZ = 0,
+    flipRY = 0,
+    alpha = 1,
     state = nil, -- default state set in characterManager.load --> .initState 
     animations = { },
     animationTrackState = { },
@@ -132,7 +133,7 @@ character.new = function(directory, dirName, definition, spritesheetDir)
   return setmetatable(self, character)
 end
 
-character.setState = function(self, newState)
+character.applyAnimation = function(self, newState)
   local anim = require("src.characterManager").animations[newState]
   if anim then
     anim:apply(self)
@@ -156,14 +157,14 @@ character.moveX = function(self, deltaX)
       hit = true
     end
     if hit then
-      self:setState("idle")
+      require("src.worldManager").checkForDoor(self, "x")
+      self:applyAnimation("idle")
       return
     end
   end
 
-
   local state = math.abs(deltaX) > 0 and "walk" or "idle"
-  self:setState(state)
+  self:applyAnimation(state)
   if state == "walk" then
     local currentFlip = self.flip
     self.flip = deltaX > 0
@@ -172,25 +173,70 @@ character.moveX = function(self, deltaX)
         self.flipTween:stop()
       end
       if self.flip then
-        self.flipRZ = math.rad(0)
-        self.flipTween = flux.to(self, 0.15, { flipRZ = math.rad(-180) })
+        self.flipRY = math.rad(0)
+        self.flipTween = flux.to(self, 0.15, { flipRY = math.rad(-180) })
       else
-        self.flipRZ = math.rad(-180)
-        self.flipTween = flux.to(self, 0.15, { flipRZ = math.rad(0) })
+        self.flipRY = math.rad(-180)
+        self.flipTween = flux.to(self, 0.15, { flipRY = math.rad(0) })
       end
     end
   end
 end
 
-character.setPosition = function(self, world, x, z, flipped)
+local moveUnitZ, moveUnitZEpsilon = 0.5, 0.001
+character.moveZ = function(self, deltaZ)
+  if math.abs(deltaZ) < moveUnitZEpsilon then
+    return
+  end
+  if math.abs(deltaZ) > moveUnitZ then
+    local direction = math.sign(deltaZ) -- 1 or -1
+    print("enter")
+    while math.abs(deltaZ) >= moveUnitZ - moveUnitZEpsilon do
+      self:moveZ(moveUnitZ * direction)
+      deltaZ = deltaZ - moveUnitZ * direction
+    end
+    print("exit")
+    return
+  end
+  local target = self.z - deltaZ
+  if target > 5 then
+    require("src.worldManager").checkForDoor(self, "z")
+    return
+  end
+  target = math.max(3, math.min(5, target))
+  if self.z == target then
+    return
+  end
+
+  local newTween
+  if not self.zTween or self.zTween.progress >= 1 then
+    newTween = flux.to(self, 0.3, { z = target })
+  else
+    target = math.max(3, math.min(5, self.zTarget - deltaZ))
+    if self.zTarget ~= target then
+      newTween = self.zTween:after(self, 0.3, { z = target })
+    end
+  end
+  if newTween then
+    self.zTween = newTween
+    self.zTween:ease("cubicout")
+    self:applyAnimation("zjump")
+    self.zTarget = target
+  end
+end
+
+character.setWorld = function(self, world, x, z, flipped)
   self.world = world
+  local min, max = require("src.worldManager").getWorldLimit(self.world)
+  if x == min then x = x + 1 end
+  if x == max then x = x - 1 end
   self.x, self.z = x, z
   self.flip = flipped == nil and self.flip or flipped
-  -- update flipRZ; so both flipping systems show the correct direction
+  -- update flipRY; so both flipping systems show the correct direction
   if self.flip then
-    self.flipRZ = math.rad(-180)
+    self.flipRY = math.rad(-180)
   else
-    self.flipRZ = math.rad(0)
+    self.flipRY = math.rad(0)
   end
 end
 
@@ -251,7 +297,7 @@ character.draw = function(self)
   lg.clear(0, 0, 0, 0)
   local w, h = characterCanvas:getDimensions()
   lg.translate(w/2, h/2)
-  if self.flip then
+  if self.flip then -- cheap flip; see below :setRotation for fancy flip
     -- lg.scale(-1, 1)
   end
   for _, item in ipairs(drawingQueue) do
@@ -267,11 +313,13 @@ character.draw = function(self)
   end
   lg.pop()
 
-  
+
   lg.push()
+  lg.setColor(1,1,1,self.alpha)
   characterCanvasPlane:setTranslation(self.x, self.y, self.z)
-  characterCanvasPlane:setRotation(0, self.flipRZ, 0)
+  characterCanvasPlane:setRotation(0, self.flipRY, 0)
   characterCanvasPlane:draw()
+  lg.setColor(1,1,1,1)
   lg.pop()
 end
 

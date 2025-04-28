@@ -55,7 +55,7 @@ end
 
 local initCharacterState = function()
   for _, character in pairs(characterManager.characters) do
-    character:setState("idle")
+    character:applyAnimation("idle")
     character.isPlayer = character.dirName == "player"
   end
 end

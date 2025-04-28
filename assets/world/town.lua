@@ -6,21 +6,21 @@ local world = {
 }
 
 -- Where characters appear in the world
-  -- todo if polish involves saves, update this line
+  -- todo if polish involves saves, update how player spawns
 local player = characterManager.get("player")
 player.x, player.z = 0, 4
 
 local child = characterManager.get("child")
-child.x, child.z = -3, 5
+child.x, child.z = -5, 5
 
 local electrician = characterManager.get("electrician")
-electrician.x, electrician.z = -1, 5
+electrician.x, electrician.z = -3, 5
 
 local sami = characterManager.get("sami")
-sami.x, sami.z = 1, 5
+sami.x, sami.z = 3, 5
 
 local zyla = characterManager.get("zyla")
-zyla.x, zyla.z = 3, 5
+zyla.x, zyla.z = 5, 5
 
 ------------------------------------
 

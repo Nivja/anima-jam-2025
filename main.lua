@@ -9,6 +9,10 @@ local le, lg, ltr, lfs, lw = love.event, love.graphics, love.timer, love.filesys
 
 -- lg.setMeshCullMode("back")
 
+math.sign = function(number)
+  return number > 0 and 1 or number == 0 and 0 or -1
+end
+
 require("errorhandler")
 require("util.logSystemInfo")
 

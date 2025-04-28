@@ -2,8 +2,11 @@ local lg = love.graphics
 
 local g3d = require("libs.g3d")
 
+local logger = require("util.logger")
+
 local door = {
   model = g3d.newModel("assets/models/door.obj"),
+  halfWidth = 0.8,
 }
 door.__index = door
 
@@ -12,20 +15,20 @@ door.new = function(worldA, drawA, entryA, worldB, drawB, entryB)
   if entryA[3] == nil then
     local min, max = require("src.worldManager").getWorldLimit(worldA)
     if entryA[2] == min then
-      entryA[3] = true
+      entryA[3] = false
     end
     if entryA[2] == max then
-      entryA[3] = false
+      entryA[3] = true
     end
   end
 
   if entryB[3] == nil then
     local min, max = require("src.worldManager").getWorldLimit(worldB)
     if entryB[2] == min then
-      entryB[3] = true
+      entryB[3] = false
     end
     if entryB[2] == max then
-      entryB[3] = false
+      entryB[3] = true
     end
   end
 
@@ -42,11 +45,11 @@ end
 door.getCB = function(self, character)
   if character.world == self.worldA then -- moveTo worldB
     return function()
-      character:setPosition(self.worldB, unpack(self.entryB))
+      character:setWorld(self.worldB, unpack(self.entryB))
     end
   elseif character.world == self.worldB then -- moveTo worldA
     return function()
-      character:setPosition(self.worldA, unpack(self.entryA))
+      character:setWorld(self.worldA, unpack(self.entryA))
     end
   else
     logger.warn("Character tried to interact with door in world they were not in. Character:", character.world, ". Door:", self.worldA, self.worldB)

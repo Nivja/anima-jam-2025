@@ -110,29 +110,31 @@ scene.update = function(dt)
   if zProgress >= 1 or zProgress <= -1 then
     local level = zProgress >= 1 and 0.5 or -0.5
     zProgress = 0
-    local target = scene.playerChar.z - level 
-    target = math.max(3, math.min(5, target)) --todo replace with HC collision
-    if scene.playerChar.z ~= target then
-      if scene.playerChar.zTween and scene.playerChar.zTween.progress < 1 then
-        target = scene.playerChar.zTarget - level
-        target = math.max(3, math.min(5, target))
-        if scene.playerChar.zTarget ~= target then
-          scene.playerChar.zTween = scene.playerChar.zTween:after(scene.playerChar, 0.3, {
-            z = target
-          }):ease("cubicout")
-          characterManager.animations["zjump"]:apply(scene.playerChar)
-        end
-      else
-        scene.playerChar.zTween = flux.to(scene.playerChar, 0.3, {
-          z = target
-        }):ease("cubicout")
-        characterManager.animations["zjump"]:apply(scene.playerChar)
-      end
-      scene.playerChar.zTarget = target
-    end
+    scene.playerChar:moveZ(level)
+    -- local target = scene.playerChar.z - level 
+    -- target = math.max(3, math.min(5, target)) --todo replace with HC collision
+    -- if scene.playerChar.z ~= target then
+    --   if scene.playerChar.zTween and scene.playerChar.zTween.progress < 1 then
+    --     target = scene.playerChar.zTarget - level
+    --     target = math.max(3, math.min(5, target))
+    --     if scene.playerChar.zTarget ~= target then
+    --       scene.playerChar.zTween = scene.playerChar.zTween:after(0.3, {
+    --         z = target
+    --       }):ease("cubicout")
+    --       characterManager.animations["zjump"]:apply(scene.playerChar)
+    --     end
+    --   else
+    --     scene.playerChar.zTween = flux.to(scene.playerChar, 0.3, {
+    --       z = target
+    --     }):ease("cubicout")
+    --     characterManager.animations["zjump"]:apply(scene.playerChar)
+    --   end
+    --   scene.playerChar.zTarget = target
+    -- end
   end
 
-  scene.posX = scene.playerChar.x
+  local min, max = worldManager.getWorldLimit(scene.playerChar.world)
+  scene.posX = math.max(min+5, math.min(max-5, scene.playerChar.x))
   scene.posZ = 0.5 * scene.playerChar.z - 2
   updateCamera()
 
@@ -154,7 +156,7 @@ scene.draw = function()
   lg.pop()
   -- UI
   lg.push("all")
-
+  worldManager.drawUI()
   lg.pop()
 end
 

@@ -1,5 +1,6 @@
 local lfs, lg = love.filesystem, love.graphics
 
+local flux = require("libs.flux")
 local file = require("util.file")
 
 local characterManager = require("src.characterManager")
@@ -8,6 +9,9 @@ local door = require("src.door")
 local worldManager = {
   worlds = { },
   doors = { },
+  doorTransition = {
+    radius = 0,
+  },
 }
 
 worldManager.load = function(dir)
@@ -62,6 +66,40 @@ worldManager.getWorldLimit = function(worldId)
   return world.min, world.max
 end
 
+worldManager.checkForDoor = function(character, axis)
+  local enterDoor = false
+  for _, door in ipairs(worldManager.doors) do
+    local entry = door.worldA == character.world and door.entryA or
+                  door.worldB == character.world and door.entryB or nil
+    if entry then
+      local isOnXAxis = entry[1] - door.halfWidth < character.x and
+                        entry[1] + door.halfWidth > character.x
+      local isOnZAxis = entry[2] - 0.1 < character.z and
+                        entry[2] + 0.1 > character.z
+      -- print(axis, isOnXAxis, character.x, entry[1])
+      if (axis == "z" and isOnXAxis) or
+         (axis == "x" and isOnXAxis and isOnZAxis) then
+        enterDoor = door
+        break
+      end
+    end
+  end
+  if enterDoor then
+    local cb = enterDoor:getCB(character)
+    if character.isPlayer then
+      local time = 0.5
+      flux.to(worldManager.doorTransition, time, { radius = 1 })
+        :oncomplete(cb)
+        :after(time, { radius = 0 })
+    else
+      local time = 0.4
+      flux.to(character, time, { alpha = 0 })
+        :oncomplete(cb)
+        :after(time, { alpha = 1 })
+    end
+  end
+end
+
 worldManager.update = function(dt)
   for _, world in pairs(worldManager.worlds) do
     if type(world.update) == "function" then
@@ -97,6 +135,12 @@ worldManager.draw = function(playerWorld)
     return
   end
 
+  love.graphics.setDepthMode("always", false)
+  for _, door in ipairs(worldManager.doors) do
+    door:draw(world.name)
+  end
+  love.graphics.setDepthMode("lequal", true)
+
   local objects
   if world.get3DObjects then
     objects = world.get3DObjects()
@@ -113,9 +157,16 @@ worldManager.draw = function(playerWorld)
   for _, object in ipairs(objects) do
     object:draw()
   end
+end
 
-  for _, door in ipairs(worldManager.doors) do
-    door:draw(world.name)
+worldManager.drawUI = function()
+  if worldManager.doorTransition.radius ~= 0 then
+    local w, h = lg.getDimensions()
+    local x = w / 2
+    local y = (h / 3) * 2 -- 2/3
+    lg.setColor(0,0,0,1)
+    lg.circle("fill", x, y, (w > h and w or h) * worldManager.doorTransition.radius)
+    lg.setColor(1,1,1,1)
   end
 end
 
