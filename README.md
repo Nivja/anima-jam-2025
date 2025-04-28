@@ -8,4 +8,4 @@ This repo is for the (Solarpunk Jam)[https://itch.io/jam/day-zero-games-solarpun
 (Aika)[#] | Artist
 
 ## License
-This repo covered by copyright where applicable. It is public for ease of use, and used as an opportunity to learn by others if they wanted to investigate how something is achieved. 
+This repo covered by copyright where applicable. It is public for ease of use for the team, and used as an opportunity to learn by others if they wanted to investigate how something is achieved. 
