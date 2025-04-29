@@ -52,6 +52,7 @@ local newTuft = function(x, z)
   table.insert(world.objects, tuft)
 end
 
+-- Near
 newTuft(-7, 2.5)
 newTuft(-2, 2)
 newTuft(2, 2.5)
@@ -59,11 +60,24 @@ newTuft(3, 2)
 newTuft(7, 3)
 newTuft(9, 2.5)
 
+-- Far
+newTuft(-9, 5)
+newTuft(-4, 5.5)
+newTuft(4.5, 5.5)
+newTuft(6, 6)
+newTuft(9, 5)
+
 -- objects with (or)
   -- .z field
   -- .translation[3] field
 -- world.get3DObjects = function() -- for alpha objects
 -- end
+
+local workshopExterior = g3d.newModel("assets/models/workshop_exterior.obj", "assets/textures/workshop_exterior.png", { 0, 0, 6.005 }, nil, nil, false, true)
+
+world.draw = function()
+  workshopExterior:draw()
+end
 
 local floor = g3d.newModel("assets/models/floor.obj", "assets/textures/ground.png", { 0, 0, 4 }, nil, nil, true, false)
 floor.texture:setWrap("repeat")

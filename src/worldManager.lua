@@ -123,13 +123,13 @@ local sortObjectsFunc = function(a, b)
   if not a.isCharacter and b.isCharacter then return true end
 
   if not a.isCharacter and not b.isCharacter then
-    if a.name and b.name then
+    if a.name and b.name and a.name ~= b.name then
       return a.name < b.name
     end
-    print("hit")
     if a.id and b.id then
       return a.id < b.id
     end
+    -- Catch : Slow and can cause frame times to rocket
     return tostring(a) < tostring(b)
   end
 
@@ -161,11 +161,9 @@ worldManager.draw = function(playerWorld)
 
   ------ Draw
 
-  love.graphics.setDepthMode("always", false)
   for _, door in ipairs(worldManager.doors) do
     door:draw(world.name)
   end
-  love.graphics.setDepthMode("lequal", true)
 
   local shader = g3d.shader
 

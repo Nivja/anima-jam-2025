@@ -66,12 +66,16 @@ door.draw = function(self, world)
   local position = world == self.worldA and self.drawA or self.drawB
   self.model:setTranslation(position[1], 0, position[2])
   self.model:setRotation(0, position[3], 0)
+  lg.push("all")
   if position[3] ~= 0 then
+    love.graphics.setDepthMode("always", false)
     self.model:setScale(0.4, 1, 1)
   else
     self.model:setScale(1,1,1,1)
   end
   self.model:draw()
+  lg.pop()
+  -- love.graphics.setDepthMode("lequal", true)
   lg.setColor(1,1,1,1)
   lg.pop()
 end
