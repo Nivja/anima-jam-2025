@@ -6,7 +6,7 @@ return {
   { "setCharacter", "zyla" },
   "Oh, but Rosetta is the one who made this garment for me, I have been wearing it to my council meetings.",
   { "choice",
-    { "and she did a fine job! Please let me have a look.", --[[ goto ]] "option_one" },
+    { "and she did a fine job! Please let me have a look. [Tutorial]", --[[ goto ]] "option_one" },
     { "If you would rather wait, Rosetta will be here for the evening shift.", --[[ goto ]] "option_two" },
   },
   { "tag", "option_one" }, -- [[ Declare a point which can be 'goto'ed ]]
@@ -16,7 +16,7 @@ return {
     { name = "Neutral Fabric", tags = { "fabric", "use-patch" }, patchType = "neutral", },
     { name = "Fancy Fabric", tags = { "fabric", "use-patch" }, patchType = "fancy", },
     {
-      name = "Old Lady's Dress",
+      name = "Zyla's Dress",
       issue = { {
         --[[ issue details for minigame... ]]
       } },
