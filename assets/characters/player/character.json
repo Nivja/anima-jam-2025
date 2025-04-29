@@ -1,8 +1,9 @@
 {
   "spritesheet": "SpriteSheet.png",
   "transform": {
-    "y": 0.7
+    "y": 0.6
   },
+  "shadowOffset": 0.1,
   "parts": [
     {
       "name": "Torso",

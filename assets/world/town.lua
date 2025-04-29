@@ -26,6 +26,9 @@ zyla.x, zyla.z = 5, 5
 
 ------------------------------------
 
+local lg = love.graphics
+local g3d = require("libs.g3d")
+
 -- world.setupColliders = function() -- todo
 
 -- end
@@ -34,17 +37,38 @@ zyla.x, zyla.z = 5, 5
 
 -- end
 
-world.get3DObjects = function()
-  -- todo objects with (or)
-    -- .z field
-    -- .translation[3] field
+local foliage = g3d.newModel("assets/models/foliage.obj", nil, nil, nil, nil, true, false)
+
+local texture_tuft_01 = lg.newImage("assets/textures/tuft_01.png")
+texture_tuft_01:setFilter("nearest")
+
+world.objects = { } -- for objects that don't have alpha considerations
+
+local newTuft = function(x, z)
+  foliage.texture = texture_tuft_01
+  local tuft = foliage:clone()
+  z = z - 0.1
+  tuft:setTranslation(x, 0, z)
+  table.insert(world.objects, tuft)
 end
 
-local g3d = require("libs.g3d")
-local floor = g3d.newModel("assets/models/floor.obj", "assets/models/grass.png", { 0, 0, 4 }, nil, nil, true, false)
+newTuft(-7, 2.5)
+newTuft(-2, 2)
+newTuft(2, 2.5)
+newTuft(3, 2)
+newTuft(7, 3)
+newTuft(9, 2.5)
+
+-- objects with (or)
+  -- .z field
+  -- .translation[3] field
+-- world.get3DObjects = function() -- for alpha objects
+-- end
+
+local floor = g3d.newModel("assets/models/floor.obj", "assets/textures/ground.png", { 0, 0, 4 }, nil, nil, true, false)
 floor.texture:setWrap("repeat")
 
-world.draw = function() 
+world.drawFloor = function() 
   floor:draw()
 end
 

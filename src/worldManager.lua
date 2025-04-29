@@ -1,5 +1,6 @@
 local lfs, lg = love.filesystem, love.graphics
 
+local g3d = require("libs.g3d")
 local flux = require("libs.flux")
 local file = require("util.file")
 
@@ -43,10 +44,13 @@ worldManager.load = function(dir)
 
     world.min, world.max = w.min or -10, w.max or 10
 
+    world.objects = w.objects
+
     world.setupColliders = w.setupColliders
     world.update = w.update
     world.get3DObjects = w.get3DObjects
     world.draw = w.draw
+    world.drawFloor = w.drawFloor
   end
 
   -- load doors
@@ -118,7 +122,16 @@ local sortObjectsFunc = function(a, b)
   if a.isCharacter and not b.isCharacter then return false end
   if not a.isCharacter and b.isCharacter then return true end
 
-  if not a.isCharacter and not b.isCharacter then return a.fileName < b.fileName end
+  if not a.isCharacter and not b.isCharacter then
+    if a.name and b.name then
+      return a.name < b.name
+    end
+    print("hit")
+    if a.id and b.id then
+      return a.id < b.id
+    end
+    return tostring(a) < tostring(b)
+  end
 
   -- if both character
 
@@ -135,11 +148,7 @@ worldManager.draw = function(playerWorld)
     return
   end
 
-  love.graphics.setDepthMode("always", false)
-  for _, door in ipairs(worldManager.doors) do
-    door:draw(world.name)
-  end
-  love.graphics.setDepthMode("lequal", true)
+  ------ Get objects & sort
 
   local objects
   if world.get3DObjects then
@@ -147,12 +156,43 @@ worldManager.draw = function(playerWorld)
   end
 
   objects = objects or { }
-  characterManager.getCharactersInWorld(world, objects)
+  local characters = characterManager.getCharactersInWorld(world, objects)
   table.sort(objects, sortObjectsFunc)
+
+  ------ Draw
+
+  love.graphics.setDepthMode("always", false)
+  for _, door in ipairs(worldManager.doors) do
+    door:draw(world.name)
+  end
+  love.graphics.setDepthMode("lequal", true)
+
+  local shader = g3d.shader
+
+  shader:send("numCharacters", #characters)
+  local temp = { }
+  for _, character in ipairs(characters) do
+    -- An attempt to centre shadow under the mass of the player character
+    local offset = character.shadowOffset * (character.flip and -1 or 1)
+    table.insert(temp, { character.x + offset, character.alpha, character.z })
+  end
+  shader:send("characterPositions", unpack(temp))
+  if type(world.drawFloor) == "function" then
+    world.drawFloor()
+  end
+  shader:send("numCharacters", 0)
 
   if type(world.draw) == "function" then
     world.draw()
   end
+
+  shader:send("opaque", true)
+  if world.objects then
+    for _, object in ipairs(world.objects) do
+      object:draw()
+    end
+  end
+  shader:send("opaque", false)
 
   for _, object in ipairs(objects) do
     object:draw()

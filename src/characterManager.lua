@@ -86,12 +86,16 @@ end
 
 characterManager.getCharactersInWorld = function(world, outCharacters)
   world = type(world) == "table" and world.name or world
-  outCharacters = outCharacters or { }
+  local characters = { }
   for _, character in pairs(characterManager.characters) do
     if character.world == world then
-      table.insert(outCharacters, character)
+      table.insert(characters, character)
+      if outCharacters then
+        table.insert(outCharacters, character)
+      end
     end
   end
+  return characters
 end
 
 return characterManager

@@ -16,6 +16,7 @@ character.new = function(directory, dirName, definition, spritesheetDir)
     flip = false,
     flipRY = 0,
     alpha = 1,
+    shadowOffset = 0.1,
     state = nil, -- default state set in characterManager.load --> .initState 
     animations = { },
     animationTrackState = { },
@@ -43,6 +44,10 @@ character.new = function(directory, dirName, definition, spritesheetDir)
     end
   else
     error("Character is missing spritesheet, of:"..dirName)
+  end
+
+  if type(definition.shadowOffset) == "number" then
+    self.shadowOffset = definition.shadowOffset
   end
 
   local partLookup = { }

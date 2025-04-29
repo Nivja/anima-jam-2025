@@ -60,6 +60,12 @@ if select(3, love.window.getMode()).depth then
   love.graphics.setDepthMode("lequal", true)
 end
 
+g3d.shader:send("opaque", false)
+g3d.shader:send("shadowRadiusX", 0.7)
+g3d.shader:send("shadowRadiusZ", 0.3)
+g3d.shader:send("shadowSoftness", 0.7)
+g3d.shader:send("shadowStrength", 1.0)
+
 -- get rid of g3d from the global namespace and return it instead
 local g3d = g3d
 _G.g3d = nil

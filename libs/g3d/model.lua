@@ -27,6 +27,8 @@ model.vertexFormat = {
 }
 model.shader = g3d.shader
 
+local currentID = 0
+
 -- this returns a new instance of the model class
 -- a model must be given a .obj file or equivalent lua table, and a texture
 -- translation, rotation, and scale are all 3d vectors and are all optional
@@ -47,6 +49,8 @@ local function newModel(verts, texture, translation, rotation, scale, uFlip, vFl
     end
 
     -- initialize my variables
+    self.id = currentID
+    currentID = currentID + 1
     self.name = fileName
     self.verts = verts
     self.texture = texture
@@ -246,7 +250,7 @@ function model:clone()
         self.scale and {unpack(self.scale)},
         nil,
         nil,
-        self.fileName
+        self.name
     )
 end
 
