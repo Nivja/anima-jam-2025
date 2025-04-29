@@ -1,5 +1,5 @@
 # Day Zero, Anima Games Jam 2025
-This repo is for the (Solarpunk Jam)[https://itch.io/jam/day-zero-games-solarpunk-jam] hosted by Day Zero and Anima Interactive. The theme of the jam centre around `SolarPunk`
+This repo is for the [Solarpunk Jam](https://itch.io/jam/day-zero-games-solarpunk-jam) hosted by Day Zero and Anima Interactive. The theme of the jam centre around `SolarPunk`
 
 ## Team
 (EngineerSmith)[#] | Lead Developer
