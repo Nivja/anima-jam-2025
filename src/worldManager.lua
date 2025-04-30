@@ -61,6 +61,10 @@ worldManager.get = function(worldId)
   return worldManager.worlds[worldId]
 end
 
+worldManager.getDoor = function(doorID)
+  return worldManager.doorLookup[doorID]
+end
+
 worldManager.newDoor = function(id, ...)
   local newDoor = door.new(...)
   table.insert(worldManager.doors, newDoor)
@@ -91,18 +95,7 @@ worldManager.checkForDoor = function(character, axis)
     end
   end
   if enterDoor then
-    local cb = enterDoor:getCB(character)
-    if character.isPlayer then
-      local time = 0.5
-      flux.to(worldManager.doorTransition, time, { radius = 1 })
-        :oncomplete(cb)
-        :after(time, { radius = 0 })
-    else
-      local time = 0.4
-      flux.to(character, time, { alpha = 0 })
-        :oncomplete(cb)
-        :after(time, { alpha = 1 })
-    end
+    enterDoor:use(character)
   end
 end
 

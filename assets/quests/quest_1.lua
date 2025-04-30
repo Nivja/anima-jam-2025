@@ -6,8 +6,9 @@ return {
   },
   dialogue = {
     { "setState", "state_intro"},
-    { "setObjective", "Listen to Zyla's request" }
     { "tag", "state_intro" },
+    { "setQuestNPC", "zyla" }, -- same as npc = "zyla", but so it can change if needed
+    { "setObjective", "Listen to Zyla's request" }
     { "teleportToDoor", "zyla", "town-workshop", "town" },
     { "useDoor", "zyla", "town-workshop" },
     { "moveX", "zyla", -5 }, -- move towards table

@@ -13,6 +13,7 @@ character.new = function(directory, dirName, definition, spritesheetDir)
     x = 0, y = 0, z = 4,
     rotation = 0,
     scale = 1,
+    speedX = 4,
     flip = false,
     flipRY = 0,
     alpha = 1,

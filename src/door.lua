@@ -57,6 +57,23 @@ door.getCB = function(self, character)
   return nil
 end
 
+door.use = function(self, character)
+  local cb = self:getCB(character)
+  local fluxTween
+  if character.isPlayer then
+    local time = 0.5
+    fluxTween = flux.to(worldManager.doorTransition, time, { radius = 1 })
+      :oncomplete(cb)
+      :after(time, { radius = 0 })
+  else
+    local time = 0.4
+    fluxTween = flux.to(character, time, { alpha = 0 })
+      :oncomplete(cb)
+      :after(time, { alpha = 1 })
+  end
+  return fluxTween
+end
+
 door.draw = function(self, world)
   if self.worldA ~= world and self.worldB ~= world then
     return
