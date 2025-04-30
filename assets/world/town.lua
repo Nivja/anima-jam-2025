@@ -8,21 +8,25 @@ local world = {
 -- Where characters appear in the world
   -- todo if polish involves saves, update how player spawns
 local player = characterManager.get("player")
-player.x, player.z = 0, 4
+player:setHome("town", 0, 4)
+  :teleportHome()
 
 local child = characterManager.get("child")
-child.x, child.z = -5, 5
-child:setFlip(true)
+child:setHome("town", -5, 5, true)
+  :teleportHome()
 
 local electrician = characterManager.get("electrician")
 electrician.x, electrician.z = -3, 5
+electrician:setHome("town", -3, 5)
+  :teleportHome()
 
 local sami = characterManager.get("sami")
-sami.x, sami.z = 3, 5
-sami:setFlip(true)
+sami:setHome("town", 3, 5, true)
+  :teleportHome()
 
 local zyla = characterManager.get("zyla")
-zyla.x, zyla.z = 5, 5
+zyla:setHome("town", 5, 5)
+  :teleportHome()
 
 ------------------------------------
 

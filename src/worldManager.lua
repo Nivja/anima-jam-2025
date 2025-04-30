@@ -61,8 +61,10 @@ worldManager.get = function(worldId)
   return worldManager.worlds[worldId]
 end
 
-worldManager.newDoor = function(...)
-  table.insert(worldManager.doors, door.new(...))
+worldManager.newDoor = function(id, ...)
+  local newDoor = door.new(...)
+  table.insert(worldManager.doors, newDoor)
+  worldManager.doorLookup[id] = newDoor
 end
 
 worldManager.getWorldLimit = function(worldId)

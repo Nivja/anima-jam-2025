@@ -147,6 +147,19 @@ character.applyAnimation = function(self, newState)
   end
 end
 
+character.setHome = function(self, world, x, z, flip)
+  self.homeWorld = world or self.homeWorld
+  self.homeX = x or self.homeX
+  self.homeZ = z or self.homeZ
+  self.homeFlipped = flip == nil and self.homeFlipped
+  return self
+end
+
+character.teleportHome = function(self)
+  self:setWorld(self.homeWorld, self.homeX, self.homeY, self.homeFlipped)
+  return self
+end
+
 character.moveX = function(self, deltaX)
   self.x = self.x + deltaX
 
@@ -229,13 +242,18 @@ character.moveZ = function(self, deltaZ)
 end
 
 character.setFlip = function(self, flipped)
-  self.flip = flipped == nil and self.flip or flipped
+  if flipped == nil then
+    self.flip = self.flip
+  else
+    self.flip = flipped
+  end
   -- update flipRY; so both flipping systems show the correct direction
   if self.flip then
     self.flipRY = math.rad(-180)
   else
     self.flipRY = math.rad(0)
   end
+  return self
 end
 
 character.setWorld = function(self, world, x, z, flipped)
@@ -245,6 +263,7 @@ character.setWorld = function(self, world, x, z, flipped)
   if x == max then x = x - 1 end
   self.x, self.z = x, z
   self:setFlip(flipped)
+  return self
 end
 
 character.update = function(self, dt)
