@@ -178,14 +178,22 @@ dialogue.next = function(self)
   return self:next()
 end
 
+dialogue.hasFinished = function(self)
+  return self.isFinished == true and self.ready == true
+end
+
 dialogue.canContinue = function(self)
-  return self.isFinished == true and self.ready == true and
-         self.currentState ~= nil and self.tagLookup[self.currentState] ~= nil
+  return self:hasFinished() and self.currentState ~= nil and self.tagLookup[self.currentState] ~= nil
 end
 
 dialogue.continue = function(self)
   if self:canContinue() then
-    self.index = self.tagLookup[self.currentState]
+    local index = self.tagLookup[self.currentState]
+    if index then
+      self.index = index
+    else
+      logger.warn("Dialogue["..self.dirName.."@"..self.index.."]: Cannot find tag for currentState:", self.currentState)
+    end
     self.isFinished = false
   else
     self:reset()

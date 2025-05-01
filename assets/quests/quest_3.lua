@@ -1,5 +1,5 @@
 return {
-  title = "",
+  title = "Quest 3",
   npc = "lyn",
   unlock = { },
   dialogue = { --todo programmer pass

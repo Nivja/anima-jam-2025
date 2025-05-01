@@ -1,26 +1,35 @@
+local lfs = love.filesystem
+
 local logger = require("util.logger")
+local file = require("util.file")
+
+local dialogueManager = require("src.dialogueManager")
+
+local questManager = {
+  locked = { },
+  unlocked = { },
+  active = { },
+  finished = { },
+  activeQuestScene = nil,
+}
 
 local quest = { }
 quest.__index = quest
 
-quest.finish = function()
-  logger.warn("todo quest.finish")
+quest.finish = function(self)
+  questManager.finishQuest(self)
 end
-
-local dialogueManager = require("src.dialogueManager")
-
-local questManager = { }
 
 questManager.parse = function(definition)
   local newQuest = setmetatable(definition, quest)
 
-  if not newQuad.dialogue then
-    logger.warn("Found quest without any dialogue. ID:", newQuad.id)
+  if not newQuest.dialogue then
+    logger.warn("Found quest without any dialogue. ID:", newQuest.id)
   else
     newQuest.dialogue = dialogueManager.parse(newQuest.dialogue)
   end
 
-  return newQuad
+  return newQuest
 end
 
 questManager.load = function(dir)
@@ -34,12 +43,68 @@ questManager.load = function(dir)
     end
     local definition = chunk()
     definition.id = definition.id or name
-    questManager.quests[name] = questManager.parse(definition)
+    questManager.locked[name] = questManager.parse(definition)
   end
 end
 
+-- Returns quest, and it's state [quest, state]
+questManager.get = function(questId)
+  for _, state in ipairs({ "locked", "unlocked", "active", "finished" }) do
+    for id, quest in pairs(questManager[state]) do
+      if id == questId then
+        return quest, state
+      end
+    end
+  end
+  return nil, nil
+end
+
+local transitionQuest = function(questId, fromState, toState)
+  local fromStateTbl = questManager[fromState]
+  local toStateTbl = questManager[toState]
+
+  local quest = fromStateTbl[questId]
+  if not quest then
+    logger.warn("QuestManager: Failed to transition quest '"..tostring(questId).."'. Couldn't be found in state: '"..tostring(fromState).."'")
+    return false
+  end
+  fromStateTbl[questId] = nil
+  toStateTbl[questId] = quest
+  return true
+end
+
 questManager.unlockQuest = function(questId)
-  logger.warn("TODO unlock quest")
+  transitionQuest(questId, "locked", "unlocked")
+end
+
+questManager.activateQuest = function(questId)
+  transitionQuest(questId, "unlocked", "active")
+end
+
+questManager.finishQuest = function(questId)
+  transitionQuest(questId, "active", "finished")
+end
+
+local checkTime = 0.2 -- How often to check
+questManager.update = function(dt)
+  if not questManager.activeQuestScene then
+    for _, quest in pairs(questManager.active) do
+      if quest.repeatCheck and love.timer.getTime() - quest.lastCheck > checkTime then
+        if quest.dialogue:canContinue() then
+          local text = quest.dialogue:next()
+          -- send to dialogue system; but handle rest elsewhere
+          questManager.activeQuestScene = quest
+          break
+        end
+      end
+    end
+  else
+    -- activeQuestScene; handle dialogue until finished 
+  end
+end
+
+questManager.draw = function()
+
 end
 
 return questManager

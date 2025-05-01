@@ -35,7 +35,8 @@ local defaultSettings = {
         cameraRight = { "axis:rightx+" },
         cameraUp    = { "axis:righty-" }, -- Should you be able to remap, or map the movements of the mouse
         cameraDown  = { "axis:righty+" }, --   to an axis that isn't normalized? TODO POLISH?
-        accept = { "sc:space", "sc:return", "button:a" },
+        interact = { "sc:space", "sc:return", "button:a" },
+        accept = { "sc:space", "sc:return", "mouse:1", "button:a" },
         reject = { "sc:escape", "sc:backspace", "button:b" },
         pause =   { "sc:escape", "button:start" },
         unpause = { "sc:escape", "sc:backspace", "button:start", "button:back", "button:b" },
@@ -56,7 +57,7 @@ local defaultSettings = {
   }
 
 local inputControls = {
-  "moveUp", "moveDown", "moveLeft", "moveRight", "menuNavUp", "menuNavDown", "menuNavLeft", "menuNavRight", "settingsMenuLeft", "settingsMenuRight", "accept", "reject"
+  "moveUp", "moveDown", "moveLeft", "moveRight", "menuNavUp", "menuNavDown", "menuNavLeft", "menuNavRight", "settingsMenuLeft", "settingsMenuRight", "interact", "accept", "reject"
 }
 
 -- lazy deep copy, the best kind of copy

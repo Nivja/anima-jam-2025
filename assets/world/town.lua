@@ -21,11 +21,11 @@ electrician:setHome("town", -3, 5)
   :teleportHome()
 
 local sami = characterManager.get("sami")
-sami:setHome("town", 3, 5, true)
+sami:setHome("town", 5, 5, true)
   :teleportHome()
 
 local zyla = characterManager.get("zyla")
-zyla:setHome("town", 5, 5)
+zyla:setHome("town", 7, 5)
   :teleportHome()
 
 ------------------------------------
@@ -34,10 +34,6 @@ local lg = love.graphics
 local g3d = require("libs.g3d")
 
 -- world.setupColliders = function() -- todo
-
--- end
-
--- world.update = function(dt)
 
 -- end
 
@@ -71,16 +67,33 @@ newTuft(4.5, 5.5)
 newTuft(6, 6)
 newTuft(9, 5)
 
--- objects with (or)
-  -- .z field
-  -- .translation[3] field
--- world.get3DObjects = function() -- for alpha objects
--- end
+local rbX, rbZ = 3.5, 5.5
+
+local requestBoard = g3d.newModel("assets/models/request_board.obj", "assets/textures/request_board.png", { rbX, 0, rbZ }, nil, nil, false, false)
+requestBoard.texture:setFilter("nearest")
+
+local requestBoardSRC = require("src.requestBoard")
+requestBoardSRC.set(rbX, rbZ, rbX, rbZ - 0.5)
+
+world.update = function(dt, scale)
+  requestBoardSRC.update(dt, scale)
+end
+
+world.get3DObjects = function() -- for alpha objects
+  return {
+    requestBoard,
+  }
+end
 
 local workshopExterior = g3d.newModel("assets/models/workshop_exterior.obj", "assets/textures/workshop_exterior.png", { 0, 0, 6.005 }, nil, nil, false, true)
 
 world.draw = function()
   workshopExterior:draw()
+  requestBoardSRC.draw(player.x, player.z)
+end
+
+world.drawUI = function(scale)
+  requestBoardSRC.drawUI(scale)
 end
 
 local floor = g3d.newModel("assets/models/floor.obj", "assets/textures/ground.png", { 0, 0, 4 }, nil, nil, true, false)

@@ -1,14 +1,15 @@
 return {
   title = "Zyla's Dilemma",
-  npc = "zyla", -- Who to talk to to activate the dialogue
+  npc = "zyla", -- Who to talk to to activate the dialogue; isn't needed if repeatCheck is active
   unlock = {
     "quest_2",
   },
+  repeatCheck = false,
   dialogue = {
     { "setState", "state_intro"},
     { "tag", "state_intro" },
-    { "setQuestNPC", "zyla" }, -- same as npc = "zyla", but so it can change if needed
-    { "setObjective", "Listen to Zyla's request" }
+    { "setQuestNPC", "zyla" }, -- same as npc = "zyla", but so it can change if needed; isn't needed if repeatCheck is active
+    { "setObjective", "Listen to Zyla's request" },
     { "teleportToDoor", "zyla", "town-workshop", "town" },
     { "useDoor", "zyla", "town-workshop" },
     { "moveX", "zyla", -5 }, -- move towards table

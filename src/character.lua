@@ -26,6 +26,7 @@ character.new = function(directory, dirName, definition, spritesheetDir)
     shouldDraw = true,
     isCharacter = true,
     world = "town",
+    canMove = true,
   }
 
   if definition.transform then
@@ -152,12 +153,12 @@ character.setHome = function(self, world, x, z, flip)
   self.homeWorld = world or self.homeWorld
   self.homeX = x or self.homeX
   self.homeZ = z or self.homeZ
-  self.homeFlipped = flip == nil and self.homeFlipped
+  self.homeFlipped = flip or false
   return self
 end
 
 character.teleportHome = function(self)
-  self:setWorld(self.homeWorld, self.homeX, self.homeY, self.homeFlipped)
+  self:setWorld(self.homeWorld, self.homeX, self.homeZ, self.homeFlipped)
   return self
 end
 
@@ -202,6 +203,8 @@ character.moveX = function(self, deltaX)
   end
 end
 
+local minZ, maxZ = 2, 5
+
 local moveUnitZ, moveUnitZEpsilon = 0.5, 0.001
 character.moveZ = function(self, deltaZ)
   if math.abs(deltaZ) < moveUnitZEpsilon then
@@ -216,11 +219,11 @@ character.moveZ = function(self, deltaZ)
     return
   end
   local target = self.z - deltaZ
-  if target > 5 then
+  if target > maxZ then
     require("src.worldManager").checkForDoor(self, "z")
     return
   end
-  target = math.max(2, math.min(5, target))
+  target = math.max(minZ, math.min(maxZ, target))
   if self.z == target then
     return
   end
@@ -229,7 +232,7 @@ character.moveZ = function(self, deltaZ)
   if not self.zTween or self.zTween.progress >= 1 then
     newTween = flux.to(self, 0.3, { z = target })
   else
-    target = math.max(2, math.min(5, self.zTarget - deltaZ))
+    target = math.max(minZ, math.min(maxZ, self.zTarget - deltaZ))
     if self.zTarget ~= target then
       newTween = self.zTween:after(self, 0.3, { z = target })
     end

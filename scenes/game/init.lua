@@ -19,7 +19,7 @@ local lang = require("util.lang")
 local ui = require("util.ui")
 
 local characterManager = require("src.characterManager")
-local dialogueManager = require("src.dialogueManager")
+local questManager = require("src.questManager")
 local worldManager = require("src.worldManager")
 
 local scene = {
@@ -40,20 +40,7 @@ scene.load = function(gpMode)
 
   cursor.switch("arrow")
   characterManager.load("assets/animations", "assets/characters/")
-  -- This should be replaced by quest load; which specifies what dialogue to load
-  dialogueManager.load("assets/quests")
-
-  -- for name, dialogue in pairs(dialogueManager.dialogue) do
-  --   print(">", name)
-  --   while not dialogue.isFinished do
-  --     local text = dialogue:next()
-  --     if text == nil and dialogue.isFinished then
-  --       break
-  --     end
-  --     logger.info(dialogue.speaker, ">", text)
-  --   end
-  -- end
-
+  questManager.load("assets/quests")
   worldManager.load("assets/world")
 
   scene.playerChar = characterManager.get("player")
@@ -91,26 +78,28 @@ local zProgress = 0
 scene.update = function(dt)
   characterManager.update(dt)
 
-  local dx, dy = input.baton:get("move")
+  if scene.playerChar.canMove then
+    local dx, dy = input.baton:get("move")
 
-  if math.abs(dx) <= 0.2 then
-    dx = 0
-  end
-  scene.playerChar:moveX(dx * scene.playerChar.speedX * dt)
-
-  if math.abs(dy) > 0.3 then
-    local speed = 8
-    if scene.playerChar.zTween and scene.playerChar.zTween.progress < 1 then
-      speed = 4
+    if math.abs(dx) <= 0.2 then
+      dx = 0
     end
-    zProgress = zProgress + dy * speed * dt
-  else
-    zProgress = 0
-  end
-  if zProgress >= 1 or zProgress <= -1 then
-    local level = zProgress >= 1 and 0.5 or -0.5
-    zProgress = 0
-    scene.playerChar:moveZ(level)
+    scene.playerChar:moveX(dx * scene.playerChar.speedX * dt)
+
+    if math.abs(dy) > 0.3 then
+      local speed = 8
+      if scene.playerChar.zTween and scene.playerChar.zTween.progress < 1 then
+        speed = 4
+      end
+      zProgress = zProgress + dy * speed * dt
+    else
+      zProgress = 0
+    end
+    if zProgress >= 1 or zProgress <= -1 then
+      local level = zProgress >= 1 and 0.5 or -0.5
+      zProgress = 0
+      scene.playerChar:moveZ(level)
+    end
   end
 
   local min, max = worldManager.getWorldLimit(scene.playerChar.world)
@@ -126,6 +115,18 @@ scene.update = function(dt)
     love.mouse.setRelativeMode(false)
     love.mouse.setVisible(true)
   end
+
+  
+
+  if input.baton:pressed("interact") then
+    local consumed, object = worldManager.interact(scene.playerChar.x, scene.playerChar.z)
+    if consumed then
+      -- logger.info("INTERACTION SUCCESSFUL:", object.name)
+      return -- so we don't double trigger any interaction within worldManager.Update
+    end
+  end
+
+  worldManager.update(dt, scene.scale)
 end
 
 scene.draw = function()
@@ -137,7 +138,7 @@ scene.draw = function()
   lg.pop()
   -- UI
   lg.push("all")
-  worldManager.drawUI()
+  worldManager.drawUI(scene.playerChar.world or "town", scene.scale)
   lg.pop()
 end
 

@@ -1,8 +1,9 @@
 local lfs, lg = love.filesystem, love.graphics
 
-local g3d = require("libs.g3d")
+local logger = require("util.logger")
 local flux = require("libs.flux")
 local file = require("util.file")
+local g3d = require("libs.g3d")
 
 local characterManager = require("src.characterManager")
 local door = require("src.door")
@@ -10,9 +11,11 @@ local door = require("src.door")
 local worldManager = {
   worlds = { },
   doors = { },
+  doorLookup = { },
   doorTransition = {
     radius = 0,
   },
+  interactable = { },
 }
 
 worldManager.load = function(dir)
@@ -51,6 +54,7 @@ worldManager.load = function(dir)
     world.get3DObjects = w.get3DObjects
     world.draw = w.draw
     world.drawFloor = w.drawFloor
+    world.drawUI = w.drawUI
   end
 
   -- load doors
@@ -99,10 +103,19 @@ worldManager.checkForDoor = function(character, axis)
   end
 end
 
-worldManager.update = function(dt)
+worldManager.interact = function(playerX, playerZ)
+  for _, object in ipairs(worldManager.interactable) do
+    if object:interact(playerX, playerZ) then
+      return true, object -- event consumed
+    end
+  end
+  return false
+end
+
+worldManager.update = function(dt, scale)
   for _, world in pairs(worldManager.worlds) do
     if type(world.update) == "function" then
-      world.update(dt)
+      world.update(dt, scale)
     end
   end
 end
@@ -163,13 +176,15 @@ worldManager.draw = function(playerWorld)
   local shader = g3d.shader
 
   shader:send("numCharacters", #characters)
-  local temp = { }
-  for _, character in ipairs(characters) do
-    -- An attempt to centre shadow under the mass of the player character
-    local offset = character.shadowOffset * (character.flip and -1 or 1)
-    table.insert(temp, { character.x + offset, character.alpha, character.z })
+  if #characters > 0 then
+    local temp = { }
+    for _, character in ipairs(characters) do
+      -- An attempt to centre shadow under the mass of the player character
+      local offset = character.shadowOffset * (character.flip and -1 or 1)
+      table.insert(temp, { character.x + offset, character.alpha, character.z })
+    end
+    shader:send("characterPositions", unpack(temp))
   end
-  shader:send("characterPositions", unpack(temp))
   if type(world.drawFloor) == "function" then
     world.drawFloor()
   end
@@ -192,7 +207,16 @@ worldManager.draw = function(playerWorld)
   end
 end
 
-worldManager.drawUI = function()
+worldManager.drawUI = function(playerWorld, scale)
+  local world = worldManager.get(playerWorld)
+  if not world then
+    logger.warn("Could not find player world:", playerWorld)
+    return
+  end
+  if world.drawUI then
+    world.drawUI(scale)
+  end
+
   if worldManager.doorTransition.radius ~= 0 then
     local w, h = lg.getDimensions()
     local x = w / 2

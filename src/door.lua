@@ -1,5 +1,6 @@
 local lg = love.graphics
 
+local flux = require("libs.flux")
 local g3d = require("libs.g3d")
 
 local logger = require("util.logger")
@@ -62,7 +63,7 @@ door.use = function(self, character)
   local fluxTween
   if character.isPlayer then
     local time = 0.5
-    fluxTween = flux.to(worldManager.doorTransition, time, { radius = 1 })
+    fluxTween = flux.to(require("src.worldManager").doorTransition, time, { radius = 1 })
       :oncomplete(cb)
       :after(time, { radius = 0 })
   else

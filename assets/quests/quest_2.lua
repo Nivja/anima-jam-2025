@@ -1,5 +1,5 @@
 return {
-  title = "",
+  title = "Quest 2",
   npc = "sami",
   unlock = {
     "quest_3",

@@ -126,7 +126,7 @@ love.run = function()
   sceneManager.changeScene("load")
 
   logger.info("Creating client gameloop")
-  local frameTime, fuzzyTime = 1/60, {1/2,1,2} --todo make frameTime a setting
+  local frameTime, fuzzyTime = 1/60, {1/2,1,2} --todo make frameTime a setting value
   local updateDelta, drawDelta = 0, 0
 
   local gameloop = function()
