@@ -11,6 +11,7 @@ local questManager = {
   active = { },
   finished = { },
   activeQuestScene = nil,
+  questOrder = { },
 }
 
 local quest = { }
@@ -75,6 +76,7 @@ end
 
 questManager.unlockQuest = function(questId)
   transitionQuest(questId, "locked", "unlocked")
+  table.insert(questManager.questOrder, questId)
 end
 
 questManager.activateQuest = function(questId)

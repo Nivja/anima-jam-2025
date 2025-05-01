@@ -112,10 +112,10 @@ worldManager.interact = function(playerX, playerZ)
   return false
 end
 
-worldManager.update = function(dt, scale)
+worldManager.update = function(dt, scale, isGamepadActive)
   for _, world in pairs(worldManager.worlds) do
     if type(world.update) == "function" then
-      world.update(dt, scale)
+      world.update(dt, scale, isGamepadActive)
     end
   end
 end

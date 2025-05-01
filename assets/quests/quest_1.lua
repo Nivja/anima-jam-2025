@@ -1,5 +1,6 @@
 return {
   title = "Zyla's Dilemma",
+  description = "Help Zyla with her dress!",
   npc = "zyla", -- Who to talk to to activate the dialogue; isn't needed if repeatCheck is active
   unlock = {
     "quest_2",

@@ -75,8 +75,8 @@ requestBoard.texture:setFilter("nearest")
 local requestBoardSRC = require("src.requestBoard")
 requestBoardSRC.set(rbX, rbZ, rbX, rbZ - 0.5)
 
-world.update = function(dt, scale)
-  requestBoardSRC.update(dt, scale)
+world.update = function(dt, scale, isGamepadActive)
+  requestBoardSRC.update(dt, scale, isGamepadActive)
 end
 
 world.get3DObjects = function() -- for alpha objects

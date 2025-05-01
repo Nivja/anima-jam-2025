@@ -4,6 +4,7 @@ local cursor = require("util.cursor")
 local input = require("util.input")
 
 local createPlaneForQuad = require("src.createPlaneForQuad")
+local questManager = require("src.questManager")
 
 local slice = require("ui.nineSlice").new("assets/UI/panel_brown_corners_a.png", 57, 70, 57, 70)
 slice.texture:setFilter("nearest")
@@ -21,6 +22,8 @@ local canMovePlayer = function(boolean)
   playerChar:moveX(0)
 end
 
+local index = nil
+
 local xRange = 1.4
 requestBoard.interact = function(_, x, z)
   if not requestBoard.show and
@@ -29,6 +32,7 @@ requestBoard.interact = function(_, x, z)
      math.abs(z - requestBoard.interactZ) < 0.1 then
     canMovePlayer(false)
     requestBoard.show = true
+    index = nil
     return true -- consume the event
   end
   return false
@@ -84,32 +88,117 @@ end
 local closeButton = lg.newImage("assets/UI/checkbox_grey_cross.png")
 -- closeButton:setFilter("nearest")
 
-local inside = false
+local inside = false, nil
 local closeButtonX, closeButtonY = 0, 0
-requestBoard.update = function(dt, scale)
+requestBoard.update = function(dt, scale, isGamepadActive)
   if not requestBoard.show then
     return
   end
 
-  if input.baton:pressed("accept") and not love.mouse.isDown(1) then
+  if isGamepadActive == true and index == nil then
+    for _, questId in ipairs(questManager.questOrder) do
+      local quest = questManager.unlocked[questId]
+      if quest then
+        index = questId
+        break
+      end
+    end
+  end
+
+  local mx, my = love.mouse.getPosition()
+
+  if isGamepadActive == true and index ~= nil then
+    local menuUp = input.baton:pressed("menuNavUp") and 1 or 0
+    local menuDown = input.baton:pressed("menuNavDown") and 1 or 0
+    local menuDelta = menuUp - menuDown
+    if menuDelta ~= 0 then
+      local first, previous, found = nil, nil, false
+      for i, questId in ipairs(questManager.questOrder) do
+        local quest = questManager.unlocked[questId]
+        if quest then
+          if not first then
+            first = questId
+          end
+          if menuDelta == -1 and previous == index then
+            index = questId
+            found = true
+            break
+          end
+          if menuDelta == 1 and questId == index and previous ~= nil then
+            index = previous
+            found = true
+            break
+          end
+          previous = questId
+        end
+      end
+      if not found then
+        if previous == index then
+          index = first
+        elseif first == index then
+          index = previous
+        end
+      end
+    end
+  elseif not isGamepadActive then
+    local tw, th = lg.getDimensions()
+    local w, h = 350, 400
+    local x, y = tw/2-(w*scale)/2, th/2-(h*scale)/2
+    x, y = x + slice.width[1]*scale/2, y + slice.height[1]*scale/1.3
+
+    local questWidth = (w - slice.width[1]/2 - slice.width[3]/2) * scale
+
+    local titleFont = require("util.ui").getFont(20, "fonts.regular.bold", scale)
+    local height = titleFont:getHeight() * 3
+
+    local found = false
+    for _, questId in ipairs(questManager.questOrder) do
+      local quest = questManager.unlocked[questId]
+      if quest then
+        if mx + 5 > x and mx < x + questWidth - 10 and
+           my + 5 > y and my < y + height - 10 then
+          index = questId
+          found = true
+          cursor.switch("hand")
+          break
+        end
+        y = y + height
+      end
+    end
+    if not found then
+      index = nil
+      if not inside then
+        cursor.switch("arrow")
+      end
+    end
+  end
+
+  if input.baton:pressed("reject") and not love.mouse.isDown(1) then
     requestBoard.show = false
     canMovePlayer(true)
     cursor.switch("arrow")
     inside = false
+    index = nil
   end
 
-  local mx, my = love.mouse.getPosition()
   local dx = mx - closeButtonX
   local dy = my - closeButtonY
+
+  if index ~= nil and input.baton:pressed("accept") then
+    questManager.activateQuest(index)
+    index = nil
+    return
+  end
 
   if (dx^2+dy^2) <= ((closeButton:getWidth() * scale)/2)^2 then
     inside = true
     cursor.switch("hand")
-    if input.baton:pressed("accept") then
+    if input.baton:pressed("reject") or love.mouse.isDown(1) then
       requestBoard.show = false
       canMovePlayer(true)
       cursor.switch("arrow")
       inside = false
+      index = nil
     end
   elseif inside == true then
     cursor.switch("arrow")
@@ -118,15 +207,66 @@ requestBoard.update = function(dt, scale)
 
 end
 
+local drawQuest = function(quest, width, scale, isActive)
+  local titleFont = require("util.ui").getFont(20, "fonts.regular.bold", scale)
+  local subtitleFont = require("util.ui").getFont(12, "fonts.regular", scale)
+  local height = titleFont:getHeight() * 3
+  lg.push("all")
+  if index~= nil and index == quest.id then
+    lg.setColor(1,.5,0,1)
+    lg.rectangle("fill", 0, 0, width, height)
+  end
+  lg.setColor(.9,.85,.72)
+  if isActive then
+    lg.setColor(.8,.9,.62)
+  end
+  lg.rectangle("fill", 5, 5, width-10, height-10)
+  lg.setColor(0,0,0,1)
+  if isActive then
+    lg.setColor(.1,.1,.1,1)
+  end
+  local title = quest.title or "UNKNOWN"
+  local description = quest.description or "UNKNOWN"
+  lg.print(title, titleFont, (width-10)/2-titleFont:getWidth(title)/2, ((height-10)/4)*1-titleFont:getHeight()/2)
+  lg.print(description, subtitleFont, (width-10)/2-subtitleFont:getWidth(description)/2, ((height-10)/4)*3-subtitleFont:getHeight()/2)
+  lg.pop()
+  return height
+end
+
 requestBoard.drawUI = function(scale)
   if requestBoard.show then
     lg.push()
     local tw, th = lg.getDimensions()
-    local w, h = 350 * scale, 400 * scale
-    lg.translate(tw/2-w/2, th/2-h/2)
+    local w, h = 350, 400
+    lg.translate(tw/2-(w*scale)/2, th/2-(h*scale)/2)
+    lg.push()
+    lg.scale(scale)
     slice:draw(w, h)
+    lg.pop()
+
+    lg.push("all")
+    lg.translate(slice.width[1]*scale/2, slice.height[1]*scale/1.3)
+
+    local questWidth = (w - slice.width[1]/2 - slice.width[3]/2) * scale
+
+    for _, questId in ipairs(questManager.questOrder) do
+      local quest = questManager.unlocked[questId]
+      if quest then
+        local h = drawQuest(quest, questWidth, scale)
+        lg.translate(0, h)
+      end
+    end
+    for _, questId in ipairs(questManager.questOrder) do
+      local quest = questManager.active[questId]
+      if quest then
+        local h = drawQuest(quest, questWidth, scale, true)
+        lg.translate(0, h)
+      end
+    end
+    lg.pop()
+
     local bw, bh = closeButton:getDimensions()
-    lg.translate(w/2, h)
+    lg.translate(w*scale/2, h*scale)
     lg.draw(closeButton, 0, 0, 0, scale, scale, bw/2, bh/2)
     closeButtonX, closeButtonY = lg.transformPoint(0, 0)
     lg.pop()

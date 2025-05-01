@@ -45,6 +45,12 @@ scene.load = function(gpMode)
 
   scene.playerChar = characterManager.get("player")
   scene.playerChar.world = "town"
+
+  questManager.unlockQuest("quest_1")
+  questManager.unlockQuest("quest_2")
+  questManager.unlockQuest("quest_3")
+  questManager.unlockQuest("test")
+
 end
 
 scene.unload = function()
@@ -126,7 +132,7 @@ scene.update = function(dt)
     end
   end
 
-  worldManager.update(dt, scene.scale)
+  worldManager.update(dt, scene.scale, scene.gamepadActive)
 end
 
 scene.draw = function()
