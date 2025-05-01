@@ -46,10 +46,10 @@ scene.load = function(gpMode)
   scene.playerChar = characterManager.get("player")
   scene.playerChar.world = "town"
 
+  questManager.unlockQuest("test")
   questManager.unlockQuest("quest_1")
   questManager.unlockQuest("quest_2")
   questManager.unlockQuest("quest_3")
-  questManager.unlockQuest("test")
 
 end
 
@@ -149,7 +149,7 @@ scene.draw = function()
 end
 
 local inputDetected = function(inputType)
-  scene.gamepadActive = inputType == "gamepad"
+  scene.gamepadActive = inputType == "gamepad" or inputType == "keyboard"
 end
 
 scene.keypressed = function()

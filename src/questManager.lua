@@ -77,14 +77,17 @@ end
 questManager.unlockQuest = function(questId)
   transitionQuest(questId, "locked", "unlocked")
   table.insert(questManager.questOrder, questId)
+  logger.info("QuestManager: Unlocked quest,", questId)
 end
 
 questManager.activateQuest = function(questId)
   transitionQuest(questId, "unlocked", "active")
+  logger.info("QuestManager: Activated quest,", questId)
 end
 
 questManager.finishQuest = function(questId)
   transitionQuest(questId, "active", "finished")
+  logger.info("QuestManager: Finished quest,", questId)
 end
 
 local checkTime = 0.2 -- How often to check
