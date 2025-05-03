@@ -334,7 +334,11 @@
   "gamepad.general.paddle4": "Paddle 4",
   "gamepad.general.touchpad": "Touchpad",
 
-
+  "speaker.child": "Child",
+  "speaker.electrician": "Electrician",
+  "speaker.player": "Player",
+  "speaker.sami": "Sami",
+  "speaker.zyla": "Zyla",
 
   "EOF": "To avoid having to keep adding new ',' characters"
 }

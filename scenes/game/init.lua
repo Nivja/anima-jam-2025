@@ -44,12 +44,8 @@ scene.load = function(gpMode)
   worldManager.load("assets/world")
 
   scene.playerChar = characterManager.get("player")
-  scene.playerChar.world = "town"
 
   questManager.unlockQuest("test")
-  questManager.unlockQuest("quest_1")
-  questManager.unlockQuest("quest_2")
-  questManager.unlockQuest("quest_3")
 
 end
 
@@ -78,6 +74,9 @@ scene.resize = function(w, h)
   local cam = g3d.camera:current()
   cam.aspectRatio = (w/h)
   cam:updateProjectionMatrix()
+
+--
+  questManager.resize(w, h, scene.scale)
 end
 
 local zProgress = 0
@@ -122,8 +121,6 @@ scene.update = function(dt)
     love.mouse.setVisible(true)
   end
 
-  
-
   if input.baton:pressed("interact") then
     local consumed, object = worldManager.interact(scene.playerChar.x, scene.playerChar.z)
     if consumed then
@@ -131,6 +128,8 @@ scene.update = function(dt)
       return -- so we don't double trigger any interaction within worldManager.Update
     end
   end
+
+  questManager.update(dt, scene.scale, scene.gamepadActive)
 
   worldManager.update(dt, scene.scale, scene.gamepadActive)
 end
@@ -145,6 +144,7 @@ scene.draw = function()
   -- UI
   lg.push("all")
   worldManager.drawUI(scene.playerChar.world or "town", scene.scale)
+  questManager.drawUI(scene.scale)
   lg.pop()
 end
 

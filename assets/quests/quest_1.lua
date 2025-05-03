@@ -7,31 +7,32 @@ return {
   },
   repeatCheck = false,
   dialogue = {
+    { "freeze", "player" },
     { "setState", "state_intro"},
     { "tag", "state_intro" },
     { "setQuestNPC", "zyla" }, -- same as npc = "zyla", but so it can change if needed; isn't needed if repeatCheck is active
     { "setObjective", "Listen to Zyla's request" },
     { "teleportToDoor", "zyla", "town-workshop", "town" },
     { "useDoor", "zyla", "town-workshop" },
-    { "moveX", "zyla", -5 }, -- move towards table
+    { "moveX", "zyla", -2 }, -- move towards table
     { "setCharacter", "zyla" },
-    "Good morning, I am here to see Rosetta. Is she around? I need my dress fixed.",
+    "Good morning, I am here to see Rosetta. Is she around? I need my dress repaired.",
     { "setCharacter", "player" },
-    "Rosetta is not here this morning. I am here to help with all sewing and mending and would love to help",
+    "Rosetta is not here this morning. I am here to help with all sewing and mending and would love to help!",
     { "setCharacter", "zyla" },
     "Oh, but Rosetta is the one who made this garment for me, I have been wearing it to my council meetings.",
-    { "choice",
-      { "and she did a fine job! Please let me have a look. [color=#7DFFFF]{Tutorial}[/color]", --[[ goto ]] "option_one" },
-      { "If you would rather wait, Rosetta will be here for the evening shift.", --[[ goto ]] "option_two" },
-    },
+    { "choice", {
+      { "and she did a fine job! Please let me have a look.", "option_one" },
+      { "I have just the thing for it!", "option_one" }
+    } },
     { "tag", "option_one" }, -- [[ Declare a point which can be 'goto'ed ]]
-    { "setObjective", "Patch Zyla's Dress" },
+    { "setObjective", "Find fabric to use" },
     { "addItem",
-    -- Add items required for the mini game
-      { name = "Childish Fabric", tags = { "fabric", "use-patch" }, patchType = "silly", },
-      { name = "Neutral Fabric", tags = { "fabric", "use-patch" }, patchType = "neutral", },
-      { name = "Fancy Fabric", tags = { "fabric", "use-patch" }, patchType = "fancy", },
-      {
+    -- Add items to be found
+      -- { name = "Childish Fabric", tags = { "fabric", "use-patch" }, patchType = "silly", },
+      -- { name = "Neutral Fabric", tags = { "fabric", "use-patch" }, patchType = "neutral", },
+      -- { name = "Fancy Fabric", tags = { "fabric", "use-patch" }, patchType = "fancy", },
+      { -- todo
         name = "Zyla's Dress",
         id = "zyla_dress",
         issue = { {
@@ -41,9 +42,15 @@ return {
         --[[ item details... ]]
       },
     },
+    -- todo check if items are in player's inventory; then allow to continue
+    { "end" },
+    { "tag", "patch_time" },
+    { "setObjective", "Patch Zyla's Dress" },
+    
     { "setState", "state_option_one"}, -- State is persistent if the conversation ends; it will return to the tagged point
+    { "unfreeze", "player" },
     -- { "inspectItem", "lastAdded" }, -- Makes item pop up on user's screen - might be scoped out
-    { "minigame", "patch", "zyla_dress" }, -- 3rd arg is optionally, skip inventory screen to given item  (lastAdded being a keyword)
+    -- { "minigame", "patch", "zyla_dress" }, -- 3rd arg is optionally, skip inventory screen to given item  (lastAdded being a keyword)
     { "tag", "state_option_one" },
     { "if", "item", "zyla_dress", "hasTag", "patched.silly", "silly_design" }, -- So the patching minigame would add the "patched.<patchType>" tag to the dress
     { "if", "item", "zyla_dress", "hasTag", "patched.neutral", "neutral_design" },
@@ -68,13 +75,6 @@ return {
     },
     { "goto", "end_option_one" },
     { "tag", "end_option_one" },
-    { "questFinished" },
-    { "end" },
-    { "tag", "option_two" },
-    { "setState", "option_two"},
-    { "setCharacter", "zyla" },
-    "I'll be back then",
-    -- todo mini game
     { "questFinished" },
     { "end" },
   }

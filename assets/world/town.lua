@@ -5,12 +5,6 @@ local world = {
   max =  10,
 }
 
--- Where characters appear in the world
-  -- todo if polish involves saves, update how player spawns
-local player = characterManager.get("player")
-player:setHome("town", 0, 4)
-  :teleportHome()
-
 local child = characterManager.get("child")
 child:setHome("town", -5, 5, true)
   :teleportHome()
@@ -87,6 +81,7 @@ end
 
 local workshopExterior = g3d.newModel("assets/models/workshop_exterior.obj", "assets/textures/workshop_exterior.png", { 0, 0, 6.005 }, nil, nil, false, true)
 
+local player = characterManager.get("player")
 world.draw = function()
   workshopExterior:draw()
   requestBoardSRC.draw(player.x, player.z)

@@ -5,43 +5,27 @@ local file = require("util.file")
 local flux = require("libs.flux")
 
 local characterManager = require("src.characterManager")
+local worldManager = require("src.worldManager")
 local inventory = require("src.inventory")
 
 local dialogue = { }
 dialogue.__index = dialogue
 
-dialogue.next = function(self)
-  if not self.ready then
-    return nil
-  end
+local _ignoreCommand = function(self)
+  return self:next()
+end
 
-  self.index = self.index + 1
-  if self.index > #self.definition then
-    self.index = #self.definition
-    self.isFinished = true
-    return nil
-  end
-  local commandTbl = self.definition[self.index]
-  if type(commandTbl) == "string" then
-    return commandTbl -- implied "text" command
-  end
-  if type(commandTbl) ~= "table" then
-    logger.warn("Hit non-string, non-table value in dialogue["..self.dirName.."@"..self.index.."]. Found type:", type(command))
-    return self:next()
-  end
-  local commandType = commandTbl[1]
-  if type(commandType) ~= "string" then
-    logger.warn("Hit non-string commandType in dialogue["..self.dirName.."@"..self.index.."]. Found type:", type(commandType))
-    return self:next()
-  end
-  if commandType == "end" then
+local commandLookup = {
+  ["end"] = function(self)
     self.ready = true
     self.isFinished = true
     return nil
-  elseif commandType == "setCharacter" then
+  end,
+  ["setCharacter"] = function(self, commandTbl)
     self.speaker = commandTbl[2]
     return self:next()
-  elseif commandType == "if_true" then
+  end,
+  ["if_true"] = function(self, commandTbl)
     local condition = commandTbl[2]
     if type(condition) == "function" then
       if condition() then
@@ -56,31 +40,39 @@ dialogue.next = function(self)
       end
       return self:next()
     end
-  elseif commandType == "goto" then
+    error("2nd arg should be a function")
+  end,
+  ["goto"] = function(self, commandTbl)
     local gt = commandTbl[2]
-    local newIndex = self.tagLookup(tostring(gt))
+    local newIndex = self.tagLookup[tostring(gt)]
     if newIndex then
       self.index = newIndex -- this jumps straight to the next commandTbl; ignoring the tag index
       return self:next()
     end
     logger.warn("Dialogue["..self.dirName.."@"..self.index.."] could not find tag:", tostring(gt))
+    if commandTbl[3] == "forced" then
+      return nil
+    end
     return self:next()
-  -- Command Types that can be ignored
-  elseif commandType == "tag" then 
-    return self:next()
-  elseif commandType == "setState" then
+  end,
+  ["tag"] = _ignoreCommand,
+  ["setState"] = function(self, commandTbl)
     self.currentState = commandTbl[2]
     return self:next()
-  elseif commandType == "setObjective" then
+  end,
+  ["setObjective"] = function(self, commandTbl)
     self.quest.objective = commandTbl[2]
     return self:next()
-  elseif commandType == "setQuestNPC" then
+  end,
+  ["setQuestNPC"] = function(self, commandTbl)
     self.quest.npc = commandTbl[2]
     return self:next()
-  elseif commandType == "questFinished" then
+  end,
+  ["questFinished"] = function(self)
     self.quest:finish()
     return self:next()
-  elseif commandType == "teleportToDoor" then
+  end,
+  ["teleportToDoor"] = function(self, commandTbl, commandType)
     local character = characterManager.get(commandTbl[2])
     if not character then
       logger.warn("Dialogue["..self.dirName.."@"..self.index.."]: Couldn't find character to", commandType, ", gave character ID:", commandTbl[2])
@@ -105,7 +97,8 @@ dialogue.next = function(self)
     end
     character:setWorld(world, x, z, flip)
     return self:next()
-  elseif commandTbl == "useDoor" then
+  end,
+  ["useDoor"] = function(self, commandTbl, commandType)
     local character = characterManager.get(commandTbl[2])
     if not character then
       logger.warn("Dialogue["..self.dirName.."@"..self.index.."]: Couldn't find character to", commandType, ", gave character ID:", commandTbl[2])
@@ -134,29 +127,33 @@ dialogue.next = function(self)
       self.ready = true
     end)
     return nil
-  elseif commandType == "moveX" then
+  end,
+  ["moveX"] = function(self, commandTbl, commandType)
     local character = characterManager.get(commandTbl[2])
     if not character then
       logger.warn("Dialogue["..self.dirName.."@"..self.index.."]: Couldn't find character to", commandType, ", gave character ID:", commandTbl[2])
       return self:next()
     end
     local preX = character.x
-    local totalTime = commandTbl[3] / character.speedX
+    local totalTime = math.abs(commandTbl[3] / (character.speedX * (commandTbl[2] ~= "player" and 0.8 or 1)))
     character:moveX(0)
+    local previous = 0
     local tween
     tween = flux.to({}, totalTime, {})
       :onupdate(function()
-          local delta = tween.progress 
+          local current = commandTbl[3] * tween.progress 
+          local delta = current - previous
+          previous = current
           character:moveX(delta)
         end)
       :oncomplete(function()
         self.ready = true
-        -- character.x = preX + commandTbl[3]
         character:moveX(0)
       end)
     self.ready = false
     return nil
-  elseif commandType == "moveZ" then
+  end,
+  ["moveZ"] = function(self, commandTbl, commandType)
     local character = characterManager.get(commandTbl[2])
     if not character then
       logger.warn("Dialogue["..self.dirName.."@"..self.index.."]: Couldn't find character to", commandType, ", gave character ID:", commandTbl[2])
@@ -173,13 +170,88 @@ dialogue.next = function(self)
     character.zTween:oncomplete(function()
       self.ready = true
     end)
+    return nil
+  end,
+  ["freeze"] = function(self, commandTbl, commandType)
+    local character = characterManager.get(commandTbl[2])
+    if not character then
+      logger.warn("Dialogue["..self.dirName.."@"..self.index.."]: Couldn't find character to", commandType, ", gave character ID:", commandTbl[2])
+      return self:next()
+    end
+    character.canMove = false
+    character:moveX(0)
+    logger.info("Dialogue: Froze character,", commandTbl[2])
+    return self:next()
+  end,
+  ["unfreeze"] = function(self, commandTbl, commandType)
+    local character = characterManager.get(commandTbl[2])
+    if not character then
+      logger.warn("Dialogue["..self.dirName.."@"..self.index.."]: Couldn't find character to", commandType, ", gave character ID:", commandTbl[2])
+      return self:next()
+    end
+    character.canMove = true
+    character:moveX(0)
+    logger.info("Dialogue: Unfroze character,", commandTbl[2])
+    return self:next()
+  end,
+  ["addItem"] = function(self, commandTbl)
+    for _, item in ipairs(commandTbl[2]) do
+      inventory.addItem(item)
+    end
+    return self:next()
+  end,
+  ["choice"] = function(self, commandTbl)
+    self.waitForChoice = true
+    self.choice = commandTbl[2]
+    return nil
+  end,
+}
+
+dialogue.next = function(self)
+  if not self.ready or self.waitForChoice then
+    return nil
+  end
+
+  self.index = self.index + 1
+  if self.index > #self.definition then
+    self.index = #self.definition
+    self.isFinished = true
+    return nil
+  end
+  local commandTbl = self.definition[self.index]
+  if type(commandTbl) == "string" then
+    return commandTbl -- implied "text" command
+  end
+  if type(commandTbl) ~= "table" then
+    logger.warn("Hit non-string, non-table value in dialogue["..self.dirName.."@"..self.index.."]. Found type:", type(command))
+    return self:next()
+  end
+  local commandType = commandTbl[1]
+  if type(commandType) ~= "string" then
+    logger.warn("Hit non-string commandType in dialogue["..self.dirName.."@"..self.index.."]. Found type:", type(commandType))
+    return self:next()
+  end
+  local func = commandLookup[commandType]
+  if func then
+    return func(self, commandTbl, commandType)
   end
   logger.warn("Unrecognised commandType:", commandType, ", in dialogue["..self.dirName.."@"..self.index.."]")
   return self:next()
 end
 
+dialogue.makeChoice = function(self, index)
+  if not (index >= 1 and index <= #self.choice) then
+    logger.warn("Dialogue choice: Tried to pick invalid choice. Index:", index)
+    return -- invalid
+  end
+  self.waitForChoice = false
+  local tag = self.choice[index][2]
+  self.choice = nil
+  commandLookup["goto"](self, { "goto", tag, "forced" })
+end
+
 dialogue.hasFinished = function(self)
-  return self.isFinished == true and self.ready == true
+  return self.isFinished == true and self.ready == true and self.waitForChoice == false
 end
 
 dialogue.canContinue = function(self)
@@ -206,6 +278,7 @@ dialogue.reset = function(self)
   self.speaker = nil
   self.currentState = nil
   self.ready = true
+  self.waitForChoice = false
 end
 
 local dialogueManager = {
@@ -219,6 +292,7 @@ dialogueManager.parse = function(definition, dirName)
     tagLookup = { },
     currentState = nil,
     ready = true,
+    waitForChoice = false,
   }
   setmetatable(parsedDialogue, dialogue)
   parsedDialogue:reset() -- set defaults
