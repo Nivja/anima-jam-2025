@@ -121,15 +121,42 @@ scene.update = function(dt)
     love.mouse.setVisible(true)
   end
 
-  if input.baton:pressed("interact") then
-    local consumed, object = worldManager.interact(scene.playerChar.x, scene.playerChar.z)
-    if consumed then
-      -- logger.info("INTERACTION SUCCESSFUL:", object.name)
-      return -- so we don't double trigger any interaction within worldManager.Update
+  local inputConsumed = questManager.update(dt, scene.scale, scene.gamepadActive)
+
+  if not inputConsumed then
+    if scene.playerChar.canMove and input.baton:pressed("interact") then
+      local range = 2.5
+      if not questManager.activeQuestScene then
+        for _, character in pairs(characterManager.characters) do
+          if character ~= scene.playerChar and character.world == scene.playerChar.world then
+            if math.abs(character.z - scene.playerChar.z) < 0.1 then
+              if (scene.playerChar.flip and character.x >= scene.playerChar.x and character.x < scene.playerChar.x + range) or
+                (not scene.playerChar.flip and character.x <= scene.playerChar.x and character.x > scene.playerChar.x - range) then
+                for _, quest in pairs(questManager.active) do
+                  if quest.npc == character.dirName and quest.dialogue:canContinue() then
+                    quest.dialogue:continue()
+                    questManager.activeQuestScene = quest
+                    inputConsumed = true
+                    break
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
     end
   end
 
-  questManager.update(dt, scene.scale, scene.gamepadActive)
+  if not inputConsumed then
+    if input.baton:pressed("interact") then
+      local consumed, object = worldManager.interact(scene.playerChar.x, scene.playerChar.z)
+      if consumed then
+        -- logger.info("INTERACTION SUCCESSFUL:", object.name)
+        return -- so we don't double trigger any interaction within worldManager.Update
+      end
+    end
+  end
 
   worldManager.update(dt, scene.scale, scene.gamepadActive)
 end

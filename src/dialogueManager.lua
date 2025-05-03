@@ -47,6 +47,9 @@ local commandLookup = {
     local newIndex = self.tagLookup[tostring(gt)]
     if newIndex then
       self.index = newIndex -- this jumps straight to the next commandTbl; ignoring the tag index
+      if commandTbl[3] == "forced" then
+        return nil
+      end
       return self:next()
     end
     logger.warn("Dialogue["..self.dirName.."@"..self.index.."] could not find tag:", tostring(gt))
@@ -205,6 +208,10 @@ local commandLookup = {
     self.choice = commandTbl[2]
     return nil
   end,
+  ["print"] = function(self, commandTbl)
+    print(commandTbl[2])
+    return self:next()
+  end
 }
 
 dialogue.next = function(self)

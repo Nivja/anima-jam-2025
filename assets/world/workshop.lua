@@ -16,9 +16,11 @@ questManager.unlockQuest("quest_1")
 
 world.update = function(dt, _, _)
   if player.x >= 4 then
+    -- player.x = 4
     local _, questState = questManager.get("quest_1")
     if questState == "unlocked" then
       questManager.activateQuest("quest_1", true)
+      player:moveX(0)
     end
   end
 end

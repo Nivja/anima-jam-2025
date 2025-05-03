@@ -178,6 +178,7 @@ local inside = false
 
 local checkTime = 0.2 -- How often to check
 questManager.update = function(dt, scale, isGamepadActive)
+  local consumedInput = false
 
   if flip then
     progress = progress + dt * 2
@@ -227,8 +228,10 @@ questManager.update = function(dt, scale, isGamepadActive)
       if input.baton:pressed("accept") then
         if not box:is_finished() then
           questManager.skipText()
+          consumedInput = true
         elseif box:is_finished() and box.waitforinput then
           questManager.box:continue()
+          consumedInput = true
         end
       end
     else
@@ -256,6 +259,7 @@ questManager.update = function(dt, scale, isGamepadActive)
 
         if choiceIndex ~= nil and input.baton:pressed("accept") then
           quest.dialogue:makeChoice(choiceIndex)
+          consumedInput = true
         end
       elseif not isGamepadActive then
         local w, _ = lg.getDimensions()
@@ -293,12 +297,19 @@ questManager.update = function(dt, scale, isGamepadActive)
 
         if choiceIndex ~= nil and input.baton:pressed("accept") then
           quest.dialogue:makeChoice(choiceIndex)
+          consumedInput = true
+          if inside then
+            cursor.switch("arrow")
+            inside = false
+          end
         end
       end
     end
   end
 
   questManager.box:update(dt)
+
+  return consumedInput
 end
 
 questManager.drawUI = function(scale)

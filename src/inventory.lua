@@ -6,6 +6,18 @@ local inventory = {
 }
 inventory.__index = inventory
 
+local inventoryItem = { }
+inventoryItem.__index = inventoryItem
+
+inventoryItem.hasTag = function(self, lookForTag)
+  for _, tag in ipairs(self.tags) do
+    if tag == lookForTag then
+      return true
+    end
+  end
+  return false
+end
+
 inventory.get = function(id)
   if id == "lastAdded" then
     return inventory.lastAddedItem
@@ -18,6 +30,9 @@ inventory.addItem = function(item)
     logger.warn("Tried to add nil item")
     return
   end
+
+  setmetatable(item, inventoryItem)
+
   table.insert(inventory.items, item)
   if item.id then
     inventory.lookup[item.id] = item
