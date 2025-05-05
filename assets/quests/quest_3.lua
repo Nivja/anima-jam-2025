@@ -2,7 +2,7 @@ return {
   title = "Quest 2",
   npc = "sami",
   unlock = {
-    "quest_3",
+    "quest_4",
   },
   dialogue = { --todo programmer pass
     { "setCharacter", "player" },

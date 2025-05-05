@@ -11,6 +11,7 @@ slice.texture:setFilter("nearest")
 local requestBoard = {
   name = "request board",
   show = false,
+  world = "town",
 }
 
 table.insert(require("src.worldManager").interactable, requestBoard)
@@ -46,15 +47,15 @@ requestBoard.set = function(x, z, interactX, interactZ)
 end
 
 requestBoard.draw = function(playerX, playerZ)
-  if requestBoard.interactX - xRange < playerX and requestBoard.interactX + xRange > playerX and requestBoard.interactZ - 1 <= playerZ then
+  if not requestBoard.show and requestBoard.interactX - xRange < playerX and requestBoard.interactX + xRange > playerX and requestBoard.interactZ - 1 <= playerZ then
     if math.abs(playerZ - requestBoard.interactZ) < 0.1 then
       lg.setColor(0,0,0,1)
     else
       lg.setColor(.2,.2,.2,.7)
     end
     interactSign:draw()
+    lg.setColor(1,1,1,1)
   end
-  lg.setColor(1,1,1,1)
 end
 
 local closeButton = lg.newImage("assets/UI/checkbox_grey_cross.png")

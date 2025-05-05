@@ -9,12 +9,17 @@ return {
   dialogue = {
     { "freeze", "player" },
     { "setState", "state_intro"},
+    { "addItem", { -- starting items
+      { name = "Childish Fabric", tags = { "fabric", "use.patch", "patch.silly" }, },
+      { name = "Neutral Fabric", tags = { "fabric", "use.patch", "patch.neutral" }, },
+      { name = "Fancy Fabric", tags = { "fabric", "use.patch", "patch.fancy" }, },
+    } },
     { "tag", "state_intro" },
     { "setQuestNPC", "zyla" },
     { "setObjective", "Listen to Zyla's request" },
     { "teleportToDoor", "zyla", "town-workshop", "town" },
     { "useDoor", "zyla", "town-workshop" },
-    { "moveX", "zyla", -2 },
+    { "moveX", "zyla", -3 },
     { "setCharacter", "zyla" },
     "Good morning, I am here to see Rosetta. Is she around? I need my dress repaired.",
     { "setCharacter", "player" },
@@ -28,35 +33,28 @@ return {
     { "tag", "option_one" },
     { "setObjective", "Find fabric to use" },
     { "addItem", {
-    -- Add items to be found
-      -- { name = "Childish Fabric", tags = { "fabric", "use-patch" }, patchType = "silly", },
-      -- { name = "Neutral Fabric", tags = { "fabric", "use-patch" }, patchType = "neutral", },
-      -- { name = "Fancy Fabric", tags = { "fabric", "use-patch" }, patchType = "fancy", },
-      { -- todo
+      {
         name = "Zyla's Dress",
         id = "zyla_dress",
+        tags = { "clothing", "dress", "fabric.fancy" },
         issue = { {
           --[[ issue details for minigame... ]]
         } },
-        tags = { "clothing", "dress", "fancy" },
-        --[[ item details... ]]
       },
     } },
+    { "setCharacter", nil },
+    "[b][bounce=5]Added Item to Inventory[/bounce][/b][newline][newline][blink=2]Zyla's Dress[/blink]",
     { "unfreeze", "player" },
-    -- todo check if items are in player's inventory; then allow to continue
     { "setState", "patch_time" },
+    { "setObjective", "Patch Zyla's Dress" },
+    { "highlight", "interact.patch" }, -- todo highlight patch machine
     { "end" },
     { "tag", "patch_time" },
-    { "setObjective", "Patch Zyla's Dress" },
-    -- { "setState", "state_option_one"}, -- State is persistent if the conversation ends; it will return to the tagged point
-    -- { "inspectItem", "lastAdded" }, -- Makes item pop up on user's screen - might be scoped out
-    -- { "minigame", "patch", "zyla_dress" }, -- 3rd arg is optionally, skip inventory screen to given item  (lastAdded being a keyword)
-    { "tag", "state_option_one" },
-    { "if", "item", "zyla_dress", "hasTag", "patched.silly", "silly_design" }, -- So the patching minigame would add the "patched.<patchType>" tag to the dress
-    { "if", "item", "zyla_dress", "hasTag", "patched.neutral", "neutral_design" },
-    { "if", "item", "zyla_dress", "hasTag", "patched.fancy", "fancy_design" },
+    { "if", "item", "zyla_dress", "hasTag", "patch.silly", "silly_design" }, -- So the patching minigame would add the "patched.<patchType>" tag to the dress
+    { "if", "item", "zyla_dress", "hasTag", "patch.neutral", "neutral_design" },
+    { "if", "item", "zyla_dress", "hasTag", "patch.fancy", "fancy_design" },
     { "tag", "not_finished" },
-    { "setCharacter", "zyla" }, -- Shouldn't reach this point, i.e. if the dress has none of those above tags; but we handle it by ending the conversion
+    { "setCharacter", "zyla" },
     "Have you finished my dress?",
     { "end" },
     { "tag", "silly_design" },

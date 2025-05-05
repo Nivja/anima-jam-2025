@@ -13,7 +13,7 @@ lg.push("all")
   lg.translate(cw/2-(font:getWidth(str)/2), 0)
   lg.print(str, font)
   local t = lg.newImage("assets/UI/input/pc/keyboard_space_icon_outline.png")
-  x = font:getWidth("Press ")
+  local x = font:getWidth("Press ")
   local w = font:getWidth(" ")
   x = x
   lg.draw(t, x, 0, 0, 2)

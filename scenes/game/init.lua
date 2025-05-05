@@ -49,6 +49,9 @@ scene.load = function(gpMode, musicRef)
 
   questManager.unlockQuest("test")
 
+  -- fade in to scene
+  worldManager.doorTransition.radius = 1
+  flux.to(worldManager.doorTransition, 1, { radius = 0 })
 end
 
 scene.unload = function()
@@ -133,7 +136,6 @@ scene.update = function(dt)
           (not scene.playerChar.flip and character.x <= scene.playerChar.x and character.x > scene.playerChar.x - range)) then
         for _, quest in pairs(questManager.active) do
           if quest.npc == character.dirName and quest.dialogue:canContinue() then
-            print("hit")
             quest.dialogue:continue()
             questManager.activeQuestScene = quest
             inputConsumed = true
@@ -146,7 +148,7 @@ scene.update = function(dt)
 
   if not inputConsumed then
     if input.baton:pressed("interact") then
-      local consumed, object = worldManager.interact(scene.playerChar.x, scene.playerChar.z)
+      local consumed, object = worldManager.interact(scene.playerChar.x, scene.playerChar.z, scene.playerChar.world or "town")
       if consumed then
         -- logger.info("INTERACTION SUCCESSFUL:", object.name)
         return -- so we don't double trigger any interaction within worldManager.Update

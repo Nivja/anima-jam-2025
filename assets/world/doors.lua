@@ -4,5 +4,5 @@ local worldManager = require("src.worldManager")
 
 worldManager.newDoor("town-workshop", -- id unique; not checked
                      "town", { 0, 6 }, { 0, 5 },
-                     "workshop", { 10, 4, math.rad(90) }, { 10, 4, false })
+                     "workshop", { 10, 4.5, math.rad(90) }, { 10, 4.5, false })
 

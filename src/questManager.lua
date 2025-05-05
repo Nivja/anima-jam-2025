@@ -321,6 +321,9 @@ questManager.drawUI = function(scale)
   lg.push("all")
   if speaker then
     local text = lang.getText("speaker."..speaker)
+    if text == "speaker."..speaker then
+      text = speaker
+    end
     if text then
       local font = ui.getFont(24, "fonts.regular.bold", scale)
       lg.push()

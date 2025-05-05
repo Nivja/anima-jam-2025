@@ -107,9 +107,9 @@ worldManager.checkForDoor = function(character, axis)
   end
 end
 
-worldManager.interact = function(playerX, playerZ)
+worldManager.interact = function(playerX, playerZ, playerWorld)
   for _, object in ipairs(worldManager.interactable) do
-    if object:interact(playerX, playerZ) then
+    if object.world == playerWorld and object:interact(playerX, playerZ) then
       return true, object -- event consumed
     end
   end
