@@ -48,7 +48,6 @@ return {
     { "end" },
     { "tag", "patch_time" },
     { "setObjective", "Patch Zyla's Dress" },
-    
     -- { "setState", "state_option_one"}, -- State is persistent if the conversation ends; it will return to the tagged point
     -- { "inspectItem", "lastAdded" }, -- Makes item pop up on user's screen - might be scoped out
     -- { "minigame", "patch", "zyla_dress" }, -- 3rd arg is optionally, skip inventory screen to given item  (lastAdded being a keyword)

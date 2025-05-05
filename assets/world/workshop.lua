@@ -4,6 +4,8 @@ local questManager = require("src.questManager")
 local world = {
   min = 0,
   max =  10,
+  clearColor = { 44/255, 50/255, 82/255, 1, },
+  musicKey = nil
 }
 
 local player = characterManager.get("player")

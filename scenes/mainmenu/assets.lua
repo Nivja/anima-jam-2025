@@ -5,4 +5,7 @@ return {
 -- audios
   "audio.ui.select",
   "audio.ui.click",
+
+  "audio.music.menu",
+  "audio.music.town",
 }

@@ -90,6 +90,10 @@ audioManager.play = function(assetKey)
     local s = audioInfo[love.math.random(1, #audioInfo)]
     s.asset:play()
     s.asset = s.asset:clone()
+  elseif audioInfo.audioType == "music" then
+    local s = audioInfo[1]
+    s.asset:play()
+    return s.asset
   else
     logger.error("Add", audioInfo.audioType, "audioType to audiomanager.play")
     return audioInfo[1]

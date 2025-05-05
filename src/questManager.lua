@@ -349,7 +349,7 @@ questManager.drawUI = function(scale)
     if box:is_finished() and box.waitforinput then
       lg.push()
       lg.translate(bw/2, bh+(10*scale)+(progress*3*scale))
-      if not questManager.activeQuestScene.dialogue.waitForChoice then
+      if questManager.activeQuestScene and not questManager.activeQuestScene.dialogue.waitForChoice then
         lg.setColor(.1,.1,.1,1)
         lg.rotate(math.rad(90))
         lg.circle("fill", 0, 0, 10*scale, 3)

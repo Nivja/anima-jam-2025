@@ -1,5 +1,6 @@
 local lfs, lg = love.filesystem, love.graphics
 
+local audioManager = require("util.audioManager")
 local logger = require("util.logger")
 local flux = require("libs.flux")
 
@@ -260,13 +261,69 @@ character.setFlip = function(self, flipped)
   return self
 end
 
+
+local worldMusicRef, newMusicRef, newMusicTween, oldMusicRef, oldMusicTween
 character.setWorld = function(self, world, x, z, flipped)
+  local oldWorld = self.world
   self.world = world
   local min, max = require("src.worldManager").getWorldLimit(self.world)
   if x == min then x = x + 1 end
   if x == max then x = x - 1 end
   self.x, self.z = x, z
   self:setFlip(flipped)
+
+  if oldWorld ~= self.world then
+    if self.dirName == "player" then
+      if newMusicRef then -- fast switching world handling
+        newMusicTween:stop()
+        worldMusicRef = newMusicRef
+        newMusicRef = nil
+      end
+      if oldMusicRef then
+        oldMusicTween._oncomplete()
+        oldMusicTween:stop()
+      end
+
+      if worldMusicRef then
+        oldMusicRef = worldMusicRef
+        -- fade out
+        local startingVolume = oldMusicRef:getVolume()
+        oldMusicTween = flux.to({ }, 1, { }):ease("linear")
+          :onupdate(function()
+            oldMusicRef:setVolume(startingVolume * ( 1 - oldMusicTween.progress))
+          end)
+          :oncomplete(function()
+            oldMusicRef:stop()
+            oldMusicRef:seek(0)
+            print("stopped old music")
+            oldMusicRef:setVolume(startingVolume)
+            oldMusicRef = nil
+          end)
+      end
+
+      local newMusicKey = require("src.worldManager").get(self.world).musicKey
+      if newMusicKey then
+        -- fade in
+        newMusicRef = audioManager.play(newMusicKey)
+
+        local startingVolume = newMusicRef:getVolume()
+        newMusicRef:setVolume(0)
+        print("Set to 0")
+        newMusicTween = flux.to({ }, 1, { }):ease("linear")
+        :onupdate(function()
+          newMusicRef:setVolume(startingVolume * newMusicTween.progress)
+        end)
+        :oncomplete(function()
+          worldMusicRef = newMusicRef
+          newMusicRef = nil
+          audioManager.setVolumeAll() -- todo what if this breaks other eases?
+        end)
+      else
+        worldMusicRef = nil
+      end
+    end
+  end
+
   return self
 end
 

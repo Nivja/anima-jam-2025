@@ -22,17 +22,33 @@ scene.preload = function()
   settingsMenu.preload()
 end
 
+local musicRef
 scene.load = function()
   suit:gamepadMode(true)
   cursor.setType(settings.client.systemCursor and "system" or "custom")
 
   scene.menu = "prompt"
   settingsMenu.load()
+
+  musicRef = audioManager.play("audio.music.menu")
 end
 
 scene.unload = function()
   cursor.switch(nil)
   settingsMenu.unload()
+
+  local startingVolume = musicRef:getVolume()
+  local tweenRef
+  tweenRef = flux.to({ }, 2, { })
+    :ease("linear")
+    :onupdate(function()
+      musicRef:setVolume(startingVolume * (1- tweenRef.progress))
+    end)
+    :oncomplete(function()
+      musicRef:stop()
+      musicRef:seek(0)
+      musicRef:setVolume(startingVolume)
+    end)
 end
 
 scene.langchanged = function()
@@ -251,7 +267,7 @@ scene.updateui = function()
 end
 
 scene.draw = function()
-  lg.clear(25/255, 5/255, 50/255)
+  lg.clear(201/255, 118/255, 34/255)
   if scene.menu == "prompt" then
     local windowW, windowH = lg.getDimensions()
     local offset = windowH/10

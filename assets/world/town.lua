@@ -3,6 +3,8 @@ local characterManager = require("src.characterManager")
 local world = {
   min = -10,
   max =  10,
+  clearColor = { .5, 1, 1, 1, },
+  musicKey = "audio.music.town",
 }
 
 local child = characterManager.get("child")

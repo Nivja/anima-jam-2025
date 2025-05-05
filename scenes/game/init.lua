@@ -123,25 +123,18 @@ scene.update = function(dt)
 
   local inputConsumed = questManager.update(dt, scene.scale, scene.gamepadActive)
 
-  if not inputConsumed then
-    if scene.playerChar.canMove and input.baton:pressed("interact") then
-      local range = 2.5
-      if not questManager.activeQuestScene then
-        for _, character in pairs(characterManager.characters) do
-          if character ~= scene.playerChar and character.world == scene.playerChar.world then
-            if math.abs(character.z - scene.playerChar.z) < 0.1 then
-              if (scene.playerChar.flip and character.x >= scene.playerChar.x and character.x < scene.playerChar.x + range) or
-                (not scene.playerChar.flip and character.x <= scene.playerChar.x and character.x > scene.playerChar.x - range) then
-                for _, quest in pairs(questManager.active) do
-                  if quest.npc == character.dirName and quest.dialogue:canContinue() then
-                    quest.dialogue:continue()
-                    questManager.activeQuestScene = quest
-                    inputConsumed = true
-                    break
-                  end
-                end
-              end
-            end
+  if not inputConsumed and scene.playerChar.canMove and input.baton:pressed("interact") and not questManager.activeQuestScene then
+    local range = 2.5
+    for _, character in pairs(characterManager.characters) do
+      if character ~= scene.playerChar and character.world == scene.playerChar.world and math.abs(character.z - scene.playerChar.z) < 0.1 and
+          ((scene.playerChar.flip and character.x >= scene.playerChar.x and character.x < scene.playerChar.x + range) or
+          (not scene.playerChar.flip and character.x <= scene.playerChar.x and character.x > scene.playerChar.x - range)) then
+        for _, quest in pairs(questManager.active) do
+          if quest.npc == character.dirName and quest.dialogue:canContinue() then
+            quest.dialogue:continue()
+            questManager.activeQuestScene = quest
+            inputConsumed = true
+            break
           end
         end
       end
@@ -162,15 +155,17 @@ scene.update = function(dt)
 end
 
 scene.draw = function()
-  lg.clear(.5, 1, 1, 1)
+  local playerWorld = scene.playerChar.world or "town"
+
+  lg.clear(worldManager.get(playerWorld).clearColor or { 0, 0, 0, 1, })
   lg.origin()
   -- World
   lg.push("all")
-  worldManager.draw(scene.playerChar.world or "town")
+  worldManager.draw(playerWorld)
   lg.pop()
   -- UI
   lg.push("all")
-  worldManager.drawUI(scene.playerChar.world or "town", scene.scale)
+  worldManager.drawUI(playerWorld, scene.scale)
   questManager.drawUI(scene.scale)
   lg.pop()
 end

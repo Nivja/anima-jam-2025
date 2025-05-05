@@ -22,6 +22,10 @@ local makePixelAnimation = function(image, frameCount, frameWidth, frameHeight, 
   return animation
 end
 
+local loopSource = function(source)
+  source:setLooping(true)
+end
+
 return {
 -- Audio
   -- sourceType = "static"/"stream"
@@ -29,7 +33,11 @@ return {
   { path = "audio/ui/rollover5.ogg", name = "audio.ui.select.2", sourceType = "static", audioType = "ui", key = "audio.ui.select", volume = .5 },
   { path = "audio/ui/click4.ogg", name = "audio.ui.click.1", sourceType = "static", audioType = "ui", key = "audio.ui.click", volume = 2.0 },
   { path = "audio/ui/click5.ogg", name = "audio.ui.click.2", sourceType = "static", audioType = "ui", key = "audio.ui.click", volume = 2.0 },
--- Fonts
+
+  { path = "audio/music/Solarpunk_Menu_Loop.wav", name = "audio.music.menu", sourceType = "stream", audioType = "music", volume = 1.0, onLoad = loopSource },
+  { path = "audio/music/SolarPunk Jam Outside_Loop_V1.wav", name = "audio.music.town", sourceType = "stream", audioType = "music", volume = 1.0, onLoad = loopSource },
+
+  -- Fonts
   { path = "fonts/Roboto_Mono/RobotoMono-Light.ttf",            name = "fonts.light" },
   { path = "fonts/Roboto_Mono/RobotoMono-LightItalic.ttf",      name = "fonts.light.italic" },
 

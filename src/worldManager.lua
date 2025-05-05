@@ -55,6 +55,10 @@ worldManager.load = function(dir)
     world.draw = w.draw
     world.drawFloor = w.drawFloor
     world.drawUI = w.drawUI
+
+    world.clearColor = w.clearColor
+
+    world.musicKey = w.musicKey
   end
 
   -- load doors
