@@ -133,6 +133,7 @@ scene.update = function(dt)
           (not scene.playerChar.flip and character.x <= scene.playerChar.x and character.x > scene.playerChar.x - range)) then
         for _, quest in pairs(questManager.active) do
           if quest.npc == character.dirName and quest.dialogue:canContinue() then
+            print("hit")
             quest.dialogue:continue()
             questManager.activeQuestScene = quest
             inputConsumed = true

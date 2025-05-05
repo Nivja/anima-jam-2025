@@ -3,7 +3,6 @@ local lg = love.graphics
 local cursor = require("util.cursor")
 local input = require("util.input")
 
-local createPlaneForQuad = require("src.createPlaneForQuad")
 local questManager = require("src.questManager")
 
 local slice = require("ui.nineSlice").new("assets/UI/panel_brown_corners_a.png", 57, 70, 57, 70)
@@ -38,40 +37,13 @@ requestBoard.interact = function(_, x, z)
   return false
 end
 
-local cw, ch = 2*500, 0.25*500
-
-local interactSign
+local interactSign = require("src.interactSign")()
 requestBoard.set = function(x, z, interactX, interactZ)
-  interactSign:setTranslation(x or 0, 2.1 + (ch/1000), z or 0)
+  interactSign:setTranslation(x or 0, 2.1 + (0.25*500/1000), z or 0)
 
   requestBoard.interactX = interactX or x or 0
   requestBoard.interactZ = interactZ or z or 0
 end
-
-local signCanvas = lg.newCanvas(cw, ch)
-lg.push("all")
-  lg.setCanvas(signCanvas)
-  lg.clear(0,0,0,0)
-  local font = require("util.ui").getFont(100, "fonts.regular.bold", 1)
-  lg.setColor(1,1,1,1)
-  local str = "Press   /  /  "
-  lg.translate(cw/2-(font:getWidth(str)/2), 0)
-  lg.print(str, font)
-  local t = lg.newImage("assets/UI/input/pc/keyboard_space_icon_outline.png")
-  x = font:getWidth("Press ")
-  local w = font:getWidth(" ")
-  x = x
-  lg.draw(t, x, 0, 0, 2)
-  local t = lg.newImage("assets/UI/input/pc/keyboard_return_outline.png")
-  x = x + w * 3
-  lg.draw(t, x, 0, 0, 2)
-  local t = lg.newImage("assets/UI/input/steamdeck/steamdeck_button_a_outline.png")
-  x = x + w * 3
-  lg.draw(t, x, 0, 0, 2)
-  t = nil
-lg.pop()
-
-interactSign = createPlaneForQuad(0, 0, cw, ch, signCanvas)
 
 requestBoard.draw = function(playerX, playerZ)
   if requestBoard.interactX - xRange < playerX and requestBoard.interactX + xRange > playerX and requestBoard.interactZ - 1 <= playerZ then

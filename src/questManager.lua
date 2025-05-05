@@ -171,6 +171,7 @@ end
 questManager.clearText = function()
   local box = questManager.box
   box:send("")
+  box.__ogText = nil
   speaker = nil
 end
 
@@ -198,9 +199,8 @@ questManager.update = function(dt, scale, isGamepadActive)
     for _, quest in pairs(questManager.active) do
       if quest.repeatCheck and love.timer.getTime() - quest.lastCheck > checkTime then
         if quest.dialogue:canContinue() then
-          local text = quest.dialogue:next()
           print("TODO quest Manager repeat check")
-          -- send to dialogue system; but handle rest elsewhere
+          quest.dialogue:continue()
           questManager.activeQuestScene = quest
           break
         end
@@ -269,7 +269,7 @@ questManager.update = function(dt, scale, isGamepadActive)
         local choiceFont = ui.getFont(18, "fonts.regular", scale)
         local choiceFontHeight = choiceFont:getHeight()
 
-        local y = box.get.height+100*scale
+        local y = box.get.height+80*scale
         y = y + font:getHeight()+10*scale
 
         local found = false
@@ -362,7 +362,7 @@ questManager.drawUI = function(scale)
   if questManager.activeQuestScene then
     local quest = questManager.activeQuestScene
     if quest.dialogue.waitForChoice then
-      lg.translate(0, bh+100*scale)
+      lg.translate(0, bh+80*scale)
       local text = "Reply"
       local font = ui.getFont(24, "fonts.regular.bold", scale)
       local choiceFont = ui.getFont(18, "fonts.regular", scale)
