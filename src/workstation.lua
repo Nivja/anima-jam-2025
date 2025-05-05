@@ -48,14 +48,48 @@ local baseQuadRight = lg.newQuad(bw-1,0, 1,bh, base)
 local spriteSheet = lg.newImage("assets/UI/workstation_base_ss.png")
 -- spriteSheet:setFilter("nearest")
 local closeQuad = lg.newQuad(3179, 395, 40, 110, spriteSheet)
+local doorLeft = lg.newQuad(1491, 466, 136, 515, spriteSheet)
+local doorRight = lg.newQuad(1639, 466, 69, 515, spriteSheet)
+local doorBackground = lg.newQuad(1216, 462, 212, 530, spriteSheet)
+local leaves = lg.newQuad(926, 695, 236, 273, spriteSheet)
 
 local isDraggingCloseButton, closeDragOffset, closeDragOffsetY, closeInside = false, 0, 0, false
-local closeTimer, closeTimeMax = 0, 2.5
+local closeTimer, closeTimeMax, closeMouseTimer = 0, 2.5, 0
+local leavesX, leavesY, leavesFlipX, leavesFlipY = 0, 0, true, false
 workstation.update = function(dt, scale, isGamepadActive)
   local inputConsumed = false
 
   if not workstation.show then
     return inputConsumed
+  end
+
+  do -- leaves animation
+    if leavesFlipX then
+      leavesX = leavesX + 1.5 * dt
+      if leavesX >= 3 then
+        leavesX = 3
+        leavesFlipX = false
+      end
+    else
+      leavesX = leavesX - 1.5 * dt
+      if leavesX <= -3 then
+        leavesX = -3
+        leavesFlipX = true
+      end
+    end
+    if leavesFlipY then
+      leavesY = leavesY + 0.3 * dt
+      if leavesY >= 3 then
+        leavesY = 3
+        leavesFlipY = false
+      end
+    else
+      leavesY = leavesY - 0.4 * dt
+      if leavesY <= -1 then
+        leavesY = -1
+        leavesFlipY = true
+      end
+    end
   end
 
   local tw, th = lg.getDimensions()
@@ -102,13 +136,17 @@ workstation.update = function(dt, scale, isGamepadActive)
       closeDragOffsetY = 0
     end
     if closeDragOffset >= 456 then
-      closeDragOffset = 0
-      closeDragOffsetY = 0
-      workstation.show = false
-      canMovePlayer(true)
-      if closeInside then
-        cursor.switch("arrow")
-        closeInside = false
+      closeMouseTimer = closeMouseTimer + dt
+      if closeMouseTimer >= 0.3 then
+        closeMouseTimer = 0
+        closeDragOffset = 0
+        closeDragOffsetY = 0
+        workstation.show = false
+        canMovePlayer(true)
+        if closeInside then
+          cursor.switch("arrow")
+          closeInside = false
+        end
       end
     end
   end
@@ -189,9 +227,20 @@ workstation.drawUI = function(scale)
     lg.setColor(1,1,1,1)
     lg.translate(translateX, 0)
     lg.scale(textureScale)
+
+    lg.setColorMask(false)
     lg.setStencilState("replace", "always", 1)
-    lg.draw(base)
+    lg.rectangle("fill", 0,0, bw, bh)
     lg.setStencilState("keep", "greater", 0)
+    lg.setColorMask(true)
+
+    lg.draw(spriteSheet, doorBackground, 146, 452)
+    lg.draw(spriteSheet, doorLeft, 151, 466)
+    lg.draw(spriteSheet, doorRight, 285, 466)
+
+    lg.draw(base)
+
+    lg.draw(spriteSheet, leaves, 19 + leavesX * scale, 811 + leavesY * scale)
 
     -- Taken from flux#L22; sine out easing
     local p = 0

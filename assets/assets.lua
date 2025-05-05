@@ -24,6 +24,7 @@ end
 
 local loopSource = function(source)
   source:setLooping(true)
+  return source
 end
 
 return {
@@ -37,6 +38,7 @@ return {
   { path = "audio/music/Solarpunk_Menu_Loop.wav", name = "audio.music.menu", sourceType = "stream", audioType = "music", volume = 1.0, onLoad = loopSource },
   { path = "audio/music/SolarPunk Jam Outside_Loop_V1.wav", name = "audio.music.town", sourceType = "stream", audioType = "music", volume = 1.0, onLoad = loopSource },
   { path = "audio/music/Solarpunk_Workshop_V1.wav", name = "audio.music.workshop", sourceType = "stream", audioType = "music", volume = 1.0, onLoad = loopSource },
+  { path = "audio/music/SolarPunk Mini-Game_Draft_1.mp3", name = "audio.music.minigame", sourceType = "stream", audioType = "music", volume = 1.0, onLoad = loopSource },
 
   -- Fonts
   { path = "fonts/Roboto_Mono/RobotoMono-Light.ttf",            name = "fonts.light" },

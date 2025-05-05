@@ -261,11 +261,65 @@ character.setFlip = function(self, flipped)
   return self
 end
 
-
 local worldMusicRef, newMusicRef, newMusicTween, oldMusicRef, oldMusicTween
 
 character.setMusicRef = function(ref)
   worldMusicRef = ref
+end
+
+local swapMusic = function(newMusicKey)
+  if newMusicKey then
+    local audioInfo = audioManager.audio[newMusicKey]
+    local source = audioInfo[1].asset
+    if audioInfo and (source == worldMusicRef or (newMusicKey and source == newMusicKey)) then
+      return -- already playing
+    end
+  end
+
+  if newMusicRef then -- fast switching handling
+    newMusicTween:stop()
+    worldMusicRef = newMusicRef
+    newMusicRef = nil
+  end
+  if oldMusicRef then
+    oldMusicTween._oncomplete()
+    oldMusicTween:stop()
+  end
+
+  if worldMusicRef then
+    oldMusicRef = worldMusicRef
+    -- fade out
+    local startingVolume = oldMusicRef:getVolume()
+    oldMusicTween = flux.to({ }, 1, { }):ease("linear")
+      :onupdate(function()
+        oldMusicRef:setVolume(startingVolume * ( 1 - oldMusicTween.progress))
+      end)
+      :oncomplete(function()
+        oldMusicRef:stop()
+        oldMusicRef:seek(0) -- should it seek?
+        oldMusicRef:setVolume(startingVolume)
+        oldMusicRef = nil
+      end)
+  end
+
+  if newMusicKey then
+    -- fade in
+    newMusicRef = audioManager.play(newMusicKey)
+
+    local startingVolume = newMusicRef:getVolume()
+    newMusicRef:setVolume(0)
+    newMusicTween = flux.to({ }, 1, { }):ease("linear")
+      :onupdate(function()
+        newMusicRef:setVolume(startingVolume * newMusicTween.progress)
+      end)
+      :oncomplete(function()
+        worldMusicRef = newMusicRef
+        newMusicRef = nil
+        audioManager.setVolumeAll() -- todo what if this breaks other eases?
+      end)
+  else
+    worldMusicRef = nil
+  end
 end
 
 character.setWorld = function(self, world, x, z, flipped)
@@ -277,62 +331,35 @@ character.setWorld = function(self, world, x, z, flipped)
   self.x, self.z = x, z
   self:setFlip(flipped)
 
-  if oldWorld ~= self.world then
-    if self.dirName == "player" then
-      if newMusicRef then -- fast switching world handling
-        newMusicTween:stop()
-        worldMusicRef = newMusicRef
-        newMusicRef = nil
-      end
-      if oldMusicRef then
-        oldMusicTween._oncomplete()
-        oldMusicTween:stop()
-      end
-
-      if worldMusicRef then
-        oldMusicRef = worldMusicRef
-        -- fade out
-        local startingVolume = oldMusicRef:getVolume()
-        oldMusicTween = flux.to({ }, 1, { }):ease("linear")
-          :onupdate(function()
-            oldMusicRef:setVolume(startingVolume * ( 1 - oldMusicTween.progress))
-          end)
-          :oncomplete(function()
-            oldMusicRef:stop()
-            oldMusicRef:seek(0) -- should it seek?
-            oldMusicRef:setVolume(startingVolume)
-            oldMusicRef = nil
-          end)
-      end
-
-      local newMusicKey = require("src.worldManager").get(self.world).musicKey
-      if newMusicKey then
-        -- fade in
-        newMusicRef = audioManager.play(newMusicKey)
-
-        local startingVolume = newMusicRef:getVolume()
-        newMusicRef:setVolume(0)
-        newMusicTween = flux.to({ }, 1, { }):ease("linear")
-          :onupdate(function()
-            newMusicRef:setVolume(startingVolume * newMusicTween.progress)
-          end)
-          :oncomplete(function()
-            worldMusicRef = newMusicRef
-            newMusicRef = nil
-            audioManager.setVolumeAll() -- todo what if this breaks other eases?
-          end)
-      else
-        worldMusicRef = nil
-      end
-    end
+  if oldWorld ~= self.world and self.dirName == "player" then
+    local w = require("src.worldManager").get(self.world)
+    local newMusicKey = w and w.musicKey or nil
+    swapMusic(newMusicKey)
   end
 
   return self
 end
 
+local isPlayingWorkstation = false
 character.update = function(self, dt)
   -- self.root.y = self.root.y + dt
   -- self.root.scale = self.root.scale + dt * 0.5
+  if self.dirName == "player" then
+    local workstation = require("src.workstation")
+    if not isPlayingWorkstation then
+      if workstation.show then
+        isPlayingWorkstation = true
+        swapMusic("audio.music.minigame")
+      end
+    else
+      if not workstation.show then
+        isPlayingWorkstation = false
+        local w = require("src.worldManager").get("workshop")
+        local newMusicKey = w and w.musicKey or nil
+        swapMusic(newMusicKey)
+      end
+    end
+  end
 end
 
 local collectDrawItems

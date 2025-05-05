@@ -1,3 +1,5 @@
+local logger = require("util.logger")
+
 local characterManager = require("src.characterManager")
 local questManager = require("src.questManager")
 
@@ -12,7 +14,7 @@ local player = characterManager.get("player")
 player:setHome("workshop", 4, 4.5, true)
   :teleportHome()
 
-questManager.unlockQuest("quest_1")
+-- questManager.unlockQuest("quest_1")
 
 ------------------------------------
 
