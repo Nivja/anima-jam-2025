@@ -272,7 +272,7 @@ local swapMusic = function(newMusicKey)
     local audioInfo = audioManager.audio[newMusicKey]
     local source = audioInfo[1].asset
     if audioInfo and (source == worldMusicRef or (newMusicKey and source == newMusicKey)) then
-      return -- already playing
+      -- return -- already playing
     end
   end
 

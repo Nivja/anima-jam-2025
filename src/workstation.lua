@@ -52,6 +52,7 @@ local doorLeft = lg.newQuad(1491, 466, 136, 515, spriteSheet)
 local doorRight = lg.newQuad(1639, 466, 69, 515, spriteSheet)
 local doorBackground = lg.newQuad(1216, 462, 212, 530, spriteSheet)
 local leaves = lg.newQuad(926, 695, 236, 273, spriteSheet)
+local crystalBG = lg.newQuad(1769, 512, 1223, 618, spriteSheet)
 
 local isDraggingCloseButton, closeDragOffset, closeDragOffsetY, closeInside = false, 0, 0, false
 local closeTimer, closeTimeMax, closeMouseTimer = 0, 2.5, 0
@@ -237,6 +238,7 @@ workstation.drawUI = function(scale)
     lg.draw(spriteSheet, doorBackground, 146, 452)
     lg.draw(spriteSheet, doorLeft, 151, 466)
     lg.draw(spriteSheet, doorRight, 285, 466)
+    lg.draw(spriteSheet, crystalBG, 429, 347)
 
     lg.draw(base)
 
