@@ -156,7 +156,8 @@ workstation.update = function(dt, scale, isGamepadActive)
     if input.baton:down("reject") then
       closeTimer = closeTimer + 2 *dt
     elseif closeTimer > 0 then
-      closeTimer = closeTimer - 1 * dt
+      local slowDownFactor = math.min(1, math.max(0.05, closeTimer / (closeTimeMax/8)))
+      closeTimer = closeTimer - 1 * dt * slowDownFactor
       if closeTimer < 0 then
         closeTimer = 0
       end
