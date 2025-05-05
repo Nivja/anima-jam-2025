@@ -35,7 +35,7 @@ local updateCamera = function()
 end
 updateCamera()
 
-scene.load = function(gpMode)
+scene.load = function(gpMode, musicRef)
   scene.gamepadActive = gpMode
 
   cursor.switch("arrow")
@@ -44,6 +44,8 @@ scene.load = function(gpMode)
   worldManager.load("assets/world")
 
   scene.playerChar = characterManager.get("player")
+
+  scene.playerChar.setMusicRef(musicRef)
 
   questManager.unlockQuest("test")
 

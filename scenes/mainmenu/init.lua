@@ -37,18 +37,18 @@ scene.unload = function()
   cursor.switch(nil)
   settingsMenu.unload()
 
-  local startingVolume = musicRef:getVolume()
-  local tweenRef
-  tweenRef = flux.to({ }, 2, { })
-    :ease("linear")
-    :onupdate(function()
-      musicRef:setVolume(startingVolume * (1- tweenRef.progress))
-    end)
-    :oncomplete(function()
-      musicRef:stop()
-      musicRef:seek(0)
-      musicRef:setVolume(startingVolume)
-    end)
+  -- local startingVolume = musicRef:getVolume()
+  -- local tweenRef
+  -- tweenRef = flux.to({ }, 2, { })
+  --   :ease("linear")
+  --   :onupdate(function()
+  --     musicRef:setVolume(startingVolume * (1- tweenRef.progress))
+  --   end)
+  --   :oncomplete(function()
+  --     musicRef:stop()
+  --     musicRef:seek(0)
+  --     musicRef:setVolume(startingVolume)
+  --   end)
 end
 
 scene.langchanged = function()
@@ -228,7 +228,7 @@ local mainButtons = {
     end),
   mainButtonFactory("menu.new_game", function()
       --changeMenu("game")
-      require("util.sceneManager").changeScene("scenes.game", suit.gamepadActive)
+      require("util.sceneManager").changeScene("scenes.game", suit.gamepadActive, musicRef)
     end),
 }
 

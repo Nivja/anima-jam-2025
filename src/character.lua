@@ -263,6 +263,11 @@ end
 
 
 local worldMusicRef, newMusicRef, newMusicTween, oldMusicRef, oldMusicTween
+
+character.setMusicRef = function(ref)
+  worldMusicRef = ref
+end
+
 character.setWorld = function(self, world, x, z, flipped)
   local oldWorld = self.world
   self.world = world
@@ -294,8 +299,7 @@ character.setWorld = function(self, world, x, z, flipped)
           end)
           :oncomplete(function()
             oldMusicRef:stop()
-            oldMusicRef:seek(0)
-            print("stopped old music")
+            oldMusicRef:seek(0) -- should it seek?
             oldMusicRef:setVolume(startingVolume)
             oldMusicRef = nil
           end)
@@ -308,16 +312,15 @@ character.setWorld = function(self, world, x, z, flipped)
 
         local startingVolume = newMusicRef:getVolume()
         newMusicRef:setVolume(0)
-        print("Set to 0")
         newMusicTween = flux.to({ }, 1, { }):ease("linear")
-        :onupdate(function()
-          newMusicRef:setVolume(startingVolume * newMusicTween.progress)
-        end)
-        :oncomplete(function()
-          worldMusicRef = newMusicRef
-          newMusicRef = nil
-          audioManager.setVolumeAll() -- todo what if this breaks other eases?
-        end)
+          :onupdate(function()
+            newMusicRef:setVolume(startingVolume * newMusicTween.progress)
+          end)
+          :oncomplete(function()
+            worldMusicRef = newMusicRef
+            newMusicRef = nil
+            audioManager.setVolumeAll() -- todo what if this breaks other eases?
+          end)
       else
         worldMusicRef = nil
       end
