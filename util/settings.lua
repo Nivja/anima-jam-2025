@@ -10,7 +10,7 @@ end
 
 local defaultSettings = { 
     client = {
-      windowSize = { width = 800, height = 500, },
+      windowSize = { width = 800, height = 450, },
       windowMaximise = false,
       windowFullscreen = false,
       windowFullscreenType = "desktop",

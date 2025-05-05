@@ -260,6 +260,10 @@ questManager.update = function(dt, scale, isGamepadActive)
         if choiceIndex ~= nil and input.baton:pressed("accept") then
           quest.dialogue:makeChoice(choiceIndex)
           consumedInput = true
+          if inside then
+            cursor.switch("arrow")
+            inside = false
+          end
         end
       elseif not isGamepadActive then
         local w, _ = lg.getDimensions()

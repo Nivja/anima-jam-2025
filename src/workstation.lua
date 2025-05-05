@@ -1,5 +1,9 @@
 local lg = love.graphics
 
+local settings = require("util.settings")
+local cursor = require("util.cursor")
+local input = require("util.input")
+
 local workstation = {
   world = "workshop",
   show = false,
@@ -35,8 +39,100 @@ workstation.set = function(x, z, interactX, interactZ)
   workstation.interactZ = interactZ or 0
 end
 
+local base = lg.newImage("assets/UI/workstation_base.png")
+base:setWrap("clamp")
+local bw, bh = base:getDimensions()
+local baseQuadLeft = lg.newQuad(0,0, 1,bh, base)
+local baseQuadRight = lg.newQuad(bw-1,0, 1,bh, base)
+
+local spriteSheet = lg.newImage("assets/UI/workstation_base_ss.png")
+-- spriteSheet:setFilter("nearest")
+local closeQuad = lg.newQuad(3179, 395, 40, 110, spriteSheet)
+
+local isDraggingCloseButton, closeDragOffset, closeDragOffsetY, closeInside = false, 0, 0, false
+local closeTimer, closeTimeMax = 0, 2.5
 workstation.update = function(dt, scale, isGamepadActive)
-  
+  local inputConsumed = false
+
+  if not workstation.show then
+    return inputConsumed
+  end
+
+  local tw, th = lg.getDimensions()
+  local wsize = settings._default.client.windowSize
+  local ww, wh = wsize.width, wsize.height
+  local textureScale = th / bh
+  local scaledWidth = bw * textureScale
+  local translateX = (tw - scaledWidth) / 2
+
+  local mx, my = love.mouse.getPosition()
+  if not isDraggingCloseButton then
+    local _, _, cw, ch = closeQuad:getViewport()
+    local closeX = 1841*textureScale + translateX
+    local closeY =  390*textureScale
+    if mx >= closeX and mx <= closeX + cw * textureScale and
+       my >= closeY and my <= closeY + ch * textureScale then
+      if not closeInside then
+        cursor.switch("hand")
+        closeInside = true
+      end
+    else
+      if closeInside then
+        cursor.switch("arrow")
+        closeInside = false
+      end
+    end
+    if closeInside and love.mouse.isDown(1) then
+      closeDragOffsetY = my / textureScale - 390
+      isDraggingCloseButton = true
+    end
+  end
+  if isDraggingCloseButton then
+    if love.mouse.isDown(1) then
+      closeDragOffset = my / textureScale - 390 - closeDragOffsetY
+      if closeDragOffset < 0 then
+        closeDragOffset = 0
+      end
+      if closeDragOffset > 456 then
+        closeDragOffset = 456
+      end
+    else
+      isDraggingCloseButton = false
+      closeDragOffset = 0
+      closeDragOffsetY = 0
+    end
+    if closeDragOffset >= 456 then
+      closeDragOffset = 0
+      closeDragOffsetY = 0
+      workstation.show = false
+      canMovePlayer(true)
+      if closeInside then
+        cursor.switch("arrow")
+        closeInside = false
+      end
+    end
+  end
+
+  if not isDraggingCloseButton then
+    if input.baton:down("reject") then
+      closeTimer = closeTimer + 2 *dt
+    elseif closeTimer > 0 then
+      closeTimer = closeTimer - 1 * dt
+      if closeTimer < 0 then
+        closeTimer = 0
+      end
+    end
+    if closeTimer >= closeTimeMax then
+      closeTimer = 0
+      workstation.show = false
+      canMovePlayer(true)
+      inputConsumed = true
+    end
+  else
+    closeTimer = 0
+  end
+
+  return inputConsumed
 end
 
 workstation.draw = function(playerX, playerZ)
@@ -56,7 +152,68 @@ workstation.draw = function(playerX, playerZ)
 end
 
 workstation.drawUI = function(scale)
+  if not workstation.show then
+    return
+  end
+  local tw, th = lg.getDimensions()
+  lg.push("all")
+    -- Set background to black
+    lg.setColor(0,0,0,1)
+    lg.rectangle("fill", 0, 0, tw, th)
+    lg.setColor(1,1,1,1)
+  lg.push()
+    local wsize = settings._default.client.windowSize
+    local ww, wh = wsize.width, wsize.height
+    local textureScale = th / bh
+    local scaledWidth = bw * textureScale
+    local translateX = (tw - scaledWidth) / 2
 
+  do -- Sides
+    lg.push("all")
+    local c = .75
+    lg.setColor(c,c,c,1)
+    -- Left
+    lg.push()
+      lg.scale(tw/2-scaledWidth/2+5, textureScale)
+      lg.draw(base, baseQuadLeft)
+    lg.pop()
+    -- Right
+    lg.push()
+      lg.translate(scaledWidth+tw/2-scaledWidth/2-5, 0)
+      lg.scale(tw/2-scaledWidth/2+10, textureScale)
+      lg.draw(base, baseQuadRight)
+    lg.pop()
+    lg.pop()
+  end
+
+    lg.setColor(1,1,1,1)
+    lg.translate(translateX, 0)
+    lg.scale(textureScale)
+    lg.setStencilState("replace", "always", 1)
+    lg.draw(base)
+    lg.setStencilState("keep", "greater", 0)
+
+    -- Taken from flux#L22; sine out easing
+    local p = 0
+    if isDraggingCloseButton then
+      p = closeDragOffset / 456
+    else
+      p = (closeTimer/closeTimeMax)
+    end
+    p = 1 - p
+    p = 1 - p^2
+
+    local intensity = 2
+    local wobbleOffset = (love.math.simplexNoise(p * 7) * intensity) - intensity/2
+
+    if isDraggingCloseButton then
+      lg.draw(spriteSheet, closeQuad, 1841 + wobbleOffset * scale, 390+closeDragOffset)
+    else
+      lg.draw(spriteSheet, closeQuad, 1841 + wobbleOffset * scale, 390+456*p)
+    end
+  lg.pop()
+  lg.pop()
+  lg.setStencilMode() -- clear stencil
 end
 
 return workstation
