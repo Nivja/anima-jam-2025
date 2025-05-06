@@ -28,7 +28,7 @@ return {
     { "setCharacter", "zyla" },
     "Good morning, I am here to see Rosetta. Is she around? I need my dress repaired.",
     { "setCharacter", "player" },
-    "Rosetta is not here this morning. I am here to help with all sewing and mending and would love to help!",
+    "Rosetta is not here this morning. I am here to take care of all sewing and mending and would love to help!",
     { "setCharacter", "zyla" },
     "Oh, but Rosetta is the one who made this garment for me, I have been wearing it to my council meetings.",
     { "choice", {
