@@ -582,11 +582,16 @@ workstation.drawUI = function(scale)
       lg.draw(spriteSheet, quad, button.x, 313 + button.offsetY)
     end
 
-    for iy = 1, 2 do
-    for ix = 1, 4 do
-      lg.draw(spriteSheet, inventorySlot)
+    lg.push()
+    lg.translate(155, 125)
+    for iy = 0, 2-1 do
+    for ix = 0, 4-1 do
+      local _, _, w, h = inventorySlot:getViewport()
+      lg.setColor(1,1,1,1)
+      lg.draw(spriteSheet, inventorySlot, ix*(w+5), iy*(h+15))
     end
     end
+    lg.pop()
 
     -- Taken from flux#L22; sine out easing
     local p = 0
