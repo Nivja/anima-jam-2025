@@ -1,5 +1,6 @@
 local lg = love.graphics
 
+local audioManager = require("util.audioManager")
 local cursor = require("util.cursor")
 local input = require("util.input")
 
@@ -152,6 +153,7 @@ requestBoard.update = function(dt, scale, isGamepadActive)
     cursor.switch("arrow")
     inside = false
     index = nil
+    audioManager.play("audio.ui.click")
   end
 
   local dx = mx - closeButtonX

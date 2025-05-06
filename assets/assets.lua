@@ -28,17 +28,19 @@ local loopSource = function(source)
 end
 
 return {
--- Audio
-  -- sourceType = "static"/"stream"
+-- Audio | sourceType = "static"/"stream"
+  -- UI
   { path = "audio/ui/rollover4.ogg", name = "audio.ui.select.1", sourceType = "static", audioType = "ui", key = "audio.ui.select", volume = .5 },
   { path = "audio/ui/rollover5.ogg", name = "audio.ui.select.2", sourceType = "static", audioType = "ui", key = "audio.ui.select", volume = .5 },
-  { path = "audio/ui/click4.ogg", name = "audio.ui.click.1", sourceType = "static", audioType = "ui", key = "audio.ui.click", volume = 2.0 },
-  { path = "audio/ui/click5.ogg", name = "audio.ui.click.2", sourceType = "static", audioType = "ui", key = "audio.ui.click", volume = 2.0 },
+  { path = "audio/ui/SFX_UIClick_01.wav", name = "audio.ui.click.1", sourceType = "static", audioType = "ui", key = "audio.ui.click", volume = 0.7 },
+  { path = "audio/ui/SFX_UIClick_02.wav", name = "audio.ui.click.2", sourceType = "static", audioType = "ui", key = "audio.ui.click", volume = 0.7 },
+  { path = "audio/ui/SFX_UIClick_03.wav", name = "audio.ui.click.3", sourceType = "static", audioType = "ui", key = "audio.ui.click", volume = 0.7 },
 
+  -- Music
   { path = "audio/music/Solarpunk_Menu_Loop.wav", name = "audio.music.menu", sourceType = "stream", audioType = "music", volume = 1.0, onLoad = loopSource },
   { path = "audio/music/SolarPunk Jam Outside_Loop_V1.wav", name = "audio.music.town", sourceType = "stream", audioType = "music", volume = 1.0, onLoad = loopSource },
   { path = "audio/music/Solarpunk_Workshop_V1.wav", name = "audio.music.workshop", sourceType = "stream", audioType = "music", volume = 1.0, onLoad = loopSource },
-  { path = "audio/music/SolarPunk Mini-Game_Draft_2.wav", name = "audio.music.minigame", sourceType = "stream", audioType = "music", volume = 1.0, onLoad = loopSource },
+  { path = "audio/music/SolarPunk Mini-Game_Draft_2.wav", name = "audio.music.minigame", sourceType = "stream", audioType = "music", volume = 0.6, onLoad = loopSource },
 
   -- Fonts
   { path = "fonts/Roboto_Mono/RobotoMono-Light.ttf",            name = "fonts.light" },

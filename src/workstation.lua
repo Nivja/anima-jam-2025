@@ -1,5 +1,6 @@
 local lg = love.graphics
 
+local audioManager = require("util.audioManager")
 local settings = require("util.settings")
 local cursor = require("util.cursor")
 local input = require("util.input")
@@ -20,28 +21,6 @@ local canMovePlayer = function(boolean)
   playerChar:moveX(0)
 end
 
-local xRange, zRange = 1, 0.5
-workstation.interact = function(_, x, z)
-  if not workstation.show and
-    workstation.interactX - xRange < x and
-    workstation.interactX + xRange > x and
-    workstation.interactZ - zRange <= z and
-    workstation.interactZ + zRange >= z then
-    canMovePlayer(false)
-    workstation.show = true
-    return true -- consumed
-  end
-  return false
-end
-
-local interactSign = require("src.interactSign")()
-workstation.set = function(x, z, interactX, interactZ)
-  interactSign:setTranslation(x or 0, 2.1 + (0.25*500/1000), z or 0)
-
-  workstation.interactX = interactX or 0
-  workstation.interactZ = interactZ or 0
-end
-
 local base = lg.newImage("assets/UI/workstation_base.png")
 base:setWrap("clamp")
 local bw, bh = base:getDimensions()
@@ -57,6 +36,9 @@ local doorRight = lg.newQuad(1639, 466, 69, 515, spriteSheet)
 local doorBackground = lg.newQuad(1216, 462, 212, 530, spriteSheet)
 local leaves = lg.newQuad(926, 695, 236, 273, spriteSheet)
 local crystalBG = lg.newQuad(1769, 512, 1223, 618, spriteSheet)
+local darkBG = lg.newQuad(1360, 1151, 1223, 618, spriteSheet)
+local darkBGLeft = lg.newQuad(965, 1147, 159, 618, spriteSheet)
+local darkBGRight = lg.newQuad(1152, 1147, 160, 618, spriteSheet)
 
 local buttonPatch        = lg.newQuad(3041,  219, 103, 117, spriteSheet)
 local buttonPatchActive  = lg.newQuad(3041,  821, 103, 117, spriteSheet)
@@ -137,7 +119,9 @@ local switchSideButtons = function(switchTo)
       currentActive = newButton
       oldButton.active = false
       newButton.active = true
+      newButton.activateTime = love.timer.getTime()
       switchTween = nil
+      audioManager.play("audio.ui.click")
     end)
 end
 
@@ -252,6 +236,7 @@ workstation.update = function(dt, scale, isGamepadActive)
         closeDragOffset = 0
         closeDragOffsetY = 0
         workstation.show = false
+        audioManager.play("audio.ui.click")
         canMovePlayer(true)
         if closeInside then
           cursor.switch("arrow")
@@ -274,6 +259,7 @@ workstation.update = function(dt, scale, isGamepadActive)
     if closeTimer >= closeTimeMax then
       closeTimer = 0
       workstation.show = false
+      audioManager.play("audio.ui.click")
       canMovePlayer(true)
       inputConsumed = true
     end
@@ -332,6 +318,29 @@ workstation.update = function(dt, scale, isGamepadActive)
   return inputConsumed
 end
 
+local xRange, zRange = 1, 0.5
+workstation.interact = function(_, x, z)
+  if not workstation.show and
+    workstation.interactX - xRange < x and
+    workstation.interactX + xRange > x and
+    workstation.interactZ - zRange <= z and
+    workstation.interactZ + zRange >= z then
+    canMovePlayer(false)
+    workstation.show = true
+    sideButtons[1].activateTime = love.timer.getTime()
+    return true -- consumed
+  end
+  return false
+end
+
+local interactSign = require("src.interactSign")()
+workstation.set = function(x, z, interactX, interactZ)
+  interactSign:setTranslation(x or 0, 2.1 + (0.25*500/1000), z or 0)
+
+  workstation.interactX = interactX or 0
+  workstation.interactZ = interactZ or 0
+end
+
 workstation.draw = function(playerX, playerZ)
   if not workstation.show and workstation.interactZ - (zRange+.5) <= playerZ and workstation.interactZ + (zRange+.5) >= playerZ and
     workstation.interactX - (xRange+.5) <= playerX and workstation.interactX + (xRange+.5) >= playerX then
@@ -388,8 +397,10 @@ workstation.drawUI = function(scale)
     lg.scale(textureScale)
     if textureScale > 1 then
       spriteSheet:setFilter("linear")
+      base:setFilter("nearest")
     else
       spriteSheet:setFilter("nearest")
+      base:setFilter("linear")
     end
 
     lg.setColorMask(false)
@@ -398,10 +409,25 @@ workstation.drawUI = function(scale)
     lg.setStencilState("keep", "greater", 0)
     lg.setColorMask(true)
 
+    if sideButtons[1].active then
+      local button = sideButtons[1]
+      lg.draw(spriteSheet, darkBG, 429, 347)
+      local offsetXFactor = 1 - math.min(1, love.timer.getTime()-button.activateTime)
+      lg.push()
+      lg.translate(offsetXFactor*-159, 0)
+      lg.draw(spriteSheet, darkBGLeft, 429, 347)
+      lg.pop()
+      lg.push()
+      lg.translate(offsetXFactor*160, 0)
+      lg.draw(spriteSheet, darkBGRight, 1493, 347)
+      lg.pop()
+    else
+      lg.draw(spriteSheet, crystalBG, 429, 347)
+    end
+
     lg.draw(spriteSheet, doorBackground, 146, 452)
     lg.draw(spriteSheet, doorLeft, 151, 466)
     lg.draw(spriteSheet, doorRight, 285, 466)
-    lg.draw(spriteSheet, crystalBG, 429, 347)
 
     local fabricOffsetX, fabricOffsetY = 491, 77
     lg.draw(spriteSheet, fabricBackground, fabricOffsetX, fabricOffsetY)

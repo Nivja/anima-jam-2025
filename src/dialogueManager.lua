@@ -1,5 +1,6 @@
 local lfs = love.filesystem
 
+local audioManager = require("util.audioManager")
 local logger = require("util.logger")
 local file = require("util.file")
 local flux = require("libs.flux")
@@ -255,6 +256,7 @@ dialogue.makeChoice = function(self, index)
   local tag = self.choice[index][2]
   self.choice = nil
   commandLookup["goto"](self, { "goto", tag, "forced" })
+  audioManager.play("audio.ui.click")
 end
 
 dialogue.hasFinished = function(self)

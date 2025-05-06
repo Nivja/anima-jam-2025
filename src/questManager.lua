@@ -1,5 +1,6 @@
 local lfs, lg = love.filesystem, love.graphics
 
+local audioManager = require("util.audioManager")
 local syslText = require("libs.sysl-text")
 local logger = require("util.logger")
 local cursor = require("util.cursor")
@@ -232,6 +233,7 @@ questManager.update = function(dt, scale, isGamepadActive)
         elseif box:is_finished() and box.waitforinput then
           questManager.box:continue()
           consumedInput = true
+          audioManager.play("audio.ui.click")
         end
       end
     else
