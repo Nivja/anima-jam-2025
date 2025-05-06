@@ -93,7 +93,7 @@ local sideButtons = {
 }
 currentActive = sideButtons[1]
 
-local oldTween, newTween
+local oldTween, newTween, switchTween
 local switchSideButtons = function(switchTo)
   if oldTween then
     oldTween._oncomplete()
@@ -101,21 +101,43 @@ local switchSideButtons = function(switchTo)
   if newTween then
     newTween._oncomplete()
   end
+  if switchTween then
+    switchTween._oncomplete()
+  end
+
+  if type(switchTo) == "number" then
+    local currentIndex
+    for index, b in ipairs(sideButtons) do
+      if b == currentActive then
+        currentIndex = index
+        break
+      end
+    end
+    if not currentIndex then currentIndex = 1 end
+    local index = currentIndex + switchTo
+    if index > #sideButtons then index = 1 end
+    if index < 1 then index = #sideButtons end
+    switchTo = sideButtons[index]
+  end
 
   local oldButton, newButton = currentActive, switchTo
-  oldButton.active = false
-  newButton.active = true
-  currentActive = newButton
-
-  oldTween = flux.to(oldButton, .75, { offsetY = 0 }):ease("elasticinout")
-    :oncomplete(function()
+  
+  oldTween = flux.to(oldButton, .5, { offsetY = 0 }):ease("elasticinout")
+  :oncomplete(function()
       oldButton.offsetY = 0
       oldTween = nil
     end)
-  newTween = flux.to(newButton, .75, { offsetY = 10 }):ease("elasticinout")
+  newTween = flux.to(newButton, .5, { offsetY = 10 }):ease("elasticout")
     :oncomplete(function()
       newButton.offsetY = 10
       newTween = nil
+    end):delay(.1)
+  switchTween = flux.to({ }, .2, { })
+    :oncomplete(function()
+      currentActive = newButton
+      oldButton.active = false
+      newButton.active = true
+      switchTween = nil
     end)
 end
 
@@ -260,34 +282,49 @@ workstation.update = function(dt, scale, isGamepadActive)
   end
 
   if not inputConsumed and not isDraggingCloseButton then
-    local buttonX = 1700 * textureScale + translateX
-    local _, _, buttonD, _ = sideButtons[1].quad:getViewport()
-    buttonD = buttonD * textureScale
-    local found = false
-    if mx >= buttonX and mx <= buttonX + buttonD then -- early out
-      for _, button in ipairs(sideButtons) do
-        local buttonY = button.y * textureScale
-        if not button.active and my >= buttonY and my <= buttonY + buttonD then
-          found = button
-          if not sideButtonInside then
-            sideButtonInside = true
-            cursor.switch("hand")
-          end
-          break
-        end
-      end
-    end
-    if not found and sideButtonInside then
-      sideButtonInside = false
-      cursor.switch("arrow")
-    end
-    -- process input
-    if found and input.baton:pressed("accept") then
-      inputConsumed = true
-      switchSideButtons(found)
+    if isGamepadActive then
       if sideButtonInside then
         sideButtonInside = false
         cursor.switch("arrow")
+      end
+
+      if input.baton:pressed("leftBumper") then
+        inputConsumed = true
+        switchSideButtons(-1)
+      elseif input.baton:pressed("rightBumper") then
+        inputConsumed = true
+        switchSideButtons(1)
+      end
+    else
+      local buttonX = 1700 * textureScale + translateX
+      local _, _, buttonD, _ = sideButtons[1].quad:getViewport()
+      buttonD = buttonD * textureScale
+      local found = false
+      if mx >= buttonX and mx <= buttonX + buttonD then -- early out
+        for _, button in ipairs(sideButtons) do
+          local buttonY = button.y * textureScale
+          if not button.active and my >= buttonY and my <= buttonY + buttonD then
+            found = button
+            if not sideButtonInside then
+              sideButtonInside = true
+              cursor.switch("hand")
+            end
+            break
+          end
+        end
+      end
+      if not found and sideButtonInside then
+        sideButtonInside = false
+        cursor.switch("arrow")
+      end
+      -- process input
+      if found and input.baton:pressed("accept") then
+        inputConsumed = true
+        switchSideButtons(found)
+        if sideButtonInside then
+          sideButtonInside = false
+          cursor.switch("arrow")
+        end
       end
     end
   end

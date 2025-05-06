@@ -40,6 +40,8 @@ local defaultSettings = {
         reject = { "sc:escape", "sc:backspace", "button:b" },
         pause =   { "sc:escape", "button:start" },
         unpause = { "sc:escape", "sc:backspace", "button:start", "button:back", "button:b" },
+        leftBumper = { "button:leftshoulder" },
+        rightBumper = { "button:rightshoulder" },
       },
       deadzone = .15,
       deadzoneSquared = false,
