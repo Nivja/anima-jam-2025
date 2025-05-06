@@ -14,7 +14,7 @@ local player = characterManager.get("player")
 player:setHome("workshop", 4, 4.5, true)
   :teleportHome()
 
--- questManager.unlockQuest("quest_1")
+questManager.unlockQuest("quest_1")
 
 ------------------------------------
 

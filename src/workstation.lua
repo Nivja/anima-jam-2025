@@ -3,6 +3,9 @@ local lg = love.graphics
 local settings = require("util.settings")
 local cursor = require("util.cursor")
 local input = require("util.input")
+local flux = require("libs.flux")
+
+local inventory = require("src.inventory")
 
 local workstation = {
   world = "workshop",
@@ -46,7 +49,8 @@ local baseQuadLeft = lg.newQuad(0,0, 1,bh, base)
 local baseQuadRight = lg.newQuad(bw-1,0, 1,bh, base)
 
 local spriteSheet = lg.newImage("assets/UI/workstation_base_ss.png")
--- spriteSheet:setFilter("nearest")
+-- filter is handled in the draw; as it changes dependant on scale
+spriteSheet:setFilter("nearest", "nearest")
 local closeQuad = lg.newQuad(3179, 395, 40, 110, spriteSheet)
 local doorLeft = lg.newQuad(1491, 466, 136, 515, spriteSheet)
 local doorRight = lg.newQuad(1639, 466, 69, 515, spriteSheet)
@@ -54,7 +58,90 @@ local doorBackground = lg.newQuad(1216, 462, 212, 530, spriteSheet)
 local leaves = lg.newQuad(926, 695, 236, 273, spriteSheet)
 local crystalBG = lg.newQuad(1769, 512, 1223, 618, spriteSheet)
 
+local buttonPatch        = lg.newQuad(3041,  219, 103, 117, spriteSheet)
+local buttonPatchActive  = lg.newQuad(3041,  821, 103, 117, spriteSheet)
+local buttonCreate       = lg.newQuad(3041,  364, 103, 117, spriteSheet)
+local buttonCreateActive = lg.newQuad(3041,  966, 103, 117, spriteSheet)
+local buttonSteam        = lg.newQuad(3041,  512, 103, 117, spriteSheet)
+local buttonSteamActive  = lg.newQuad(3041, 1114, 103, 117, spriteSheet)
+local buttonAdd          = lg.newQuad(3041,  662, 103, 117, spriteSheet)
+local buttonAddActive    = lg.newQuad(3041, 1264, 103, 117, spriteSheet)
+
+local currentActive
+local sideButtons = {
+  {
+    quad = buttonPatch,
+    quadActive = buttonPatchActive,
+    y = 226, offsetY = 10,
+    active = true,
+  },
+  {
+    quad = buttonCreate,
+    quadActive = buttonCreateActive,
+    y = 371, offsetY = 0,
+  },
+  {
+    quad = buttonSteam,
+    quadActive = buttonSteamActive,
+    y = 519, offsetY = 0,
+  },
+  {
+    quad = buttonAdd,
+    quadActive = buttonAddActive,
+    y = 669, offsetY = 0,
+  }
+}
+currentActive = sideButtons[1]
+
+local oldTween, newTween
+local switchSideButtons = function(switchTo)
+  if oldTween then
+    oldTween._oncomplete()
+  end
+  if newTween then
+    newTween._oncomplete()
+  end
+
+  local oldButton, newButton = currentActive, switchTo
+  oldButton.active = false
+  newButton.active = true
+  currentActive = newButton
+
+  oldTween = flux.to(oldButton, .75, { offsetY = 0 }):ease("elasticinout")
+    :oncomplete(function()
+      oldButton.offsetY = 0
+      oldTween = nil
+    end)
+  newTween = flux.to(newButton, .75, { offsetY = 10 }):ease("elasticinout")
+    :oncomplete(function()
+      newButton.offsetY = 10
+      newTween = nil
+    end)
+end
+
+local fabricBackground = lg.newQuad(1831, 288, 1175, 172, spriteSheet)
+local fabricShadow = lg.newQuad(2854, 94, 61, 165, spriteSheet)
+local fabricArrow = lg.newQuad(1981, 94, 61, 165, spriteSheet)
+local fabricTextures = { -- magic number is +83
+  silly_1    = { quad = lg.newQuad(1850, 94, 61, 165, spriteSheet), x = -1, },
+  neutral_1  = { quad = lg.newQuad(2098, 94, 61, 165, spriteSheet), x = 248, },
+  fancy_1    = { quad = lg.newQuad(2265, 94, 61, 165, spriteSheet), x = 413, },
+  neutral_2  = { quad = lg.newQuad(2346, 94, 61, 165, spriteSheet), x = 496, },
+  heirloom_1 = { quad = lg.newQuad(2429, 94, 61, 165, spriteSheet), x = 579, },
+  heirloom_2 = { quad = lg.newQuad(2514, 94, 61, 165, spriteSheet), x = 662, },
+  neutral_3  = { quad = lg.newQuad(2680, 94, 61, 165, spriteSheet), x = 828, },
+  neutral_4  = { quad = lg.newQuad(2762, 94, 61, 165, spriteSheet), x = 911, },
+}
+
+local fabricTexturesOrder = {
+  "silly_1", "neutral_1", "fancy_1", "neutral_2",
+  "heirloom_1", "heirloom_2", "neutral_3", "neutral_4",
+}
+
+local fabricArrowPosition = 0
+
 local isDraggingCloseButton, closeDragOffset, closeDragOffsetY, closeInside = false, 0, 0, false
+local sideButtonInside = false
 local closeTimer, closeTimeMax, closeMouseTimer = 0, 2.5, 0
 local leavesX, leavesY, leavesFlipX, leavesFlipY = 0, 0, true, false
 workstation.update = function(dt, scale, isGamepadActive)
@@ -172,6 +259,39 @@ workstation.update = function(dt, scale, isGamepadActive)
     closeTimer = 0
   end
 
+  if not inputConsumed and not isDraggingCloseButton then
+    local buttonX = 1700 * textureScale + translateX
+    local _, _, buttonD, _ = sideButtons[1].quad:getViewport()
+    buttonD = buttonD * textureScale
+    local found = false
+    if mx >= buttonX and mx <= buttonX + buttonD then -- early out
+      for _, button in ipairs(sideButtons) do
+        local buttonY = button.y * textureScale
+        if not button.active and my >= buttonY and my <= buttonY + buttonD then
+          found = button
+          if not sideButtonInside then
+            sideButtonInside = true
+            cursor.switch("hand")
+          end
+          break
+        end
+      end
+    end
+    if not found and sideButtonInside then
+      sideButtonInside = false
+      cursor.switch("arrow")
+    end
+    -- process input
+    if found and input.baton:pressed("accept") then
+      inputConsumed = true
+      switchSideButtons(found)
+      if sideButtonInside then
+        sideButtonInside = false
+        cursor.switch("arrow")
+      end
+    end
+  end
+
   return inputConsumed
 end
 
@@ -229,6 +349,11 @@ workstation.drawUI = function(scale)
     lg.setColor(1,1,1,1)
     lg.translate(translateX, 0)
     lg.scale(textureScale)
+    if textureScale > 1 then
+      spriteSheet:setFilter("linear")
+    else
+      spriteSheet:setFilter("nearest")
+    end
 
     lg.setColorMask(false)
     lg.setStencilState("replace", "always", 1)
@@ -241,9 +366,30 @@ workstation.drawUI = function(scale)
     lg.draw(spriteSheet, doorRight, 285, 466)
     lg.draw(spriteSheet, crystalBG, 429, 347)
 
+    local fabricOffsetX, fabricOffsetY = 491, 77
+    lg.draw(spriteSheet, fabricBackground, fabricOffsetX, fabricOffsetY)
+    fabricOffsetX = fabricOffsetX + 21
+    fabricOffsetY = fabricOffsetY + 18
+
+    --   Fabric
+    for _, fabricType in ipairs(fabricTexturesOrder) do
+      local fabricAmount = inventory.fabric[fabricType]
+      if fabricAmount and fabricAmount > 0 then -- draw
+        local fabricTex = fabricTextures[fabricType]
+        if not fabricTex then logger.error("Couldn't find texture for type:", fabricType) end
+        lg.draw(spriteSheet, fabricShadow, fabricOffsetX + fabricTex.x, fabricOffsetY)
+        lg.draw(spriteSheet, fabricTex.quad, fabricOffsetX + fabricTex.x, fabricOffsetY)
+      end
+    end
+
     lg.draw(base)
 
     lg.draw(spriteSheet, leaves, 19 + leavesX * scale, 811 + leavesY * scale)
+
+    for _, button in ipairs(sideButtons) do
+      local quad = button.active and button.quadActive or button.quad
+      lg.draw(spriteSheet, quad, 1700, button.y + button.offsetY)
+    end
 
     -- Taken from flux#L22; sine out easing
     local p = 0

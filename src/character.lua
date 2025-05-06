@@ -257,6 +257,7 @@ character.setFlip = function(self, flipped)
     self.flipRY = math.rad(-180)
   else
     self.flipRY = math.rad(0)
+    self.flipRY = math.rad(0)
   end
   return self
 end
