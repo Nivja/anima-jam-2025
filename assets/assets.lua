@@ -36,11 +36,14 @@ return {
   { path = "audio/ui/SFX_UIClick_02.wav", name = "audio.ui.click.2", sourceType = "static", audioType = "ui", key = "audio.ui.click", volume = 0.7 },
   { path = "audio/ui/SFX_UIClick_03.wav", name = "audio.ui.click.3", sourceType = "static", audioType = "ui", key = "audio.ui.click", volume = 0.7 },
 
+  -- SFX
+  { path = "audio/sfx/SFX_Sewing_Loop_V1.wav", name = "audio.sfx.sewing", sourceType = "static", audioType = "sfx", volume = 1.0, onLoad = loopSource },
+
   -- Music
   { path = "audio/music/Solarpunk_Menu_Loop.wav", name = "audio.music.menu", sourceType = "stream", audioType = "music", volume = 1.0, onLoad = loopSource },
   { path = "audio/music/SolarPunk Jam Outside_Loop_V1.wav", name = "audio.music.town", sourceType = "stream", audioType = "music", volume = 1.0, onLoad = loopSource },
   { path = "audio/music/Solarpunk_Workshop_V1.wav", name = "audio.music.workshop", sourceType = "stream", audioType = "music", volume = 1.0, onLoad = loopSource },
-  { path = "audio/music/SolarPunk Mini-Game_Draft_2.wav", name = "audio.music.minigame", sourceType = "stream", audioType = "music", volume = 0.6, onLoad = loopSource },
+  { path = "audio/music/SolarPunk Mini-Game_Draft_2.wav", name = "audio.music.minigame", sourceType = "stream", audioType = "music", volume = 0.4, onLoad = loopSource },
 
   -- Fonts
   { path = "fonts/Roboto_Mono/RobotoMono-Light.ttf",            name = "fonts.light" },

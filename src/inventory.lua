@@ -48,6 +48,12 @@ inventory.addItem = function(item)
   table.insert(inventory.items, item)
   if item.id then
     inventory.lookup[item.id] = item
+
+    local path = "assets/items/"..item.id..".png"
+    if love.filesystem.getInfo(path, "file") then
+      item.texture = love.graphics.newImage(path)
+      item.texture:setFilter("nearest")
+    end
   end
   inventory.lastAddedItem = item
 
@@ -65,7 +71,17 @@ inventory.addItem = function(item)
     end
   end
 
-  logger.info("Inventory: Added item,", item.name or item.id or "UNKNOWN")
+  logger.info("Inventory: Added item", item.name or item.id or "UNKNOWN")
+end
+
+inventory.getPatchItems = function()
+  local items = { }
+  for _, item in ipairs(inventory.items) do
+    if item:hasTag("issue.patch") then
+      table.insert(items, item)
+    end
+  end
+  return #items ~= 0 and items or nil
 end
 
 return inventory

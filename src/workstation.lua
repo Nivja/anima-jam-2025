@@ -39,6 +39,61 @@ local crystalBG = lg.newQuad(1769, 512, 1223, 618, spriteSheet)
 local darkBG = lg.newQuad(1360, 1151, 1223, 618, spriteSheet)
 local darkBGLeft = lg.newQuad(965, 1147, 159, 618, spriteSheet)
 local darkBGRight = lg.newQuad(1152, 1147, 160, 618, spriteSheet)
+local darkBGCenterSquare = lg.newQuad(528, 1365, 391, 391, spriteSheet)
+
+local numOne = lg.newQuad(581, 848, 65, 87, spriteSheet)
+local numTwo = lg.newQuad(581, 1029, 65, 87, spriteSheet)
+local numThree = lg.newQuad(581, 1210, 65, 87, spriteSheet)
+
+local inventorySlot = lg.newQuad(1533, 233, 60, 58, spriteSheet)
+local inventorySlotActive = lg.newQuad(1600, 233, 60, 58, spriteSheet)
+
+local inventoryButtonLeft = lg.newQuad(1520, 314, 47, 52, spriteSheet)
+local inventoryButtonLeftActive = lg.newQuad(1520, 377, 47, 52, spriteSheet)
+local inventoryButtonRight = lg.newQuad(1576, 314, 47, 52, spriteSheet)
+local inventoryButtonRightActive = lg.newQuad(1576, 377, 47, 52, spriteSheet)
+local inventoryButtonAccept = lg.newQuad(1630, 314, 47, 52, spriteSheet)
+local inventoryButtonAcceptActive = lg.newQuad(1630, 377, 47, 52, spriteSheet)
+
+local inventoryButtons = {
+  {
+    quad = inventoryButtonLeft,
+    quadActive = inventoryButtonLeftActive,
+    x = 180, offsetY = 0,
+    active = false,
+  },
+  {
+    quad = inventoryButtonAccept,
+    quadActive = inventoryButtonAcceptActive,
+    x = 235, offsetY = 0,
+    active = false,
+  },
+  {
+    quad = inventoryButtonRight,
+    quadActive = inventoryButtonRightActive,
+    x = 289, offsetY = 0,
+    active = false,
+  },
+}
+
+local fakeInventoryButton = function(button)
+  if button.tween then
+    button.tween:stop()
+    button.active = false
+    button.offsetY = 0
+  end
+
+  button.tween = flux.to(button, .1, { offsetY = 5 }):ease("linear")
+    :oncomplete(function()
+      button.active = true
+      audioManager.play("audio.ui.click")
+    end)
+    :after(.2, { offsetY = 0 }):ease("linear")
+    :oncomplete(function()
+      button.active = false
+      button.tween = nil
+    end)
+end
 
 local buttonPatch        = lg.newQuad(3041,  219, 103, 117, spriteSheet)
 local buttonPatchActive  = lg.newQuad(3041,  821, 103, 117, spriteSheet)
@@ -147,7 +202,8 @@ local fabricTexturesOrder = {
 local fabricArrowPosition = 0
 
 local isDraggingCloseButton, closeDragOffset, closeDragOffsetY, closeInside = false, 0, 0, false
-local sideButtonInside = false
+local sideButtonInside, inventoryButtonInside = false, false
+local patchItems, patchItemsIndex, patchLevel = nil, 1, 1
 local closeTimer, closeTimeMax, closeMouseTimer = 0, 2.5, 0
 local leavesX, leavesY, leavesFlipX, leavesFlipY = 0, 0, true, false
 workstation.update = function(dt, scale, isGamepadActive)
@@ -315,6 +371,41 @@ workstation.update = function(dt, scale, isGamepadActive)
     end
   end
 
+  if not inputConsumed and not isDraggingCloseButton then
+    if isGamepadActive then
+      if inventoryButtonInside then
+        inventoryButtonInside = false
+        cursor.switch("arrow")
+      end
+    else
+      local buttonY = 313 * textureScale
+      local _, _, buttonD, _ = inventoryButtons[1].quad:getViewport()
+      buttonD = buttonD * textureScale
+      local found = false
+      if my >= buttonY and my <= buttonY + buttonD then -- early out
+        for _, button in ipairs(inventoryButtons) do
+          local buttonX = button.x * textureScale + translateX
+          if mx >= buttonX and mx <= buttonX + buttonD then
+            found = button
+            if not inventoryButtonInside then
+              inventoryButtonInside = true
+              cursor.switch("hand")
+            end
+            break
+          end
+        end
+      end
+      if not found and inventoryButtonInside then
+        inventoryButtonInside = false
+        cursor.switch("arrow")
+      end
+      if found and input.baton:pressed("accept") then
+        inputConsumed = true
+        fakeInventoryButton(found)
+      end
+    end
+  end
+
   return inputConsumed
 end
 
@@ -328,6 +419,9 @@ workstation.interact = function(_, x, z)
     canMovePlayer(false)
     workstation.show = true
     sideButtons[1].activateTime = love.timer.getTime()
+    patchItems = inventory.getPatchItems()
+    patchItemsIndex = 1
+    patchLevel = 1
     return true -- consumed
   end
   return false
@@ -416,10 +510,37 @@ workstation.drawUI = function(scale)
       lg.push()
       lg.translate(offsetXFactor*-159, 0)
       lg.draw(spriteSheet, darkBGLeft, 429, 347)
+      lg.push()
+      local _y = 618/3
+      local f = spriteSheet:getFilter()
+      spriteSheet:setFilter("linear")
+      lg.translate(429+159/2-65/2, 347-_y/1.5)
+      if patchLevel ~= 1 then lg.setColor(.5,.5,.5,1) else lg.setColor(1,1,1,1) end
+      lg.draw(spriteSheet, numOne,   0, _y*1)
+      if patchLevel ~= 2 then lg.setColor(.5,.5,.5,1) else lg.setColor(1,1,1,1) end
+      lg.draw(spriteSheet, numTwo,   0, _y*2)
+      if patchLevel ~= 3 then lg.setColor(.5,.5,.5,1) else lg.setColor(1,1,1,1) end
+      lg.draw(spriteSheet, numThree, 0, _y*3)
+      lg.setColor(1,1,1,1)
+      spriteSheet:setFilter(f)
+      lg.pop()
       lg.pop()
       lg.push()
       lg.translate(offsetXFactor*160, 0)
       lg.draw(spriteSheet, darkBGRight, 1493, 347)
+      lg.pop()
+      lg.push()
+      lg.translate(429+1223/2, 347+618/2.5)
+      lg.draw(spriteSheet, darkBGCenterSquare, -391/2, -391/2)
+      local item = patchItems[patchItemsIndex]
+      if item then
+        if item.texture then
+          local tw, th = item.texture:getDimensions()
+          lg.draw(item.texture, -tw/2, -th/2)
+        end
+      elseif #patchItems == 0 then
+        logger.warn("TODO; patch no items")
+      end
       lg.pop()
     else
       lg.draw(spriteSheet, crystalBG, 429, 347)
@@ -449,9 +570,22 @@ workstation.drawUI = function(scale)
 
     lg.draw(spriteSheet, leaves, 19 + leavesX * scale, 811 + leavesY * scale)
 
+    -- Side buttons
     for _, button in ipairs(sideButtons) do
       local quad = button.active and button.quadActive or button.quad
       lg.draw(spriteSheet, quad, 1700, button.y + button.offsetY)
+    end
+
+    -- Inventory buttons
+    for _, button in ipairs(inventoryButtons) do
+      local quad = button.active and button.quadActive or button.quad
+      lg.draw(spriteSheet, quad, button.x, 313 + button.offsetY)
+    end
+
+    for iy = 1, 2 do
+    for ix = 1, 4 do
+      lg.draw(spriteSheet, inventorySlot)
+    end
     end
 
     -- Taken from flux#L22; sine out easing

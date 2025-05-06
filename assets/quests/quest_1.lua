@@ -41,10 +41,7 @@ return {
       {
         name = "Zyla's Dress",
         id = "zyla_dress",
-        tags = { "clothing", "dress", "fabric.fancy" },
-        issue = { {
-          --[[ issue details for minigame... ]]
-        } },
+        tags = { "clothing", "dress", "fabric.fancy", "issue.patch", "patch.zyla_dress" },
       },
     } },
     { "setCharacter", nil },
@@ -74,11 +71,14 @@ return {
     { "setCharacter", "zyla" },
     "Well, this is quite stylish, you know, I do have a few heirloom fabrics just sitting around my place, I think you might be the person to make good use of them. Can't wait to see what you will make.",
     { "addItem",
-      { name = "Old Lady's Heirloom fabric 1" },
-      { name = "Old Lady's Heirloom fabric 2" },
+      { name = "Old Lady's Heirloom fabric", tags = { "fabric", "heirloom", "texture.heirloom_1", }, },
+      { name = "Old Lady's Heirloom fabric", tags = { "fabric", "heirloom", "texture.heirloom_2", }, },
     },
     { "goto", "end_option_one" },
     { "tag", "end_option_one" },
+    { "removeItem", {
+      { "zyla_dress", 1 },
+    }},
     { "questFinished" },
     { "end" },
   }
