@@ -5,6 +5,7 @@ local settings = require("util.settings")
 local cursor = require("util.cursor")
 local input = require("util.input")
 local flux = require("libs.flux")
+local ui = require("util.ui")
 
 local inventory = require("src.inventory")
 
@@ -199,6 +200,7 @@ local fabricTexturesOrder = {
   "heirloom_1", "heirloom_2", "neutral_3", "neutral_4",
 }
 
+local inventorySlotSelected = 1
 local fabricArrowPosition = 0
 
 local isDraggingCloseButton, closeDragOffset, closeDragOffsetY, closeInside = false, 0, 0, false
@@ -422,6 +424,7 @@ workstation.interact = function(_, x, z)
     patchItems = inventory.getPatchItems()
     patchItemsIndex = 1
     patchLevel = 1
+    inventorySlotSelected = 1
     return true -- consumed
   end
   return false
@@ -516,9 +519,9 @@ workstation.drawUI = function(scale)
       spriteSheet:setFilter("linear")
       lg.translate(429+159/2-65/2, 347-_y/1.5)
       if patchLevel ~= 1 then lg.setColor(.5,.5,.5,1) else lg.setColor(1,1,1,1) end
-      lg.draw(spriteSheet, numOne,   0, _y*1)
+      lg.draw(spriteSheet, numOne, 0, _y*1)
       if patchLevel ~= 2 then lg.setColor(.5,.5,.5,1) else lg.setColor(1,1,1,1) end
-      lg.draw(spriteSheet, numTwo,   0, _y*2)
+      lg.draw(spriteSheet, numTwo, 0, _y*2)
       if patchLevel ~= 3 then lg.setColor(.5,.5,.5,1) else lg.setColor(1,1,1,1) end
       lg.draw(spriteSheet, numThree, 0, _y*3)
       lg.setColor(1,1,1,1)
@@ -532,15 +535,6 @@ workstation.drawUI = function(scale)
       lg.push()
       lg.translate(429+1223/2, 347+618/2.5)
       lg.draw(spriteSheet, darkBGCenterSquare, -391/2, -391/2)
-      local item = patchItems[patchItemsIndex]
-      if item then
-        if item.texture then
-          local tw, th = item.texture:getDimensions()
-          lg.draw(item.texture, -tw/2, -th/2)
-        end
-      elseif #patchItems == 0 then
-        logger.warn("TODO; patch no items")
-      end
       lg.pop()
     else
       lg.draw(spriteSheet, crystalBG, 429, 347)
@@ -582,16 +576,38 @@ workstation.drawUI = function(scale)
       lg.draw(spriteSheet, quad, button.x, 313 + button.offsetY)
     end
 
+    do
     lg.push()
     lg.translate(155, 125)
+    local _, _, w, h = inventorySlot:getViewport()
     for iy = 0, 2-1 do
     for ix = 0, 4-1 do
-      local _, _, w, h = inventorySlot:getViewport()
-      lg.setColor(1,1,1,1)
-      lg.draw(spriteSheet, inventorySlot, ix*(w+5), iy*(h+15))
+      local index = iy * 4 + ix + 1
+      local item
+      if sideButtons[1].active or sideButtons[3].active then item = patchItems[index] end
+      if not item then
+        lg.setColor(.5,.5,.5, 1)
+      else
+        lg.setColor(1,1,1,1)
+      end
+      quad = inventorySlotSelected == index and inventorySlotActive or inventorySlot
+      lg.draw(spriteSheet, quad, ix*(w+5), iy*(h+15))
     end
     end
+    lg.setColor(1,1,1,1)
+    -- Two loops for sprite batching
+    for iy = 0, 2-1 do
+    for ix = 0, 4-1 do
+      local item = patchItems[(iy * 4 + ix)+1]
+      if item and item.texture then
+        local tw, th = item.texture:getDimensions()
+        lg.draw(item.texture, ix*(w+5)+60/2-tw/2, iy*(h+15)+58/2-th/2)
+      end
+    end
+    end
+    lg.setColor(1,1,1,1)
     lg.pop()
+    end
 
     -- Taken from flux#L22; sine out easing
     local p = 0
@@ -612,6 +628,19 @@ workstation.drawUI = function(scale)
       lg.draw(spriteSheet, closeQuad, 1841 + wobbleOffset * scale, 390+456*p)
     end
   lg.pop()
+  lg.pop()
+  lg.push("all")
+    -- lg.translate(translateX, 0)
+    lg.translate(tw/2+80*textureScale, bh*textureScale)
+    lg.setColor(163/255, 245/255, 108/255, 1)
+    local font = ui.getFont(18, "fonts.regular.bold", scale)
+    local str = "UNKNOWN"
+    if sideButtons[1].active then str = "Patching" end
+    if sideButtons[2].active then str = "Layered Patch" end
+    if sideButtons[3].active then str = "Eco Print" end
+    if sideButtons[4].active then str = "Create" end
+    lg.print(str, font, -font:getWidth(str)/2, -font:getHeight()/2-105*textureScale)
+    lg.setColor(1,1,1,1)
   lg.pop()
   lg.setStencilMode() -- clear stencil
 end
