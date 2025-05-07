@@ -7,6 +7,7 @@ return {
   "audio.ui.click",
 
   "audio.sfx.foot",
+  "audio.sfx.voice",
 
   "audio.music.menu",
   "audio.music.town",

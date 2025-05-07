@@ -678,6 +678,9 @@ function M:update(dt)
                 end
                 text_sounds[self.sound_number]:play()
               end
+              if self._customAudio then
+                require("util.audioManager").play("audio.sfx.voice")
+              end
               -- print(self.table_string[self.current_character])
               self.sound_every_counter = 1
             end

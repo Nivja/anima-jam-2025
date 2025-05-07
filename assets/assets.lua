@@ -27,6 +27,8 @@ local loopSource = function(source)
   return source
 end
 
+local voiceVolume = 0.6
+
 return {
 -- Audio | sourceType = "static"/"stream"
   -- UI
@@ -43,6 +45,15 @@ return {
   { path = "audio/sfx/SFX_FootFall_03.wav", name = "audio.sfx.foot.3", sourceType = "static", audioType = "sfx", key = "audio.sfx.foot", volume = .3 },
   { path = "audio/sfx/SFX_FootFall_04.wav", name = "audio.sfx.foot.4", sourceType = "static", audioType = "sfx", key = "audio.sfx.foot", volume = .3 },
   { path = "audio/sfx/SFX_FootFall_05.wav", name = "audio.sfx.foot.5", sourceType = "static", audioType = "sfx", key = "audio.sfx.foot", volume = .3 },
+  -- Voice
+  { path = "audio/sfx/voice/SFX_Voice_01.wav", name = "audio.sfx.voice.1", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
+  { path = "audio/sfx/voice/SFX_Voice_02.wav", name = "audio.sfx.voice.2", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
+  { path = "audio/sfx/voice/SFX_Voice_03.wav", name = "audio.sfx.voice.3", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
+  { path = "audio/sfx/voice/SFX_Voice_04.wav", name = "audio.sfx.voice.4", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
+  { path = "audio/sfx/voice/SFX_Voice_05.wav", name = "audio.sfx.voice.5", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
+  { path = "audio/sfx/voice/SFX_Voice_06.wav", name = "audio.sfx.voice.6", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
+  { path = "audio/sfx/voice/SFX_Voice_07.wav", name = "audio.sfx.voice.7", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
+
   -- Music
   { path = "audio/music/Solarpunk_Menu_Loop.wav", name = "audio.music.menu", sourceType = "stream", audioType = "music", volume = 1.0, onLoad = loopSource },
   { path = "audio/music/SolarPunk Jam Outside_Loop_V1.wav", name = "audio.music.town", sourceType = "stream", audioType = "music", volume = 1.0, onLoad = loopSource },

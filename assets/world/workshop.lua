@@ -82,7 +82,7 @@ hangingShelf:setTranslation(2, _halfH+0.5, 5.9)
 local jar1, _halfH = createPlaneForQuad(1581, 913, 92, 113, workshop_assets, 200)
 jar1:setTranslation(3, _halfH+1.2, 5.7)
 local jar2, _halfH = createPlaneForQuad(1689, 913, 92, 108, workshop_assets, 200)
-jar2:setTranslation(2.7, _halfH+1.15, 5.65)
+jar2:setTranslation(2.5, _halfH+1.15, 5.65)
 local jar3, _halfH = createPlaneForQuad(1809, 912, 92, 109, workshop_assets, 200)
 jar3:setTranslation(1.15, _halfH+1.2, 5.7)
 
@@ -101,7 +101,7 @@ world.draw = function()
   backwall:draw()
   side_wall:draw()
   roof:draw()
-  workstation.draw(player.x, player.z)
+
   -- BG items
   plant:draw()
   paintings:draw()
@@ -114,6 +114,9 @@ world.draw = function()
     jar3:draw()
   wallSandbag:draw()
   books:draw()
+  --
+
+  workstation.draw(player.x, player.z)
 end
 
 world.drawUI = function(scale)
