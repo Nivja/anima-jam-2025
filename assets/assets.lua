@@ -47,7 +47,7 @@ return {
   { path = "audio/music/Solarpunk_Menu_Loop.wav", name = "audio.music.menu", sourceType = "stream", audioType = "music", volume = 1.0, onLoad = loopSource },
   { path = "audio/music/SolarPunk Jam Outside_Loop_V1.wav", name = "audio.music.town", sourceType = "stream", audioType = "music", volume = 1.0, onLoad = loopSource },
   { path = "audio/music/Solarpunk_Workshop_V1.wav", name = "audio.music.workshop", sourceType = "stream", audioType = "music", volume = 1.0, onLoad = loopSource },
-  { path = "audio/music/Solarpunk_Mini-Game_V2.wav", name = "audio.music.minigame", sourceType = "stream", audioType = "music", volume = 0.4, onLoad = loopSource },
+  { path = "audio/music/Solarpunk_Mini-Game_V2.wav", name = "audio.music.minigame", sourceType = "stream", audioType = "music", volume = 1.0, onLoad = loopSource },
 
   -- Fonts
   { path = "fonts/Roboto_Mono/RobotoMono-Light.ttf",            name = "fonts.light" },

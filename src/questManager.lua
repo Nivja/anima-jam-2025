@@ -11,7 +11,8 @@ local ui = require("util.ui")
 
 local dialogueManager = require("src.dialogueManager")
 
-local numVoices = 3
+local numVoices = 4
+syslText.configure.add_text_sound(love.audio.newSource("assets/audio/SFX_Voice_02.wav", "static"), .2)
 syslText.configure.add_text_sound(love.audio.newSource("assets/audio/SFX_Voice_04.wav", "static"), .2)
 syslText.configure.add_text_sound(love.audio.newSource("assets/audio/SFX_Voice_05.wav", "static"), .2)
 syslText.configure.add_text_sound(love.audio.newSource("assets/audio/SFX_Voice_07.wav", "static"), .2)
