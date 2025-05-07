@@ -441,15 +441,18 @@ end
 workstation.draw = function(playerX, playerZ)
   if not workstation.show and workstation.interactZ - (zRange+.5) <= playerZ and workstation.interactZ + (zRange+.5) >= playerZ and
     workstation.interactX - (xRange+.5) <= playerX and workstation.interactX + (xRange+.5) >= playerX then
-    if workstation.interactX - xRange <= playerX and
+      if workstation.interactX - xRange <= playerX and
       workstation.interactX + xRange >= playerX and
       workstation.interactZ - zRange <= playerZ and
       workstation.interactZ + zRange >= playerZ then
-      lg.setColor(1,1,1,1)
+      lg.setColor(0,0,0,1)
     else
-      lg.setColor(.5,.5,.5,.7)
+      lg.setColor(.2,.2,.2,.7)
     end
+    lg.push("all")
+    lg.setDepthMode("always", false)
     interactSign:draw()
+    lg.pop()
     lg.setColor(1,1,1,1)
   end
 end

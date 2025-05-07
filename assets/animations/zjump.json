@@ -10,7 +10,8 @@
           "transform": {
             "r": 15,
             "y": 8 
-          }
+          },
+          "audio": "audio.sfx.foot"
         },
         {
           "length": 0.1,

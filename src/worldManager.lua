@@ -173,9 +173,9 @@ worldManager.draw = function(playerWorld)
 
   ------ Draw
 
-  for _, door in ipairs(worldManager.doors) do
-    door:draw(world.name)
-  end
+  -- for _, door in ipairs(worldManager.doors) do
+  --   door:draw(world.name)
+  -- end
 
   local shader = g3d.shader
 

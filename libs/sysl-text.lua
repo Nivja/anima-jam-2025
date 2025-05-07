@@ -671,10 +671,10 @@ function M:update(dt)
                 if self.warble == 0 then
                   text_sounds[self.sound_number]:setPitch(1)
                 elseif self.warble < 0 then
-                  text_sounds[self.sound_number]:setPitch(tonumber("0.9" .. math.random(0, 10 - math.abs(self.warble))))
-                  -- print(self.warble, math.abs(self.warble), tonumber("9." .. math.random(0,math.abs(self.warble))))
+                  text_sounds[self.sound_number]:setPitch(tonumber("0.9" .. love.math.random(0, 10 - math.abs(self.warble))))
+                  -- print(self.warble, math.abs(self.warble), tonumber("9." .. love.math.random(0,math.abs(self.warble))))
                 else
-                  text_sounds[self.sound_number]:setPitch(tonumber("1." .. math.random(0, math.abs(self.warble))))
+                  text_sounds[self.sound_number]:setPitch(tonumber("1." .. love.math.random(0, math.abs(self.warble))))
                 end
                 text_sounds[self.sound_number]:play()
               end

@@ -37,13 +37,17 @@ return {
   { path = "audio/ui/SFX_UIClick_03.wav", name = "audio.ui.click.3", sourceType = "static", audioType = "ui", key = "audio.ui.click", volume = 0.7 },
 
   -- SFX
-  { path = "audio/sfx/SFX_Sewing_Loop_V1.wav", name = "audio.sfx.sewing", sourceType = "static", audioType = "sfx", volume = 1.0, onLoad = loopSource },
-
+  { path = "audio/sfx/SFX_Sewing_Loop_V2.wav", name = "audio.sfx.sewing", sourceType = "static", audioType = "sfx", volume = 1.0, onLoad = loopSource },
+  { path = "audio/sfx/SFX_FootFall_01.wav", name = "audio.sfx.foot.1", sourceType = "static", audioType = "sfx", key = "audio.sfx.foot", volume = .3 },
+  { path = "audio/sfx/SFX_FootFall_02.wav", name = "audio.sfx.foot.2", sourceType = "static", audioType = "sfx", key = "audio.sfx.foot", volume = .3 },
+  { path = "audio/sfx/SFX_FootFall_03.wav", name = "audio.sfx.foot.3", sourceType = "static", audioType = "sfx", key = "audio.sfx.foot", volume = .3 },
+  { path = "audio/sfx/SFX_FootFall_04.wav", name = "audio.sfx.foot.4", sourceType = "static", audioType = "sfx", key = "audio.sfx.foot", volume = .3 },
+  { path = "audio/sfx/SFX_FootFall_05.wav", name = "audio.sfx.foot.5", sourceType = "static", audioType = "sfx", key = "audio.sfx.foot", volume = .3 },
   -- Music
   { path = "audio/music/Solarpunk_Menu_Loop.wav", name = "audio.music.menu", sourceType = "stream", audioType = "music", volume = 1.0, onLoad = loopSource },
   { path = "audio/music/SolarPunk Jam Outside_Loop_V1.wav", name = "audio.music.town", sourceType = "stream", audioType = "music", volume = 1.0, onLoad = loopSource },
   { path = "audio/music/Solarpunk_Workshop_V1.wav", name = "audio.music.workshop", sourceType = "stream", audioType = "music", volume = 1.0, onLoad = loopSource },
-  { path = "audio/music/SolarPunk Mini-Game_Draft_2.wav", name = "audio.music.minigame", sourceType = "stream", audioType = "music", volume = 0.4, onLoad = loopSource },
+  { path = "audio/music/Solarpunk_Mini-Game_V2.wav", name = "audio.music.minigame", sourceType = "stream", audioType = "music", volume = 0.4, onLoad = loopSource },
 
   -- Fonts
   { path = "fonts/Roboto_Mono/RobotoMono-Light.ttf",            name = "fonts.light" },

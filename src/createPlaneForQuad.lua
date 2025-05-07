@@ -9,10 +9,11 @@ local objVTFormat = "vt %.6f %.6f\n"
 local objVNFormat = "vn %.6f %.6f %.6f\n"
 
 -- createPlaneForQuad
-return function(quadX, quadY, quadW, quadH, texture)
+return function(quadX, quadY, quadW, quadH, texture, pixelUnitScale)
   local objString = ""
+  pixelUnitScale = pixelUnitScale or pixelToUnitScale
 
-  local halfW, halfH = (quadW / pixelToUnitScale) / 2, (quadH / pixelToUnitScale) / 2
+  local halfW, halfH = (quadW / pixelUnitScale) / 2, (quadH / pixelUnitScale) / 2
 
   objString = objString .. objVFormat:format( halfW, -halfH, 0.0)
   objString = objString .. objVFormat:format(-halfW, -halfH, 0.0)
@@ -47,5 +48,5 @@ return function(quadX, quadY, quadW, quadH, texture)
   if not success then
     logger.warn("Could not remove .temp file created for model generation")
   end
-  return model
+  return model, halfH
 end

@@ -81,11 +81,14 @@ world.get3DObjects = function() -- for alpha objects
   }
 end
 
-local workshopExterior = g3d.newModel("assets/models/workshop_exterior.obj", "assets/textures/workshop_exterior.png", { 0, 0, 6.005 }, nil, nil, false, true)
+-- local workshopExterior = g3d.newModel("assets/models/workshop_exterior.obj", "assets/textures/workshop_exterior.png", { 0, 0, 6.005 }, nil, nil, false, true)
+
+local workshopExterior_2 = g3d.newModel("assets/models/workshop_exterior_2.obj", "assets/textures/House.png", { -.2, -.81, 6, }, nil, nil, false, false)
 
 local player = characterManager.get("player")
 world.draw = function()
-  workshopExterior:draw()
+  -- workshopExterior:draw()
+  workshopExterior_2:draw()
   requestBoardSRC.draw(player.x, player.z)
 end
 
@@ -93,8 +96,8 @@ world.drawUI = function(scale)
   requestBoardSRC.drawUI(scale)
 end
 
-local floor = g3d.newModel("assets/models/floor.obj", "assets/textures/ground.png", { 0, 0, 4 }, nil, nil, true, false)
-floor.texture:setWrap("repeat")
+local floor = g3d.newModel("assets/models/town_floor.obj", "assets/textures/Floor_Outside.png", { 0, 0, 4 }, nil, nil, true, false)
+-- floor.texture:setWrap("repeat")
 
 world.drawFloor = function() 
   floor:draw()

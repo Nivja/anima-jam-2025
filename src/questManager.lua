@@ -11,9 +11,10 @@ local ui = require("util.ui")
 
 local dialogueManager = require("src.dialogueManager")
 
-local numVoices = 0
--- local voice_1 = love.audio.newSource("assets/audio/Solarpunk Voice_1.mp3", "static")
--- syslText.configure.add_text_sound(voice_1, 1)
+local numVoices = 3
+syslText.configure.add_text_sound(love.audio.newSource("assets/audio/SFX_Voice_04.wav", "static"), .2)
+syslText.configure.add_text_sound(love.audio.newSource("assets/audio/SFX_Voice_05.wav", "static"), .2)
+syslText.configure.add_text_sound(love.audio.newSource("assets/audio/SFX_Voice_07.wav", "static"), .2)
 
 local questManager = {
   locked = { },
@@ -135,8 +136,8 @@ questManager.resize = function(w, h, scale)
     default_underline_position = 0,
     character_sound = true,
     sound_number = 0,
-    sound_every = 5,
-    default_warble = 5,
+    sound_every = 6,
+    default_warble = 999,
   })
   if text then
     questManager.displayText(speaker, text, scale)
@@ -161,7 +162,7 @@ questManager.displayText = function(sp, text, scale)
   
   questManager.box.__ogText = text
   text = text .. "[waitforinput]"
-  if speaker and numVoices > 0 then    
+  if speaker ~= nil and numVoices > 0 then    
     local n = love.math.random(1, numVoices)
     if numVoices == 1 then n = 1 end
     text = ("[voice=%d]"):format(n) .. text

@@ -1,5 +1,6 @@
 local logger = require("util.logger")
 
+local audioManager = require("util.audioManager")
 local flux = require("libs.flux")
 
 local animation = { }
@@ -116,6 +117,9 @@ local runSequences = function(sequences, partLookup, finishCB)
           if accumulatedDelay then
             fluxTween:delay(accumulatedDelay)
             accumulatedDelay = nil
+          end
+          if fluxTween and tween.audio then
+            fluxTween:oncomplete(function() audioManager.play(tween.audio) end)
           end
         end
       end

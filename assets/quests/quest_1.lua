@@ -24,7 +24,7 @@ return {
     { "setObjective", "Listen to Zyla's request" },
     { "teleportToDoor", "zyla", "town-workshop", "town" },
     { "useDoor", "zyla", "town-workshop" },
-    { "moveX", "zyla", -3 },
+    { "moveX", "zyla", -2 },
     { "setCharacter", "zyla" },
     "Good morning, I am here to see Rosetta. Is she around? I need my dress repaired.",
     { "setCharacter", "player" },

@@ -173,6 +173,15 @@ scene.draw = function()
   worldManager.drawUI(playerWorld, scene.scale)
   questManager.drawUI(scene.scale)
   lg.pop()
+
+  if love.keyboard.isScancodeDown("tab") then
+    local str = love.timer.getFPS().." FPS"
+    lg.setColor(1,1,1,1)
+    lg.rectangle("fill", 10, 10, lg.getFont():getWidth(str), lg.getFont():getHeight())
+    lg.setColor(0,0,0,1)
+    lg.print(str, 10, 10)
+    lg.setColor(1,1,1,1)
+  end
 end
 
 local inputDetected = function(inputType)
