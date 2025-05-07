@@ -71,6 +71,18 @@ return {
 
   { path = "fonts/Roboto_Mono/RobotoMono-Medium.ttf",           name = "fonts.medium" },
   { path = "fonts/Roboto_Mono/RobotoMono-MediumItalic.ttf",     name = "fonts.medium.italic" },
+
+  { path = "fonts/Abel/Abel-Regular.ttf", name = "fonts.abel" },
+-- Fabric
+  { path = "fabric/fancy_1.png", name = "fabric.fancy_1", onLoad = filterLinear },
+  { path = "fabric/heirloom_1.png", name = "fabric.heirloom_1", onLoad = filterLinear },
+  { path = "fabric/heirloom_2.png", name = "fabric.heirloom_2", onLoad = filterLinear },
+  { path = "fabric/neutral_1.png", name = "fabric.neutral_1", onLoad = filterLinear },
+  { path = "fabric/neutral_2.png", name = "fabric.neutral_2", onLoad = filterLinear },
+  { path = "fabric/neutral_3.png", name = "fabric.neutral_3", onLoad = filterLinear },
+  { path = "fabric/neutral_4.png", name = "fabric.neutral_4", onLoad = filterLinear },
+  { path = "fabric/silly_1.png", name = "fabric.silly_1", onLoad = filterLinear },
+
 -- UI
   { path = "UI/logoES.png", name = "ui.logoES", onLoad = filterNearest },
   { path = "UI/basic_3slice.png", name = "ui.3slice.basic", onLoad = slice3Nearest, 16, 96 },

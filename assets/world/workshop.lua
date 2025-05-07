@@ -53,10 +53,18 @@ local workshop_assets = lg.newImage("assets/textures/Workshop_Assets.png")
 local pizzaShelf, _halfH = createPlaneForQuad(1166, 740, 363, 340, workshop_assets, 300)
 pizzaShelf:setTranslation(8, _halfH-.1, 1.9)
 
+local pizzaShelf2 = pizzaShelf:clone()
+pizzaShelf2:setTranslation(6, _halfH-.1, 1.9)
+
+local plant2, _halfH = createPlaneForQuad(12, 315, 181, 474, workshop_assets, 250)
+plant2:setTranslation(-1, _halfH, 2.6)
+
 world.get3DObjects = function()
   return {
     workstationModel,
     pizzaShelf,
+    pizzaShelf2,
+    plant2,
   }
 end
 

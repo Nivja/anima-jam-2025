@@ -1,8 +1,9 @@
-local lg = love.graphics
+local lg, lfs = love.graphics, love.filesystem
 
 local audioManager = require("util.audioManager")
 local settings = require("util.settings")
 local cursor = require("util.cursor")
+local assets = require("util.assets")
 local input = require("util.input")
 local flux = require("libs.flux")
 local ui = require("util.ui")
@@ -48,6 +49,8 @@ local numThree = lg.newQuad(581, 1210, 65, 87, spriteSheet)
 
 local inventorySlot = lg.newQuad(1533, 233, 60, 58, spriteSheet)
 local inventorySlotActive = lg.newQuad(1600, 233, 60, 58, spriteSheet)
+
+local textBadge = lg.newQuad(1231, 1040, 243, 76, spriteSheet)
 
 local inventoryButtonLeft = lg.newQuad(1520, 314, 47, 52, spriteSheet)
 local inventoryButtonLeftActive = lg.newQuad(1520, 377, 47, 52, spriteSheet)
@@ -185,15 +188,23 @@ local fabricBackground = lg.newQuad(1831, 288, 1175, 172, spriteSheet)
 local fabricShadow = lg.newQuad(2854, 94, 61, 165, spriteSheet)
 local fabricArrow = lg.newQuad(1981, 94, 61, 165, spriteSheet)
 local fabricTextures = { -- magic number is +83
-  silly_1    = { quad = lg.newQuad(1850, 94, 61, 165, spriteSheet), x = -1, },
-  neutral_1  = { quad = lg.newQuad(2098, 94, 61, 165, spriteSheet), x = 248, },
-  fancy_1    = { quad = lg.newQuad(2265, 94, 61, 165, spriteSheet), x = 413, },
-  neutral_2  = { quad = lg.newQuad(2346, 94, 61, 165, spriteSheet), x = 496, },
-  heirloom_1 = { quad = lg.newQuad(2429, 94, 61, 165, spriteSheet), x = 579, },
-  heirloom_2 = { quad = lg.newQuad(2514, 94, 61, 165, spriteSheet), x = 662, },
-  neutral_3  = { quad = lg.newQuad(2680, 94, 61, 165, spriteSheet), x = 828, },
-  neutral_4  = { quad = lg.newQuad(2762, 94, 61, 165, spriteSheet), x = 911, },
+  silly_1    = { quad = lg.newQuad(1850, 94, 61, 165, spriteSheet), x =  -1, name = "Silly" },
+  neutral_1  = { quad = lg.newQuad(2098, 94, 61, 165, spriteSheet), x = 248, name = "Neutral" },
+  fancy_1    = { quad = lg.newQuad(2265, 94, 61, 165, spriteSheet), x = 413, name = "Fancy" },
+  neutral_2  = { quad = lg.newQuad(2346, 94, 61, 165, spriteSheet), x = 496, name = "Neutral" },
+  heirloom_1 = { quad = lg.newQuad(2429, 94, 61, 165, spriteSheet), x = 579, name = "Heirloom" },
+  heirloom_2 = { quad = lg.newQuad(2514, 94, 61, 165, spriteSheet), x = 662, name = "Heirloom" },
+  neutral_3  = { quad = lg.newQuad(2680, 94, 61, 165, spriteSheet), x = 828, name = "Neutral" },
+  neutral_4  = { quad = lg.newQuad(2762, 94, 61, 165, spriteSheet), x = 911, name = "Neutral" },
 }
+
+for key, fabric in pairs(fabricTextures) do
+  if assets.getReferenceCount("fabric."..key) > 0 then
+    fabric.texture = assets["fabric."..key]
+  else
+    logger.error("Fabric texture has not been loaded!", key)
+  end
+end
 
 local fabricTexturesOrder = {
   "silly_1", "neutral_1", "fancy_1", "neutral_2",
@@ -425,6 +436,7 @@ workstation.interact = function(_, x, z)
     patchItemsIndex = 1
     patchLevel = 1
     inventorySlotSelected = 1
+    fabricArrowPosition = 1
     return true -- consumed
   end
   return false
@@ -509,7 +521,7 @@ workstation.drawUI = function(scale)
     lg.setStencilState("keep", "greater", 0)
     lg.setColorMask(true)
 
-    if sideButtons[1].active then
+    if sideButtons[1].active then -- Patch
       local button = sideButtons[1]
       lg.draw(spriteSheet, darkBG, 429, 347)
       local offsetXFactor = 1 - math.min(1, love.timer.getTime()-button.activateTime)
@@ -536,8 +548,21 @@ workstation.drawUI = function(scale)
       lg.draw(spriteSheet, darkBGRight, 1493, 347)
       lg.pop()
       lg.push()
+      lg.draw(spriteSheet, textBadge, 920, 850-76/2)
       lg.translate(429+1223/2, 347+618/2.5)
       lg.draw(spriteSheet, darkBGCenterSquare, -391/2, -391/2)
+      lg.push() -- Breaks sprite batching
+        local key = fabricTexturesOrder[fabricArrowPosition]
+        if key then
+        local fabric = fabricTextures[key]
+        if fabric then
+          local _, _, w, h = darkBGCenterSquare:getViewport()
+          local tw, th = fabric.texture:getDimensions()
+          w, h = w - 20, h - 20
+          lg.draw(fabric.texture, -391/2+10, -391/2+10, 0, w/tw, h/th)
+        end
+        end
+      lg.pop()
       lg.pop()
     else
       lg.draw(spriteSheet, crystalBG, 429, 347)
@@ -553,13 +578,16 @@ workstation.drawUI = function(scale)
     fabricOffsetY = fabricOffsetY + 18
 
     --   Fabric
-    for _, fabricType in ipairs(fabricTexturesOrder) do
+    for index, fabricType in ipairs(fabricTexturesOrder) do
       local fabricAmount = inventory.fabric[fabricType]
       if fabricAmount and fabricAmount > 0 then -- draw
         local fabricTex = fabricTextures[fabricType]
         if not fabricTex then logger.error("Couldn't find texture for type:", fabricType) end
         lg.draw(spriteSheet, fabricShadow, fabricOffsetX + fabricTex.x, fabricOffsetY)
         lg.draw(spriteSheet, fabricTex.quad, fabricOffsetX + fabricTex.x, fabricOffsetY)
+        if index == fabricArrowPosition then
+          lg.draw(spriteSheet, fabricArrow, fabricOffsetX + fabricTex.x, fabricOffsetY)
+        end
       end
     end
 
@@ -633,17 +661,36 @@ workstation.drawUI = function(scale)
   lg.pop()
   lg.pop()
   lg.push("all")
-    -- lg.translate(translateX, 0)
-    lg.translate(tw/2+80*textureScale, bh*textureScale)
-    lg.setColor(163/255, 245/255, 108/255, 1)
-    local font = ui.getFont(18, "fonts.regular.bold", scale)
-    local str = "UNKNOWN"
-    if sideButtons[1].active then str = "Patching" end
-    if sideButtons[2].active then str = "Layered Patch" end
-    if sideButtons[3].active then str = "Eco Print" end
-    if sideButtons[4].active then str = "Create" end
-    lg.print(str, font, -font:getWidth(str)/2, -font:getHeight()/2-105*textureScale)
-    lg.setColor(1,1,1,1)
+    lg.setColor(194/255, 234/255, 73/255, 1)
+    lg.push()
+      lg.translate(tw/2+80*textureScale, bh*textureScale)
+      local font = ui.getFont(18, "fonts.abel", scale)
+      local str = "UNKNOWN"
+      if sideButtons[1].active then str = "Patching" end
+      if sideButtons[2].active then str = "Layered Patch" end
+      if sideButtons[3].active then str = "Eco Print" end
+      if sideButtons[4].active then str = "Create" end
+      lg.print(str, font, -font:getWidth(str)/2, -font:getHeight()/2-105*textureScale)
+    lg.pop()
+    lg.push()
+      lg.translate(1580*textureScale+translateX, 100*textureScale)
+      local font = ui.getFont(16, "fonts.abel", scale)
+      local str = "Fabric"
+      lg.print(str, font, -font:getWidth(str)/2, -font:getHeight()/2)
+    lg.pop()
+    lg.push()
+      lg.setColor(0,0,0,1)
+      if sideButtons[1].active then -- Patch
+        local key = fabricTexturesOrder[fabricArrowPosition]
+        if key then
+        local fabric = fabricTextures[key]
+        if fabric then
+          lg.translate(tw/2+100*textureScale, 850*textureScale)
+          lg.print(fabric.name, font, -font:getWidth(str)/2, -font:getHeight()/2)
+        end
+        end
+      end
+    lg.pop()
   lg.pop()
   lg.setStencilMode() -- clear stencil
 end

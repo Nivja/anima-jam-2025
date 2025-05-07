@@ -119,7 +119,7 @@ questManager.resize = function(w, h, scale)
     currentCharacter = questManager.box.current_character
     wait = questManager.box.waitforinput
   end
-  local font, size = ui.getFont(20, "fonts.regular", scale)
+  local font, size = ui.getFont(20, "fonts.abel", scale)
   questManager.box = syslText.new("center", {
     autotags = "",
     font = font,
@@ -278,7 +278,7 @@ questManager.update = function(dt, scale, isGamepadActive)
         local mx, my = love.mouse.getPosition()
 
         local font = ui.getFont(24, "fonts.regular.bold", scale)
-        local choiceFont = ui.getFont(18, "fonts.regular", scale)
+        local choiceFont = ui.getFont(18, "fonts.abel", scale)
         local choiceFontHeight = choiceFont:getHeight()
 
         local y = box.get.height+80*scale

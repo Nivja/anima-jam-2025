@@ -122,7 +122,7 @@ requestBoard.update = function(dt, scale, isGamepadActive)
 
     local questWidth = (w - slice.width[1]/2 - slice.width[3]/2) * scale
 
-    local titleFont = require("util.ui").getFont(20, "fonts.regular.bold", scale)
+    local titleFont = require("util.ui").getFont(20, "fonts.abel", scale)
     local height = titleFont:getHeight() * 3
 
     local found = false
@@ -184,7 +184,7 @@ end
 
 local drawQuest = function(quest, width, scale, isActive)
   local titleFont = require("util.ui").getFont(20, "fonts.regular.bold", scale)
-  local subtitleFont = require("util.ui").getFont(12, "fonts.regular", scale)
+  local subtitleFont = require("util.ui").getFont(12, "fonts.abel", scale)
   local height = titleFont:getHeight() * 3
   lg.push("all")
   if index~= nil and index == quest.id then
