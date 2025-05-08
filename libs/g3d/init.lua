@@ -61,8 +61,8 @@ if select(3, love.window.getMode()).depth then
 end
 
 g3d.shader:send("opaque", false)
-g3d.shader:send("shadowRadiusX", 0.7)
-g3d.shader:send("shadowRadiusZ", 0.3)
+g3d.shader:send("shadowRadiusX", 0.5)
+g3d.shader:send("shadowRadiusZ", 0.2)
 g3d.shader:send("shadowSoftness", 0.7)
 g3d.shader:send("shadowStrength", 1.0)
 

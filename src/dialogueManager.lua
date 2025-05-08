@@ -184,7 +184,7 @@ local commandLookup = {
     end
     character.canMove = false
     character:moveX(0)
-    logger.info("Dialogue: Froze character,", commandTbl[2])
+    -- logger.info("Dialogue: Froze character,", commandTbl[2])
     return self:next()
   end,
   ["unfreeze"] = function(self, commandTbl, commandType)
@@ -195,7 +195,7 @@ local commandLookup = {
     end
     character.canMove = true
     character:moveX(0)
-    logger.info("Dialogue: Unfroze character,", commandTbl[2])
+    -- logger.info("Dialogue: Unfroze character,", commandTbl[2])
     return self:next()
   end,
   ["addItem"] = function(self, commandTbl)

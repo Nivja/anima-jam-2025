@@ -2,6 +2,7 @@ local lg, lfs = love.graphics, love.filesystem
 
 local audioManager = require("util.audioManager")
 local settings = require("util.settings")
+local logger = require("util.logger")
 local cursor = require("util.cursor")
 local assets = require("util.assets")
 local input = require("util.input")
@@ -47,10 +48,27 @@ local numOne = lg.newQuad(581, 848, 65, 87, spriteSheet)
 local numTwo = lg.newQuad(581, 1029, 65, 87, spriteSheet)
 local numThree = lg.newQuad(581, 1210, 65, 87, spriteSheet)
 
+local numOneSlot = lg.newQuad(722, 847, 112, 112, spriteSheet)
+local numTwoSlot = lg.newQuad(722, 1021, 112, 112, spriteSheet)
+local numThreeSlot = lg.newQuad(722, 1198, 112, 112, spriteSheet)
+
+local numberedSlotQuad = lg.newQuad(3000/2-1200, 3000/2-1200, 100*12, 100*12, 3000, 3000)
+
 local inventorySlot = lg.newQuad(1533, 233, 60, 58, spriteSheet)
 local inventorySlotActive = lg.newQuad(1600, 233, 60, 58, spriteSheet)
 
 local textBadge = lg.newQuad(1231, 1040, 243, 76, spriteSheet)
+local arrowLeft = lg.newQuad(1517, 1021, 105, 122, spriteSheet)
+local arrowRight = lg.newQuad(1639, 1023, 105, 122, spriteSheet)
+
+local arrowButtons = {
+  left = {
+    offsetX = 0,
+  },
+  right = {
+    offsetX = 0,
+  }
+}
 
 local inventoryButtonLeft = lg.newQuad(1520, 314, 47, 52, spriteSheet)
 local inventoryButtonLeftActive = lg.newQuad(1520, 377, 47, 52, spriteSheet)
@@ -214,8 +232,48 @@ local fabricTexturesOrder = {
 local inventorySlotSelected = 1
 local fabricArrowPosition = 0
 
+local moveFabricArrowPosition = function(delta)
+  local found, first, last = nil, nil, nil
+  for index, key in ipairs(fabricTexturesOrder) do
+    local fabricAmount = inventory.fabric[key]
+    if fabricAmount and fabricAmount > 0 then
+      if found and delta == 1 then
+        -- logger.warn("1Was", fabricArrowPosition, "Now", index)
+        fabricArrowPosition = index
+        return
+      end
+      if index == fabricArrowPosition then
+          found = true
+      end
+      if found and delta == -1 then
+        if last then
+          -- logger.warn("2Was", fabricArrowPosition, "Now", last)
+          fabricArrowPosition = last
+          return
+        else
+          found = false
+        end
+      end
+      if not first then first = index end
+      last = index
+    end
+  end
+  if first and delta == 1 then
+    -- logger.warn("3Was", fabricArrowPosition, "Now", first)
+    fabricArrowPosition = first
+    return
+  end
+  if last and delta == -1 then
+    -- logger.warn("4Was", fabricArrowPosition, "Now", first)
+    fabricArrowPosition = last
+    return
+  end
+  logger.warn("Shouldn't hit this; moveFabricArrowPosition call", found, first, last)
+end
+
 local isDraggingCloseButton, closeDragOffset, closeDragOffsetY, closeInside = false, 0, 0, false
-local sideButtonInside, inventoryButtonInside = false, false
+local sideButtonInside, inventoryButtonInside, insideArrowButtons, insideFabricAccept = false, false, false, false
+local textBadgePatchInside = false
 local patchItems, patchItemsIndex, patchLevel = nil, 1, 1
 local closeTimer, closeTimeMax, closeMouseTimer = 0, 2.5, 0
 local leavesX, leavesY, leavesFlipX, leavesFlipY = 0, 0, true, false
@@ -419,6 +477,118 @@ workstation.update = function(dt, scale, isGamepadActive)
     end
   end
 
+  if sideButtons[1].active then
+    if patchLevel == 1 then
+      if not inputConsumed and not isDraggingCloseButton then
+        if isGamepadActive then
+          if insideArrowButtons then
+            insideArrowButtons = false
+            cursor.switch("arrow")
+          end
+
+          local nav = 0
+          if input.baton:pressed("menuNavLeft") then
+            nav = nav - 1
+            inputConsumed = true
+          end
+          if input.baton:pressed("menuNavRight") then
+            nav = nav + 1
+            inputConsumed = true
+          end
+          if nav ~= 0 then
+            moveFabricArrowPosition(nav)
+            inputConsumed = true
+          end
+        else
+          local buttonY = (347+618/2.5-122/2) * textureScale
+          local _, _, buttonD, _ = arrowLeft:getViewport()
+          buttonD = buttonD * textureScale
+          local found
+          if my >= buttonY and my <= buttonY + buttonD then -- early out
+            local buttonX = (429+1223/2-391) * textureScale + translateX
+            if mx >= buttonX and mx <= buttonX + buttonD then
+              found = "left"
+              if not insideArrowButtons then
+                insideArrowButtons = true
+                cursor.switch("hand")
+              end
+            end
+          end
+          local buttonX = (429+1223/2+391/4*3) * textureScale + translateX
+          if mx >= buttonX and mx <= buttonX + buttonD then
+            found = "right"
+            if not insideArrowButtons then
+              insideArrowButtons = true
+              cursor.switch("hand")
+            end
+          end
+          if not found and insideArrowButtons then
+            insideArrowButtons = false
+            cursor.switch("arrow")
+          end
+          if found and input.baton:pressed("accept") then
+            inputConsumed = true
+            local tbl
+            if found == "left" then
+              tbl = arrowButtons.left
+              moveFabricArrowPosition(-1)
+            elseif found == "right" then
+              tbl = arrowButtons.right
+              moveFabricArrowPosition(1)
+            end
+            flux.to(tbl, 0.1, { offsetX = 5 })
+            :ease("linear")
+            :after(0.1, { offsetX = 0 }):ease("linear")
+            audioManager.play("audio.ui.click")
+          end
+        end
+      end
+
+      -- To stop simple skipping
+      local button = sideButtons[1]
+      local offsetXFactor = 1 - math.min(1, love.timer.getTime()-button.activateTime)
+      if not inputConsumed and not isDraggingCloseButton and offsetXFactor == 0 then
+        if isGamepadActive then
+          if textBadgePatchInside then
+            textBadgePatchInside = false
+            cursor.switch("arrow")
+          end
+
+          if input.baton:pressed("accept") then
+            patchLevel = 2
+          end
+        else
+          local buttonX = 920 * textureScale + translateX
+          local buttonY = (850-76/2) * textureScale
+          local _, _, width, height = textBadge:getViewport()
+          width, height = width * textureScale, height * textureScale
+          if mx >= buttonX and mx <= buttonX + width and
+             my >= buttonY and my <= buttonY + height then
+            if not textBadgePatchInside then
+              textBadgePatchInside = true
+              cursor.switch("hand")
+            end
+            if input.baton:pressed("accept") then
+              patchLevel = 2
+              if textBadgePatchInside then
+                textBadgePatchInside = false
+                cursor.switch("arrow")
+              end
+            end
+          else
+            if textBadgePatchInside then
+              textBadgePatchInside = false
+              cursor.switch("arrow")
+            end
+          end
+        end
+      end
+    elseif patchLevel == 2 then
+
+    end
+  end
+
+
   return inputConsumed
 end
 
@@ -532,7 +702,7 @@ workstation.drawUI = function(scale)
       local _y = 618/3
       local f = spriteSheet:getFilter()
       spriteSheet:setFilter("linear")
-      lg.translate(429+159/2-65/2, 347-_y/1.5)
+      lg.translate(429+159/2-65/2, 335-_y/1.5)
       if patchLevel ~= 1 then lg.setColor(.5,.5,.5,1) else lg.setColor(1,1,1,1) end
       lg.draw(spriteSheet, numOne, 0, _y*1)
       if patchLevel ~= 2 then lg.setColor(.5,.5,.5,1) else lg.setColor(1,1,1,1) end
@@ -540,30 +710,57 @@ workstation.drawUI = function(scale)
       if patchLevel ~= 3 then lg.setColor(.5,.5,.5,1) else lg.setColor(1,1,1,1) end
       lg.draw(spriteSheet, numThree, 0, _y*3)
       lg.setColor(1,1,1,1)
-      spriteSheet:setFilter(f)
       lg.pop()
       lg.pop()
       lg.push()
       lg.translate(offsetXFactor*160, 0)
       lg.draw(spriteSheet, darkBGRight, 1493, 347)
-      lg.pop()
       lg.push()
-      lg.draw(spriteSheet, textBadge, 920, 850-76/2)
-      lg.translate(429+1223/2, 347+618/2.5)
-      lg.draw(spriteSheet, darkBGCenterSquare, -391/2, -391/2)
-      lg.push() -- Breaks sprite batching
+      lg.translate(1649-158/2-112/2, 315-_y/1.5)
+      lg.draw(spriteSheet, numOneSlot, 0, _y*1)
+      if patchLevel == 2 then
         local key = fabricTexturesOrder[fabricArrowPosition]
         if key then
         local fabric = fabricTextures[key]
         if fabric then
-          local _, _, w, h = darkBGCenterSquare:getViewport()
-          local tw, th = fabric.texture:getDimensions()
-          w, h = w - 20, h - 20
-          lg.draw(fabric.texture, -391/2+10, -391/2+10, 0, w/tw, h/th)
+          lg.draw(fabric.texture, numberedSlotQuad, 6, 6+_y*1, 0, 1/12)
         end
         end
+      end
+      lg.draw(spriteSheet, numTwoSlot, 0, _y*2)
+      lg.draw(spriteSheet, numThreeSlot, 0, _y*3)
+      spriteSheet:setFilter(f)
       lg.pop()
       lg.pop()
+      if patchLevel == 1 then
+        lg.push()
+        lg.draw(spriteSheet, textBadge, 920, 850-76/2)
+        lg.push()
+        lg.translate(429+1223/2, 347+618/2.5)
+        lg.draw(spriteSheet, darkBGCenterSquare, -391/2, -391/2)
+        lg.pop()
+        lg.push()
+        lg.translate(429+1223/2, 347+618/2.5)
+        lg.draw(spriteSheet, arrowLeft, -391+arrowButtons.left.offsetX, -122/2)
+        lg.draw(spriteSheet, arrowRight, 391/4*3+arrowButtons.right.offsetX, -122/2)
+        lg.pop()
+        lg.push() -- Breaks sprite batching
+        lg.translate(429+1223/2, 347+618/2.5)
+          local key = fabricTexturesOrder[fabricArrowPosition]
+          if key then
+          local fabric = fabricTextures[key]
+          if fabric then
+            local _, _, w, h = darkBGCenterSquare:getViewport()
+            local tw, th = fabric.texture:getDimensions()
+            w, h = w - 20, h - 20
+            lg.draw(fabric.texture, -391/2+10, -391/2+10, 0, w/tw, h/th)
+          end
+          end
+        lg.pop()
+        lg.pop()
+      elseif patchLevel == 2 then
+
+      end
     else
       lg.draw(spriteSheet, crystalBG, 429, 347)
     end
@@ -666,7 +863,18 @@ workstation.drawUI = function(scale)
       lg.translate(tw/2+80*textureScale, bh*textureScale)
       local font = ui.getFont(18, "fonts.abel", scale)
       local str = "UNKNOWN"
-      if sideButtons[1].active then str = "Patching" end
+      if sideButtons[1].active then 
+        str = "Patching"
+        if love.timer.getTime() - sideButtons[1].activateTime >= 1.25 then
+          if patchLevel == 1 then
+            str = "Choose Fabric..."
+          elseif patchLevel == 2 then
+            str = "Stitch"
+          elseif patchLevel == 3 then
+            str = "Cut"
+          end
+        end
+      end
       if sideButtons[2].active then str = "Layered Patch" end
       if sideButtons[3].active then str = "Eco Print" end
       if sideButtons[4].active then str = "Create" end
@@ -680,12 +888,12 @@ workstation.drawUI = function(scale)
     lg.pop()
     lg.push()
       lg.setColor(0,0,0,1)
-      if sideButtons[1].active then -- Patch
+      if sideButtons[1].active and patchLevel == 1 then -- Patch 1 choose fabric
         local key = fabricTexturesOrder[fabricArrowPosition]
         if key then
         local fabric = fabricTextures[key]
         if fabric then
-          lg.translate(tw/2+100*textureScale, 850*textureScale)
+          lg.translate(tw/2+80*textureScale, 850*textureScale)
           lg.print(fabric.name, font, -font:getWidth(str)/2, -font:getHeight()/2)
         end
         end

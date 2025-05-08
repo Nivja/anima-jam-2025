@@ -161,8 +161,6 @@ world.draw = function()
   blueExtension2:draw()
   blueHouse:draw()
   requestBoardSRC.draw(player.x, player.z)
-
-  tree_left_1:draw()
 end
 
 world.drawUI = function(scale)
