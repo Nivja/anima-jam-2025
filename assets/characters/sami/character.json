@@ -1,0 +1,98 @@
+{
+  "spritesheet": "SpriteSheet.png",
+  "transform": {
+    "y": 0.6
+  },
+  "shadowOffset": 0.1,
+  "parts": [
+    {
+      "name": "Torso",
+      "parent": null,
+      "texture": {
+        "x": 1183,
+        "y": 789,
+        "width": 351,
+        "height": 341
+      },
+      "pivot": [ 1425, 1050 ]
+    },
+    {
+      "name": "Pants_",
+      "parent": "Torso",
+      "texture": {
+        "x": 1904,
+        "y": 414,
+        "width": 325,
+        "height": 136
+      },
+      "pivot": [ 2050, 470 ],
+      "offset": [ -80, 70 ],
+      "zOffset": -0.2
+    },
+    {
+      "name": "Leg.Right",
+      "parent": "Torso",
+      "texture": {
+        "x": 1574,
+        "y": 340,
+        "width": 240,
+        "height": 256
+      },
+      "pivot": [ 1680, 420 ],
+      "offset": [ -122, 120 ],
+      "zOffset": -0.1
+    },
+    {
+      "name": "Leg.Left",
+      "parent": "Torso",
+      "texture": {
+        "x": 1978,
+        "y": 689,
+        "width": 220,
+        "height": 254
+      },
+      "pivot": [ 2080, 710 ],
+      "offset": [ 0, 50],
+      "zOffset": -0.3
+    },
+    {
+      "name": "Head",
+      "parent": "Torso",
+      "texture": {
+        "x": 877,
+        "y": 133,
+        "width": 570,
+        "height": 580
+      },
+      "pivot": [ 1195, 633 ],
+      "offset": [ -70, -190 ],
+      "zOffset": 0.5
+    },
+    {
+      "name": "Arm.Right",
+      "parent": "Torso",
+      "texture": {
+        "x": 912,
+        "y": 895,
+        "width": 177,
+        "height": 318
+      },
+      "pivot": [ 1000, 940 ],
+      "offset": [ -200, -140 ],
+      "zOffset": 0.3
+    },
+    {
+      "name": "Arm.Left",
+      "parent": "Torso",
+      "texture": {
+        "x": 1624,
+        "y": 890,
+        "width": 175,
+        "height": 329
+      },
+      "pivot": [ 1675, 925 ],
+      "offset": [ 30, -150 ],
+      "zOffset": -0.3
+    }
+  ]
+}

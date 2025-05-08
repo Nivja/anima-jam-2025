@@ -1,4 +1,5 @@
 return {
+  importance = 100,
   title = "Zyla's Dilemma",
   description = "Help Zyla with her dress!",
   npc = "zyla", -- Who to talk to to activate the dialogue; isn't needed if repeatCheck is active
@@ -52,12 +53,14 @@ return {
     { "highlight", "interact.patch" }, -- todo highlight patch machine
     { "end" },
     { "tag", "patch_time" },
+    { "freeze", "player" },
     { "if", "item", "zyla_dress", "hasTag", "patch.silly", "silly_design" }, -- So the patching minigame would add the "patched.<patchType>" tag to the dress
     { "if", "item", "zyla_dress", "hasTag", "patch.neutral", "neutral_design" },
     { "if", "item", "zyla_dress", "hasTag", "patch.fancy", "fancy_design" },
     { "tag", "not_finished" },
     { "setCharacter", "zyla" },
     "Have you finished my dress?",
+    { "unfreeze", "player" },
     { "end" },
     { "tag", "silly_design" },
     { "setCharacter", "zyla" },
@@ -80,6 +83,7 @@ return {
       { "zyla_dress", 1 },
     }},
     { "questFinished" },
+    { "unfreeze", "player" },
     { "end" },
   }
 }

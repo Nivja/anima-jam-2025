@@ -216,6 +216,7 @@ local commandLookup = {
 }
 
 dialogue.next = function(self)
+  self.ran = true
   if not self.ready or self.waitForChoice then
     return nil
   end
@@ -276,7 +277,7 @@ dialogue.continue = function(self)
       logger.warn("Dialogue["..self.dirName.."@"..self.index.."]: Cannot find tag for currentState:", self.currentState)
     end
     self.isFinished = false
-  else
+  elseif self.ran then
     self:reset()
   end
 end
@@ -288,6 +289,7 @@ dialogue.reset = function(self)
   self.currentState = nil
   self.ready = true
   self.waitForChoice = false
+  self.ran = false
 end
 
 local dialogueManager = {
@@ -302,6 +304,7 @@ dialogueManager.parse = function(definition, dirName)
     currentState = nil,
     ready = true,
     waitForChoice = false,
+    ran = false,
   }
   setmetatable(parsedDialogue, dialogue)
   parsedDialogue:reset() -- set defaults

@@ -1,4 +1,5 @@
 return {
+  importance = 100,
   title = "Restock",
   description = "Restock on fabrics",
   unlock = {

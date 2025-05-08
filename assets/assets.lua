@@ -82,7 +82,9 @@ return {
   { path = "fabric/neutral_3.png", name = "fabric.neutral_3", onLoad = filterLinear },
   { path = "fabric/neutral_4.png", name = "fabric.neutral_4", onLoad = filterLinear },
   { path = "fabric/silly_1.png", name = "fabric.silly_1", onLoad = filterLinear },
-
+  
+  { path = "textures/Outside_Assets_1.png", name = "img.town.1", onLoad = filterLinear },
+  { path = "textures/Outside_Assets_2.png", name = "img.town.2", onLoad = filterLinear },
 -- UI
   { path = "UI/logoES.png", name = "ui.logoES", onLoad = filterNearest },
   { path = "UI/basic_3slice.png", name = "ui.3slice.basic", onLoad = slice3Nearest, 16, 96 },

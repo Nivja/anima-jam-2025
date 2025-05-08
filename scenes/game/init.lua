@@ -47,8 +47,6 @@ scene.load = function(gpMode, musicRef)
 
   scene.playerChar.setMusicRef(musicRef)
 
-  questManager.unlockQuest("test")
-
   -- fade in to scene
   worldManager.doorTransition.radius = 1
   flux.to(worldManager.doorTransition, 1, { radius = 0 })
@@ -134,13 +132,19 @@ scene.update = function(dt)
       if character ~= scene.playerChar and character.world == scene.playerChar.world and math.abs(character.z - scene.playerChar.z) < 0.1 and
           ((scene.playerChar.flip and character.x >= scene.playerChar.x and character.x < scene.playerChar.x + range) or
           (not scene.playerChar.flip and character.x <= scene.playerChar.x and character.x > scene.playerChar.x - range)) then
+        local found = nil
         for _, quest in pairs(questManager.active) do
-          if quest.npc == character.dirName and quest.dialogue:canContinue() then
-            quest.dialogue:continue()
-            questManager.activeQuestScene = quest
-            inputConsumed = true
-            break
+          if quest.npc == character.dirName and (quest.dialogue:canContinue() or not quest.dialogue.ran) then
+            if found and found.importance < quest.importance or not found then
+              found = quest
+            end
           end
+        end
+        if found then
+          found.dialogue:continue()
+          questManager.activeQuestScene = found
+          inputConsumed = true
+          break
         end
       end
     end
@@ -160,10 +164,21 @@ scene.update = function(dt)
 end
 
 scene.draw = function()
+  lg.origin()
   local playerWorld = scene.playerChar.world or "town"
 
-  lg.clear(worldManager.get(playerWorld).clearColor or { 0, 0, 0, 1, })
-  lg.origin()
+  local clearColor = worldManager.get(playerWorld).clearColor or { 0, 0, 0, 1, }
+  if type(clearColor) == "table" then
+    lg.clear(clearColor)
+  else
+    local ww, wh = lg.getDimensions()
+    local cw, ch = clearColor:getDimensions()
+    lg.clear(0,0,0,1)
+    lg.push("all")
+    lg.setDepthMode("always", false)
+    lg.draw(clearColor, 0,0, 0, ww/cw, wh/ch)
+    lg.pop()
+  end
   -- World
   lg.push("all")
   worldManager.draw(playerWorld)

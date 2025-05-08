@@ -10,6 +10,9 @@ return {
   "audio.music.workshop",
   "audio.music.minigame",
 
+  "img.town.1",
+  "img.town.2",
+
   "fabric.fancy_1",
   "fabric.heirloom_1",
   "fabric.heirloom_2",

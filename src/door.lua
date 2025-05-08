@@ -43,12 +43,12 @@ door.new = function(worldA, drawA, entryA, worldB, drawB, entryB)
   }, door)
 end
 
-door.getCB = function(self, character)
-  if character.world == self.worldA then -- moveTo worldB
+door.getCB = function(self, character, useEntry)
+  if not useEntry and character.world == self.worldA or useEntry == self.entryA then -- moveTo worldB
     return function()
       character:setWorld(self.worldB, unpack(self.entryB))
     end
-  elseif character.world == self.worldB then -- moveTo worldA
+  elseif not useEntry and character.world == self.worldB or useEntry == self.entryB then -- moveTo worldA
     return function()
       character:setWorld(self.worldA, unpack(self.entryA))
     end
@@ -58,8 +58,8 @@ door.getCB = function(self, character)
   return nil
 end
 
-door.use = function(self, character)
-  local cb = self:getCB(character)
+door.use = function(self, character, useEntry)
+  local cb = self:getCB(character, useEntry)
   local fluxTween
   if character.isPlayer then
     local time = 0.5
@@ -81,19 +81,32 @@ door.draw = function(self, world)
   end
   lg.push()
   lg.setColor(0,0,0,1)
-  local position = world == self.worldA and self.drawA or self.drawB
-  self.model:setTranslation(position[1], 0, position[2])
-  self.model:setRotation(0, position[3], 0)
-  lg.push("all")
-  if position[3] ~= 0 then
-    love.graphics.setDepthMode("always", false)
-    self.model:setScale(0.4, 1, 1)
-  else
-    self.model:setScale(1,1,1,1)
+  if world == self.worldA then
+    self.model:setTranslation(self.drawA[1], 0, self.drawA[2])
+    self.model:setRotation(0, self.drawA[3], 0)
+    lg.push("all")
+    if self.drawA[3] ~= 0 then
+      love.graphics.setDepthMode("always", false)
+      self.model:setScale(0.4, 1, 1)
+    else
+      self.model:setScale(1,1,1,1)
+    end
+    self.model:draw()
+    lg.pop()
   end
-  self.model:draw()
-  lg.pop()
-  -- love.graphics.setDepthMode("lequal", true)
+  if world == self.worldB then
+    self.model:setTranslation(self.drawB[1], 0, self.drawB[2])
+    self.model:setRotation(0, self.drawB[3], 0)
+    lg.push("all")
+    if self.drawB[3] ~= 0 then
+      love.graphics.setDepthMode("always", false)
+      self.model:setScale(0.4, 1, 1)
+    else
+      self.model:setScale(1,1,1,1)
+    end
+    self.model:draw()
+    lg.pop()
+  end
   lg.setColor(1,1,1,1)
   lg.pop()
 end

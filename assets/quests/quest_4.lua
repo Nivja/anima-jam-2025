@@ -1,4 +1,5 @@
 return {
+  importance = 100,
   title = "Quest 3",
   npc = "lyn",
   unlock = { },

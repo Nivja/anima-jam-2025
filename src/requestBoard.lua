@@ -226,14 +226,14 @@ requestBoard.drawUI = function(scale)
 
     for _, questId in ipairs(questManager.questOrder) do
       local quest = questManager.unlocked[questId]
-      if quest then
+      if quest and not quest.noShow then
         local h = drawQuest(quest, questWidth, scale)
         lg.translate(0, h)
       end
     end
     for _, questId in ipairs(questManager.questOrder) do
       local quest = questManager.active[questId]
-      if quest then
+      if quest and not quest.noShow then
         local h = drawQuest(quest, questWidth, scale, true)
         lg.translate(0, h)
       end

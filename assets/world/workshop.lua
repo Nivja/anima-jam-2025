@@ -18,6 +18,16 @@ player:setHome("workshop", 5, 4.5, true)
 
 questManager.unlockQuest("quest_1")
 
+-- Setup bark dialogue
+questManager.unlockQuest("child_bark")
+questManager.activateQuest("child_bark")
+questManager.unlockQuest("electrician_bark")
+questManager.activateQuest("electrician_bark")
+questManager.unlockQuest("sami_bark")
+questManager.activateQuest("sami_bark")
+questManager.unlockQuest("zyla_bark")
+questManager.activateQuest("zyla_bark")
+
 ------------------------------------
 
 local g3d = require("libs.g3d")

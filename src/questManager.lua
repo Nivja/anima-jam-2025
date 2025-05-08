@@ -97,6 +97,8 @@ questManager.activateQuest = function(questId, execute)
       return
     end
     questManager.activeQuestScene = quest
+  else
+    quest.dialogue.is_finished = true -- so it can continue
   end
 end
 

@@ -85,11 +85,10 @@ worldManager.getWorldLimit = function(worldId)
 end
 
 worldManager.checkForDoor = function(character, axis)
-  local enterDoor = false
+  local enterDoor, useEntry = false, nil
   for _, door in ipairs(worldManager.doors) do
-    local entry = door.worldA == character.world and door.entryA or
-                  door.worldB == character.world and door.entryB or nil
-    if entry then
+    if door.worldA == character.world then
+      local entry = door.entryA
       local isOnXAxis = entry[1] - door.halfWidth < character.x and
                         entry[1] + door.halfWidth > character.x
       local isOnZAxis = entry[2] - 0.1 < character.z and
@@ -98,12 +97,27 @@ worldManager.checkForDoor = function(character, axis)
       if (axis == "z" and isOnXAxis) or
          (axis == "x" and isOnXAxis and isOnZAxis) then
         enterDoor = door
+        useEntry = entry
+        break
+      end
+    end
+    if door.worldB == character.world then
+      local entry = door.entryB
+      local isOnXAxis = entry[1] - door.halfWidth < character.x and
+                        entry[1] + door.halfWidth > character.x
+      local isOnZAxis = entry[2] - 0.1 < character.z and
+                        entry[2] + 0.1 > character.z
+      -- print(axis, isOnXAxis, character.x, entry[1])
+      if (axis == "z" and isOnXAxis) or
+         (axis == "x" and isOnXAxis and isOnZAxis) then
+        enterDoor = door
+        useEntry = entry
         break
       end
     end
   end
   if enterDoor then
-    enterDoor:use(character)
+    enterDoor:use(character, useEntry)
   end
 end
 

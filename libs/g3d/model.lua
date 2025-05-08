@@ -95,9 +95,9 @@ end
 
 -- move given one 3d vector
 function model:setTranslation(tx,ty,tz)
-    self.translation[1] = tx
-    self.translation[2] = ty
-    self.translation[3] = tz
+    self.translation[1] = tx or self.translation[1]
+    self.translation[2] = ty or self.translation[2]
+    self.translation[3] = tz or self.translation[3]
     self:updateMatrix()
 end
 
