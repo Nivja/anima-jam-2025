@@ -13,7 +13,7 @@ return {
     { "setCharacter", "player" },
     "Thanks! I actually love it here, how about you, where are you spending your shifts?",
     { "setCharacter", "sami" },
-    "I’m at the bicycle workshop",
+    "I’m at the bicycle workshop.",
     { "setCharacter", "player" },
     "And.. are you into it?",
     { "setCharacter", "sami" },
