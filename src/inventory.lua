@@ -74,6 +74,26 @@ inventory.addItem = function(item)
   logger.info("Inventory: Added item", item.name or item.id or "UNKNOWN")
 end
 
+inventory.removeItem = function(id)
+  local item = inventory.lookup[id]
+  if not item then
+    logger.warn("Couldn't remove", id, "as it isn't in the lookup")
+    return
+  end
+
+  inventory.lookup[id] = nil
+
+  if inventory.lastAddedItem == item then inventory.lastAddedItem = nil end
+
+  for index, i in ipairs(inventory.items) do
+    if i == item then
+      table.remove(inventory.items, index)
+      break
+    end
+  end
+  logger.info("Inventory: Removed item", item.name or item.id or "UNKNOWN")
+end
+
 inventory.getPatchItems = function()
   local items = { }
   for _, item in ipairs(inventory.items) do

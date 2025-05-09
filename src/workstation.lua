@@ -27,8 +27,10 @@ end
 local base = assets["game.workstation.base"]
 base:setWrap("clamp")
 local bw, bh = base:getDimensions()
-local baseQuadLeft = lg.newQuad(0,0, 1,bh, base)
-local baseQuadRight = lg.newQuad(bw-1,0, 1,bh, base)
+local baseQuads = {
+  baseQuadLeft = lg.newQuad(0,0, 1,bh, base),
+  baseQuadRight = lg.newQuad(bw-1,0, 1,bh, base),
+}
 
 local spriteSheet = assets["game.workstation.spritesheet"]
 -- filter is handled in the draw; as it changes dependant on scale
@@ -58,8 +60,10 @@ local inventorySlot = lg.newQuad(1533, 233, 60, 58, spriteSheet)
 local inventorySlotActive = lg.newQuad(1600, 233, 60, 58, spriteSheet)
 
 local textBadge = lg.newQuad(1231, 1040, 243, 76, spriteSheet)
-local arrowLeft = lg.newQuad(1517, 1021, 105, 122, spriteSheet)
-local arrowRight = lg.newQuad(1639, 1023, 105, 122, spriteSheet)
+local arrowQuads = {
+  arrowLeft = lg.newQuad(1517, 1021, 105, 122, spriteSheet),
+  arrowRight = lg.newQuad(1639, 1023, 105, 122, spriteSheet),
+}
 
 local arrowButtons = {
   left = {
@@ -73,29 +77,22 @@ local arrowButtons = {
 local correctTick = lg.newQuad(725, 4, 554, 438, spriteSheet)
 local sewingMachineHead = lg.newQuad(1406, 68, 394, 149, spriteSheet)
 
-local inventoryButtonLeft = lg.newQuad(1520, 314, 47, 52, spriteSheet)
-local inventoryButtonLeftActive = lg.newQuad(1520, 377, 47, 52, spriteSheet)
-local inventoryButtonRight = lg.newQuad(1576, 314, 47, 52, spriteSheet)
-local inventoryButtonRightActive = lg.newQuad(1576, 377, 47, 52, spriteSheet)
-local inventoryButtonAccept = lg.newQuad(1630, 314, 47, 52, spriteSheet)
-local inventoryButtonAcceptActive = lg.newQuad(1630, 377, 47, 52, spriteSheet)
-
 local inventoryButtons = {
   {
-    quad = inventoryButtonLeft,
-    quadActive = inventoryButtonLeftActive,
+    quad = lg.newQuad(1520, 314, 47, 52, spriteSheet),
+    quadActive = lg.newQuad(1520, 377, 47, 52, spriteSheet),
     x = 180, offsetY = 0,
     active = false,
   },
   {
-    quad = inventoryButtonAccept,
-    quadActive = inventoryButtonAcceptActive,
+    quad = lg.newQuad(1630, 314, 47, 52, spriteSheet),
+    quadActive = lg.newQuad(1630, 377, 47, 52, spriteSheet),
     x = 235, offsetY = 0,
     active = false,
   },
   {
-    quad = inventoryButtonRight,
-    quadActive = inventoryButtonRightActive,
+    quad = lg.newQuad(1576, 314, 47, 52, spriteSheet),
+    quadActive = lg.newQuad(1576, 377, 47, 52, spriteSheet),
     x = 289, offsetY = 0,
     active = false,
   },
@@ -120,36 +117,27 @@ local fakeInventoryButton = function(button)
     end)
 end
 
-local buttonPatch        = lg.newQuad(3041,  219, 103, 117, spriteSheet)
-local buttonPatchActive  = lg.newQuad(3041,  821, 103, 117, spriteSheet)
-local buttonCreate       = lg.newQuad(3041,  364, 103, 117, spriteSheet)
-local buttonCreateActive = lg.newQuad(3041,  966, 103, 117, spriteSheet)
-local buttonSteam        = lg.newQuad(3041,  512, 103, 117, spriteSheet)
-local buttonSteamActive  = lg.newQuad(3041, 1114, 103, 117, spriteSheet)
-local buttonAdd          = lg.newQuad(3041,  662, 103, 117, spriteSheet)
-local buttonAddActive    = lg.newQuad(3041, 1264, 103, 117, spriteSheet)
-
 local currentActive
 local sideButtons = {
   {
-    quad = buttonPatch,
-    quadActive = buttonPatchActive,
+    quad = lg.newQuad(3041,  219, 103, 117, spriteSheet),
+    quadActive = lg.newQuad(3041,  821, 103, 117, spriteSheet),
     y = 226, offsetY = 10,
     active = true,
   },
   {
-    quad = buttonCreate,
-    quadActive = buttonCreateActive,
+    quad = lg.newQuad(3041,  364, 103, 117, spriteSheet),
+    quadActive = lg.newQuad(3041,  966, 103, 117, spriteSheet),
     y = 371, offsetY = 0,
   },
   {
-    quad = buttonSteam,
-    quadActive = buttonSteamActive,
+    quad = lg.newQuad(3041,  512, 103, 117, spriteSheet),
+    quadActive = lg.newQuad(3041, 1114, 103, 117, spriteSheet),
     y = 519, offsetY = 0,
   },
   {
-    quad = buttonAdd,
-    quadActive = buttonAddActive,
+    quad = lg.newQuad(3041,  662, 103, 117, spriteSheet),
+    quadActive = lg.newQuad(3041, 1264, 103, 117, spriteSheet),
     y = 669, offsetY = 0,
   }
 }
@@ -236,8 +224,12 @@ local fabricTexturesOrder = {
 
 local sashikoSpriteSheet = assets["game.workstation.sashiko"]
 
-local sashikoArrow_up = lg.newQuad(523, 93, 127, 124, sashikoSpriteSheet)
-local sashikoArrow_left = lg.newQuad(733, 91, 124, 126, sashikoSpriteSheet)
+local sashikoArrowQuads = {
+  up = lg.newQuad(146, 92, 127, 126, sashikoSpriteSheet),
+  left = lg.newQuad(1115, 91, 124, 126, sashikoSpriteSheet),
+  up_red = lg.newQuad(523, 93, 127, 124, sashikoSpriteSheet),
+  left_red = lg.newQuad(733, 91, 124, 126, sashikoSpriteSheet),
+}
 
 local inventorySlotSelected = 1
 local fabricArrowPosition = 0
@@ -423,9 +415,21 @@ workstation.update = function(dt, scale, isGamepadActive)
       if input.baton:pressed("leftBumper") then
         inputConsumed = true
         switchSideButtons(-1)
+        if sashikoArrowTimerStart ~= 0 then
+          sashikoArrowTimerStart = 1
+        end
+        if patchLevel == 4 then
+          patchLevel = 1
+        end
       elseif input.baton:pressed("rightBumper") then
         inputConsumed = true
         switchSideButtons(1)
+        if sashikoArrowTimerStart ~= 0 then
+          sashikoArrowTimerStart = 1
+        end
+        if patchLevel == 4 then
+          patchLevel = 1
+        end
       end
     else
       local buttonX = 1700 * textureScale + translateX
@@ -453,6 +457,12 @@ workstation.update = function(dt, scale, isGamepadActive)
       if found and input.baton:pressed("accept") then
         inputConsumed = true
         switchSideButtons(found)
+        if sashikoArrowTimerStart ~= 0 then
+          sashikoArrowTimerStart = 1
+        end
+        if patchLevel == 4 then
+          patchLevel = 1
+        end
         if sideButtonInside then
           sideButtonInside = false
           cursor.switch("arrow")
@@ -520,7 +530,7 @@ workstation.update = function(dt, scale, isGamepadActive)
           end
         else
           local buttonY = (347+618/2.5-122/2) * textureScale
-          local _, _, buttonD, _ = arrowLeft:getViewport()
+          local _, _, buttonD, _ = arrowQuads.arrowLeft:getViewport()
           buttonD = buttonD * textureScale
           local found
           if my >= buttonY and my <= buttonY + buttonD then -- early out
@@ -610,7 +620,7 @@ workstation.update = function(dt, scale, isGamepadActive)
       if not inputConsumed and not isDraggingCloseButton then
         local dx, dy = input.baton:get("move")
         tearFabricPosition[1] = tearFabricPosition[1] + 10 * dx *-1
-        if math.abs(tearFabricPosition[1]) <= 15 then
+        if math.abs(tearFabricPosition[1]) <= 20 then
           patchLevelTwoTimer = patchLevelTwoTimer + 1.0 * dt
           if patchLevelTwoTimer >= 3 then
             patchLevel = 3
@@ -620,18 +630,26 @@ workstation.update = function(dt, scale, isGamepadActive)
               local r = love.math.random(1, 4)
               if r == 1 then
                 arrow.dir = "up"
-                arrow.quad = sashikoArrow_up
+                arrow.quad = sashikoArrowQuads.up
+                arrow.red = sashikoArrowQuads.up_red
+                arrow.key = "menuNavUpN"
               elseif r == 2 then
                 arrow.dir = "right"
-                arrow.quad = sashikoArrow_left
+                arrow.quad = sashikoArrowQuads.left
+                arrow.red = sashikoArrowQuads.left_red
                 arrow.rotation = math.rad(180)
+                arrow.key = "menuNavRightN"
               elseif r == 3 then
                 arrow.dir = "down"
-                arrow.quad = sashikoArrow_up
+                arrow.quad = sashikoArrowQuads.up
+                arrow.red = sashikoArrowQuads.up_red
                 arrow.rotation = math.rad(180)
+                arrow.key = "menuNavDownN"
               else
                 arrow.dir = "left"
-                arrow.quad = sashikoArrow_left
+                arrow.quad = sashikoArrowQuads.left
+                arrow.red = sashikoArrowQuads.left_red
+                arrow.key = "menuNavLeftN"
               end
               table.insert(sashikoArrows, arrow)
             end
@@ -642,6 +660,76 @@ workstation.update = function(dt, scale, isGamepadActive)
         else
           patchLevelTwoTimer = patchLevelTwoTimer - 0.5 * dt
           if patchLevelTwoTimer < 0 then patchLevelTwoTimer = 0 end
+        end
+      end
+    elseif patchLevel == 3 then
+      sashikoArrowTimerStart = sashikoArrowTimerStart + dt
+      if sashikoArrowTimerStart > 2 then
+        sashikoArrowTimer = sashikoArrowTimer + dt
+        if not inputConsumed and not isDraggingCloseButton then
+          local currentArrow, index
+          for i, arrow in ipairs(sashikoArrows) do
+            if not arrow.passed and not arrow.noShow then
+              currentArrow = arrow
+              index = i
+              break
+            end
+          end
+          if currentArrow then
+            local speed, distBetween = 250, 250
+            local n = 500 + sashikoArrowTimer*-speed + distBetween * (index-1)
+            if input.baton:pressed(currentArrow.key) then
+              if n <= 260 then
+                currentArrow.noShow = true
+                audioManager.play("audio.ui.click")
+              else
+                currentArrow.passed = true -- too early
+                audioManager.play("audio.ui.select")
+              end
+              inputConsumed = true
+            end
+          else
+            -- end of minigame
+            local hit, missed = 0, 0
+            for _, a in ipairs(sashikoArrows) do
+              if a.noShow then
+                hit = hit + 1
+              elseif a.passed then
+                missed = missed + 1
+              end
+            end
+            logger.info("Hit:", hit, ". Missed:", missed, "todo; implement failing")
+            patchLevel = 4
+            -- hard coded, oops - we don't have a working inventory so who cares
+            local patchTag = "patch."
+            local key = fabricTexturesOrder[fabricArrowPosition]
+            if key then
+            local fabric = fabricTextures[key]
+            if fabric then
+              patchTag = patchTag .. fabric.name:lower()
+            end
+            end
+            patchItems[1].tags = {
+              "clothing",
+              "dress",
+              "fabric.fancy",
+              -- "issue.patch", -- removed
+              -- "patch.zyla_dress"
+              patchTag,
+              "patched",
+            }
+            -- Should remove from patch items; but it's done with the below
+
+            patchItems = inventory.getPatchItems() or { }
+            patchItemsIndex = 1
+            -- patchLevel = 1
+            inventorySlotSelected = 1
+            fabricArrowPosition = 1
+            tearFabricPosition = { 0, 0 }
+            patchLevelTwoTimer = 0
+            sashikoArrows = { }
+            sashikoArrowIndex = 1
+          end
         end
       end
     end
@@ -661,7 +749,7 @@ workstation.interact = function(_, x, z)
     canMovePlayer(false)
     workstation.show = true
     sideButtons[1].activateTime = love.timer.getTime()
-    patchItems = inventory.getPatchItems()
+    patchItems = inventory.getPatchItems() or { }
     patchItemsIndex = 1
     patchLevel = 1
     inventorySlotSelected = 1
@@ -726,13 +814,13 @@ workstation.drawUI = function(scale)
     -- Left
     lg.push()
       lg.scale(tw/2-scaledWidth/2+5, textureScale)
-      lg.draw(base, baseQuadLeft)
+      lg.draw(base, baseQuads.baseQuadLeft)
     lg.pop()
     -- Right
     lg.push()
       lg.translate(scaledWidth+tw/2-scaledWidth/2-5, 0)
       lg.scale(tw/2-scaledWidth/2+10, textureScale)
-      lg.draw(base, baseQuadRight)
+      lg.draw(base, baseQuads.baseQuadRight)
     lg.pop()
     lg.pop()
   end
@@ -754,11 +842,11 @@ workstation.drawUI = function(scale)
     lg.setStencilState("keep", "greater", 0)
     lg.setColorMask(true)
 
-    if sideButtons[1].active then -- Patch
+    if sideButtons[1].active and #patchItems ~= 0 then -- Patch
       local button = sideButtons[1]
       lg.draw(spriteSheet, darkBG, 429, 347)
 
-      if patchLevel >= 2 then
+      if patchLevel >= 2 and patchLevel <= 3 then
         lg.push()
         lg.translate(429+100, 348)
         local key = fabricTexturesOrder[fabricArrowPosition]
@@ -800,18 +888,38 @@ workstation.drawUI = function(scale)
         lg.pop()
         lg.pop()
       end
-      if patchLevel >= 3 then
-        local _, _, smw, _ = sewingMachineHead:getViewport()
+      if patchLevel == 3 then
+        local _, _, smw, smh = sewingMachineHead:getViewport()
         lg.push()
         lg.translate(429+100, 348)
         lg.setColor(0,0,0,0.6)
-        lg.rectangle("fill", 0,0,1223, 618)
+        lg.rectangle("fill", -200,-200,1223+200, 618+200)
         lg.setColor(1,1,1,1)
         lg.translate(1200/2-smw, 0)
-        lg.setColor(1,1,1,0.3)
-        lg.rectangle("fill", -3, 0, 6, 618) -- target line
+        lg.setColor(1,1,1,0.1)
+        lg.rectangle("fill", -4, 0, 7, 618) -- target line
         lg.setColor(1,1,1,1)
         lg.draw(spriteSheet, sewingMachineHead, -smw/2)
+        lg.pop()
+        lg.push()
+        lg.translate(429+100+500, 348+(618)/2)
+        local speed, distBetween = 250, 250
+        lg.translate(sashikoArrowTimer*-speed, 0)
+        for i, arrow in ipairs(sashikoArrows) do
+          if not arrow.noShow then
+            local _, _, w, h = arrow.quad:getViewport()
+            local n = 500 + sashikoArrowTimer*-speed + distBetween * (i-1)
+            if arrow.passed or n <= 160 then
+              arrow.passed = true
+              lg.setColor(1,1,1,0.4)
+              lg.draw(sashikoSpriteSheet, arrow.red, 0,0,arrow.rotation, 1/2, 1/2, w/2, h/2)
+              lg.setColor(1,1,1,1)
+            else
+              lg.draw(sashikoSpriteSheet, arrow.quad, 0,0,arrow.rotation, 1/2, 1/2, w/2, h/2)
+            end
+          end
+          lg.translate(distBetween, 0)
+        end
         lg.pop()
       end
 
@@ -873,8 +981,8 @@ workstation.drawUI = function(scale)
         lg.pop()
         lg.push()
         lg.translate(429+1223/2, 347+618/2.5)
-        lg.draw(spriteSheet, arrowLeft, -391+arrowButtons.left.offsetX, -122/2)
-        lg.draw(spriteSheet, arrowRight, 391/4*3+arrowButtons.right.offsetX, -122/2)
+        lg.draw(spriteSheet, arrowQuads.arrowLeft, -391+arrowButtons.left.offsetX, -122/2)
+        lg.draw(spriteSheet, arrowQuads.arrowRight, 391/4*3+arrowButtons.right.offsetX, -122/2)
         lg.pop()
         lg.push() -- Breaks sprite batching
         lg.translate(429+1223/2, 347+618/2.5)
@@ -890,8 +998,13 @@ workstation.drawUI = function(scale)
           end
         lg.pop()
         lg.pop()
-      elseif patchLevel == 2 then
+      elseif patchLevel == 4 then
         -- draw above sides
+        lg.push()
+        lg.translate(429+1223/2, 347+618/2.5)
+        local _, _, w, h = correctTick:getViewport()
+        lg.draw(spriteSheet, correctTick, -w/2, -h/2)
+        lg.pop()
       end
     else
       lg.draw(spriteSheet, crystalBG, 429, 347)

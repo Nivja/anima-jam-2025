@@ -204,6 +204,12 @@ local commandLookup = {
     end
     return self:next()
   end,
+  ["removeItem"] = function(self, commandTbl)
+    for _, id in ipairs(commandTbl[2]) do
+      inventory.removeItem(id)
+    end
+    return self:next()
+  end,
   ["choice"] = function(self, commandTbl)
     self.waitForChoice = true
     self.choice = commandTbl[2]
@@ -212,7 +218,15 @@ local commandLookup = {
   ["print"] = function(self, commandTbl)
     print(commandTbl[2])
     return self:next()
-  end
+  end,
+  ["goHome"] = function(self, commandTbl, commandType)
+    local character = characterManager.get(commandTbl[2])
+    if not character then
+      logger.warn("Dialogue["..self.dirName.."@"..self.index.."]: Couldn't find character to", commandType, ", gave character ID:", commandTbl[2])
+      return self:next()
+    end
+    character:teleportHome()
+  end,
 }
 
 dialogue.next = function(self)

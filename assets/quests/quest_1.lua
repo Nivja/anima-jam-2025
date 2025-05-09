@@ -80,10 +80,14 @@ return {
     { "goto", "end_option_one" },
     { "tag", "end_option_one" },
     { "removeItem", {
-      { "zyla_dress", 1 },
+      "zyla_dress",
     }},
     { "questFinished" },
     { "unfreeze", "player" },
+    -- todo send Zyla back
+    { "moveX", "zyla", 2 },
+    { "useDoor", "zyla", "town-workshop" },
+    { "goHome", "zyla" }, -- teleport back to home location
     { "end" },
   }
 }

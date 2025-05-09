@@ -24,7 +24,7 @@ local quest = { }
 quest.__index = quest
 
 quest.finish = function(self)
-  questManager.finishQuest(self)
+  questManager.finishQuest(self.id)
 end
 
 questManager.parse = function(definition, dirName)
