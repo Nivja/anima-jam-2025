@@ -415,6 +415,7 @@ character.draw = function(self)
   lg.clear(0, 0, 0, 0)
   local w, h = characterCanvas:getDimensions()
   lg.translate(w/2, h/2)
+  lg.scale(self.scale)
   if self.flip then -- cheap flip; see below :setRotation for fancy flip
     -- lg.scale(-1, 1)
   end

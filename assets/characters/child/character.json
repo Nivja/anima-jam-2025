@@ -1,7 +1,8 @@
 {
   "spritesheet": "SpriteSheet.png",
   "transform": {
-    "y": 0.6
+    "y": 0.48,
+    "scale": 0.8
   },
   "shadowOffset": 0.1,
   "parts": [

@@ -27,7 +27,7 @@ local loopSource = function(source)
   return source
 end
 
-local voiceVolume = 0.4
+local voiceVolume = 0.2
 
 return {
 -- Audio | sourceType = "static"/"stream"
