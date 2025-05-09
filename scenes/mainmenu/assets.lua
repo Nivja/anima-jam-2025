@@ -6,11 +6,12 @@ return {
   "ui.3slice.basic",
 
 -- audios
-  "audio.sfx.door",
-  "audio.sfx.interact",
   "audio.ui.select",
   "audio.ui.click",
+  "audio.ui.spring",
 
+  "audio.sfx.door",
+  "audio.sfx.interact",
   "audio.sfx.foot",
   "audio.sfx.voice",
 
@@ -21,6 +22,10 @@ return {
 
   "img.town.1",
   "img.town.2",
+
+  "game.workstation.base",
+  "game.workstation.spritesheet",
+  "game.workstation.sashiko",
 
   "fabric.fancy_1",
   "fabric.heirloom_1",

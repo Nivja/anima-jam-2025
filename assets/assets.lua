@@ -38,6 +38,9 @@ return {
   { path = "audio/ui/SFX_UIClick_02.wav", name = "audio.ui.click.2", sourceType = "static", audioType = "ui", key = "audio.ui.click", volume = 0.7 },
   { path = "audio/ui/SFX_UIClick_03.wav", name = "audio.ui.click.3", sourceType = "static", audioType = "ui", key = "audio.ui.click", volume = 0.7 },
 
+  { path = "audio/ui/SFX_SpringButtons_01.wav", name = "audio.ui.spring.1", sourceType = "static", audioType = "ui", key = "audio.ui.spring", volume = 0.6 },
+  { path = "audio/ui/SFX_SpringButtons_02.wav", name = "audio.ui.spring.2", sourceType = "static", audioType = "ui", key = "audio.ui.spring", volume = 0.6 },
+  { path = "audio/ui/SFX_SpringButtons_03.wav", name = "audio.ui.spring.3", sourceType = "static", audioType = "ui", key = "audio.ui.spring", volume = 0.6 },
   -- SFX
   { path = "audio/sfx/SFX_Sewing_Loop_V2.wav", name = "audio.sfx.sewing", sourceType = "static", audioType = "sfx", volume = 1.0, onLoad = loopSource },
   { path = "audio/sfx/SFX_Door.wav", name = "audio.sfx.door.1", sourceType = "static", audioType = "sfx", key = "audio.sfx.door", volume = .3 },
@@ -86,9 +89,14 @@ return {
   { path = "fabric/silly_1.png", name = "fabric.silly_1", onLoad = filterLinear },
   
   { path = "textures/zyla_dress_damage.png", name = "damage.zyla_dress", onLoad = filterLinear },
+  { path = "textures/zyla_dress_damage_outline.png", name = "damage.zyla_dress.outline", onLoad = filterLinear },
 
   { path = "textures/Outside_Assets_1.png", name = "img.town.1", onLoad = filterLinear },
   { path = "textures/Outside_Assets_2.png", name = "img.town.2", onLoad = filterLinear },
+
+  { path = "UI/workstation_base.png", name = "game.workstation.base", onLoad = filterLinear },
+  { path = "UI/workstation_base_ss.png", name = "game.workstation.spritesheet" }, -- filter is dynamic in code
+  { path = "UI/Sashiko_UI.png", name = "game.workstation.sashiko", onLoad = filterLinear },
 -- UI
   { path = "UI/Logo.png", name = "ui.game.title", onLoad = filterLinear },
   { path = "UI/Main_Menu_BG.png", name = "ui.game.menu.BG", onLoad = filterLinear },

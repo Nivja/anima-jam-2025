@@ -59,13 +59,13 @@
       "name": "Head",
       "parent": "Torso",
       "texture": {
-        "x": 877,
-        "y": 133,
-        "width": 570,
-        "height": 580
+        "x": 862,
+        "y": 52,
+        "width": 583,
+        "height": 625
       },
       "pivot": [ 1195, 633 ],
-      "offset": [ -70, -190 ],
+      "offset": [ -70, -185 ],
       "zOffset": 0.5
     },
     {

@@ -1,6 +1,7 @@
 return {
   "audio.ui.select",
   "audio.ui.click",
+  "audio.ui.spring",
 
   "audio.sfx.door",
   "audio.sfx.interact",
@@ -15,6 +16,10 @@ return {
   "img.town.1",
   "img.town.2",
 
+  "game.workstation.base",
+  "game.workstation.spritesheet",
+  "game.workstation.sashiko",
+
   "fabric.fancy_1",
   "fabric.heirloom_1",
   "fabric.heirloom_2",
@@ -25,4 +30,5 @@ return {
   "fabric.silly_1",
 
   "damage.zyla_dress",
+  "damage.zyla_dress.outline"
 }

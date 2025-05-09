@@ -52,20 +52,20 @@
         "height": 254
       },
       "pivot": [ 2080, 710 ],
-      "offset": [ 0, 50],
+      "offset": [ -10, 60],
       "zOffset": -0.3
     },
     {
       "name": "Head",
       "parent": "Torso",
       "texture": {
-        "x": 877,
-        "y": 133,
-        "width": 570,
-        "height": 580
+        "x": 824,
+        "y": 42,
+        "width": 623,
+        "height": 605
       },
       "pivot": [ 1195, 633 ],
-      "offset": [ -70, -190 ],
+      "offset": [ -60, -235 ],
       "zOffset": 0.5
     },
     {
@@ -78,7 +78,7 @@
         "height": 318
       },
       "pivot": [ 1000, 940 ],
-      "offset": [ -200, -140 ],
+      "offset": [ -210, -150 ],
       "zOffset": 0.3
     },
     {
@@ -91,7 +91,7 @@
         "height": 329
       },
       "pivot": [ 1675, 925 ],
-      "offset": [ 30, -150 ],
+      "offset": [ 35, -170 ],
       "zOffset": -0.3
     }
   ]

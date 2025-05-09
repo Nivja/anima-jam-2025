@@ -13,8 +13,12 @@ local child = characterManager.get("child")
 child:setHome("town", -5, 4, true)
   :teleportHome()
 
+local lyn = characterManager.get("lyn")
+lyn:setHome("town", -3, 4)
+  :teleportHome()
+
 local electrician = characterManager.get("electrician")
-electrician:setHome("town", -3, 4)
+electrician:setHome("town", 8.5, 4.5, true)
   :teleportHome()
 
 local sami = characterManager.get("sami")

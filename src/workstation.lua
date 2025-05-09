@@ -24,13 +24,13 @@ local canMovePlayer = function(boolean)
   playerChar:moveX(0)
 end
 
-local base = lg.newImage("assets/UI/workstation_base.png")
+local base = assets["game.workstation.base"]
 base:setWrap("clamp")
 local bw, bh = base:getDimensions()
 local baseQuadLeft = lg.newQuad(0,0, 1,bh, base)
 local baseQuadRight = lg.newQuad(bw-1,0, 1,bh, base)
 
-local spriteSheet = lg.newImage("assets/UI/workstation_base_ss.png")
+local spriteSheet = assets["game.workstation.spritesheet"]
 -- filter is handled in the draw; as it changes dependant on scale
 spriteSheet:setFilter("nearest", "nearest")
 local closeQuad = lg.newQuad(3179, 395, 40, 110, spriteSheet)
@@ -69,6 +69,9 @@ local arrowButtons = {
     offsetX = 0,
   }
 }
+
+local correctTick = lg.newQuad(725, 4, 554, 438, spriteSheet)
+local sewingMachineHead = lg.newQuad(1406, 68, 394, 149, spriteSheet)
 
 local inventoryButtonLeft = lg.newQuad(1520, 314, 47, 52, spriteSheet)
 local inventoryButtonLeftActive = lg.newQuad(1520, 377, 47, 52, spriteSheet)
@@ -191,7 +194,9 @@ local switchSideButtons = function(switchTo)
       newButton.offsetY = 10
       newTween = nil
     end):delay(.1)
-  switchTween = flux.to({ }, .2, { })
+  switchTween = flux.to({}, .1, {})
+    :oncomplete(function() audioManager.play("audio.ui.spring") end)
+    :after(.1, {})
     :oncomplete(function()
       currentActive = newButton
       oldButton.active = false
@@ -228,6 +233,11 @@ local fabricTexturesOrder = {
   "silly_1", "neutral_1", "fancy_1", "neutral_2",
   "heirloom_1", "heirloom_2", "neutral_3", "neutral_4",
 }
+
+local sashikoSpriteSheet = assets["game.workstation.sashiko"]
+
+local sashikoArrow_up = lg.newQuad(523, 93, 127, 124, sashikoSpriteSheet)
+local sashikoArrow_left = lg.newQuad(733, 91, 124, 126, sashikoSpriteSheet)
 
 local inventorySlotSelected = 1
 local fabricArrowPosition = 0
@@ -274,14 +284,23 @@ end
 local isDraggingCloseButton, closeDragOffset, closeDragOffsetY, closeInside = false, 0, 0, false
 local sideButtonInside, inventoryButtonInside, insideArrowButtons, insideFabricAccept = false, false, false, false
 local textBadgePatchInside = false
+local tearFabricPosition, tearFabricPositionBlink = { 0, 0 }, false
 local patchItems, patchItemsIndex, patchLevel = nil, 1, 1
 local closeTimer, closeTimeMax, closeMouseTimer = 0, 2.5, 0
 local leavesX, leavesY, leavesFlipX, leavesFlipY = 0, 0, true, false
+local blinkTimer, patchLevelTwoTimer = 0, 0
+local sashikoArrows, sashikoArrowIndex, sashikoArrowTimer, sashikoArrowTimerStart = { }, 1, 0, 0
 workstation.update = function(dt, scale, isGamepadActive)
   local inputConsumed = false
 
   if not workstation.show then
     return inputConsumed
+  end
+
+  blinkTimer = blinkTimer + dt
+  while blinkTimer >= 0.3 do
+    tearFabricPositionBlink = not tearFabricPositionBlink
+    blinkTimer = blinkTimer - 0.3
   end
 
   do -- leaves animation
@@ -556,6 +575,8 @@ workstation.update = function(dt, scale, isGamepadActive)
 
           if input.baton:pressed("accept") then
             patchLevel = 2
+            local r = love.math.random() > 0.5 and 1 or -1
+            tearFabricPosition = { love.math.random(250, 500)*r, 0--[[love.math.random(-250, 250)]] }
           end
         else
           local buttonX = 920 * textureScale + translateX
@@ -570,6 +591,8 @@ workstation.update = function(dt, scale, isGamepadActive)
             end
             if input.baton:pressed("accept") then
               patchLevel = 2
+              local r = love.math.random() > 0.5 and 1 or -1
+              tearFabricPosition = { love.math.random(150, 350)*r, 0--[[love.math.random(-250, 250)]] }
               if textBadgePatchInside then
                 textBadgePatchInside = false
                 cursor.switch("arrow")
@@ -584,7 +607,43 @@ workstation.update = function(dt, scale, isGamepadActive)
         end
       end
     elseif patchLevel == 2 then
-
+      if not inputConsumed and not isDraggingCloseButton then
+        local dx, dy = input.baton:get("move")
+        tearFabricPosition[1] = tearFabricPosition[1] + 10 * dx *-1
+        if math.abs(tearFabricPosition[1]) <= 15 then
+          patchLevelTwoTimer = patchLevelTwoTimer + 1.0 * dt
+          if patchLevelTwoTimer >= 3 then
+            patchLevel = 3
+            sashikoArrows = { }
+            for n = 1, 15 do
+              local arrow = { rotation = 0 }
+              local r = love.math.random(1, 4)
+              if r == 1 then
+                arrow.dir = "up"
+                arrow.quad = sashikoArrow_up
+              elseif r == 2 then
+                arrow.dir = "right"
+                arrow.quad = sashikoArrow_left
+                arrow.rotation = math.rad(180)
+              elseif r == 3 then
+                arrow.dir = "down"
+                arrow.quad = sashikoArrow_up
+                arrow.rotation = math.rad(180)
+              else
+                arrow.dir = "left"
+                arrow.quad = sashikoArrow_left
+              end
+              table.insert(sashikoArrows, arrow)
+            end
+            sashikoArrowIndex = 1
+            sashikoArrowTimer = 0
+            sashikoArrowTimerStart = 0
+          end
+        else
+          patchLevelTwoTimer = patchLevelTwoTimer - 0.5 * dt
+          if patchLevelTwoTimer < 0 then patchLevelTwoTimer = 0 end
+        end
+      end
     end
   end
 
@@ -607,6 +666,10 @@ workstation.interact = function(_, x, z)
     patchLevel = 1
     inventorySlotSelected = 1
     fabricArrowPosition = 1
+    tearFabricPosition = { 0, 0 }
+    patchLevelTwoTimer = 0
+    sashikoArrows = { }
+    sashikoArrowIndex = 1
     return true -- consumed
   end
   return false
@@ -694,6 +757,64 @@ workstation.drawUI = function(scale)
     if sideButtons[1].active then -- Patch
       local button = sideButtons[1]
       lg.draw(spriteSheet, darkBG, 429, 347)
+
+      if patchLevel >= 2 then
+        lg.push()
+        lg.translate(429+100, 348)
+        local key = fabricTexturesOrder[fabricArrowPosition]
+        if key then
+        local fabric = fabricTextures[key]
+        if fabric then
+          local tw, th = fabric.texture:getDimensions()
+          lg.draw(fabric.texture, 0,0, 0, 1000/tw)
+        end
+        end
+        local tear = assets["damage.zyla_dress"]
+        local tearW, tearH = tear:getDimensions()
+        local tearScale = 1200/tearW
+        lg.push()
+        lg.translate(530-tearW*tearScale/2, 330-tearH*tearScale/2)
+        lg.scale(tearScale)
+        lg.draw(tear)
+        local outline = assets["damage.zyla_dress.outline"]
+        if patchLevel == 2 then
+          lg.setColor(1,.6,0,.8)
+          if tearFabricPositionBlink then
+            lg.setColor(1,.6,0,.4)
+          end
+          lg.draw(outline, 0, 0)
+        end
+        lg.setColor(1,1,1,1)
+        lg.draw(outline, tearFabricPosition[1], tearFabricPosition[2])
+        lg.pop()
+        lg.push()
+        if patchLevel == 2 and patchLevelTwoTimer > 0 then  -- progress bar
+          local width = 400
+          lg.translate(1200/2-width/4*3, 35)
+          lg.setColor(1,1,1,0.6)
+          lg.rectangle("fill", 0, 0, width, 30)
+          lg.setColor(1,1,1,1)
+          lg.rectangle("fill", 0, 0, width*(patchLevelTwoTimer/3), 30)
+          lg.rectangle("line", -5, -5, width+10, 40)
+        end
+        lg.pop()
+        lg.pop()
+      end
+      if patchLevel >= 3 then
+        local _, _, smw, _ = sewingMachineHead:getViewport()
+        lg.push()
+        lg.translate(429+100, 348)
+        lg.setColor(0,0,0,0.6)
+        lg.rectangle("fill", 0,0,1223, 618)
+        lg.setColor(1,1,1,1)
+        lg.translate(1200/2-smw, 0)
+        lg.setColor(1,1,1,0.3)
+        lg.rectangle("fill", -3, 0, 6, 618) -- target line
+        lg.setColor(1,1,1,1)
+        lg.draw(spriteSheet, sewingMachineHead, -smw/2)
+        lg.pop()
+      end
+
       local offsetXFactor = 1 - math.min(1, love.timer.getTime()-button.activateTime)
       lg.push()
       lg.translate(offsetXFactor*-159, 0)
@@ -718,7 +839,7 @@ workstation.drawUI = function(scale)
       lg.push()
       lg.translate(1649-158/2-112/2, 315-_y/1.5)
       lg.draw(spriteSheet, numOneSlot, 0, _y*1)
-      if patchLevel == 2 then
+      if patchLevel >= 2 then
         local key = fabricTexturesOrder[fabricArrowPosition]
         if key then
         local fabric = fabricTextures[key]
@@ -728,7 +849,17 @@ workstation.drawUI = function(scale)
         end
       end
       lg.draw(spriteSheet, numTwoSlot, 0, _y*2)
+      if patchLevel >= 3 then
+        local _, _, sw, sh = numTwoSlot:getViewport()
+        local _, _, ctw, cth = correctTick:getViewport()
+        lg.draw(spriteSheet, correctTick,  6, 6+_y*2, 0, (sw-12)/ctw, (sh-12)/cth)
+      end
       lg.draw(spriteSheet, numThreeSlot, 0, _y*3)
+      if patchLevel >= 4 then
+        local _, _, sw, sh = numTwoSlot:getViewport()
+        local _, _, ctw, cth = correctTick:getViewport()
+        lg.draw(spriteSheet, correctTick,  6, 6+_y*3, 0, (sw-12)/ctw, (sh-12)/cth)
+      end
       spriteSheet:setFilter(f)
       lg.pop()
       lg.pop()
@@ -760,20 +891,7 @@ workstation.drawUI = function(scale)
         lg.pop()
         lg.pop()
       elseif patchLevel == 2 then
-        lg.push()
-        local key = fabricTexturesOrder[fabricArrowPosition]
-        if key then
-        local fabric = fabricTextures[key]
-        if fabric then
-          -- local _, _, w, h = darkBGCenterSquare:getViewport()
-          local tw, th = fabric.texture:getDimensions()
-          w, h = w - 20, h - 20
-          lg.draw(fabric.texture, 429+160, 347+618)
-        end
-        end
-        local tear = assets["damage.zyla_dress"]
-        -- lg.draw(tear, )
-        lg.pop()
+        -- draw above sides
       end
     else
       lg.draw(spriteSheet, crystalBG, 429, 347)
