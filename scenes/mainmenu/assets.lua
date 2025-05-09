@@ -1,7 +1,10 @@
 return {
 -- textures
+  "ui.game.title",
+  "ui.game.menu.BG",
   "ui.logoES",
   "ui.3slice.basic",
+
 -- audios
   "audio.ui.select",
   "audio.ui.click",

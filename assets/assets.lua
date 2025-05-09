@@ -27,7 +27,7 @@ local loopSource = function(source)
   return source
 end
 
-local voiceVolume = 0.6
+local voiceVolume = 0.4
 
 return {
 -- Audio | sourceType = "static"/"stream"
@@ -86,6 +86,8 @@ return {
   { path = "textures/Outside_Assets_1.png", name = "img.town.1", onLoad = filterLinear },
   { path = "textures/Outside_Assets_2.png", name = "img.town.2", onLoad = filterLinear },
 -- UI
+  { path = "UI/Logo.png", name = "ui.game.title", onLoad = filterLinear },
+  { path = "UI/Main_Menu_BG.png", name = "ui.game.menu.BG", onLoad = filterLinear },
   { path = "UI/logoES.png", name = "ui.logoES", onLoad = filterNearest },
   { path = "UI/basic_3slice.png", name = "ui.3slice.basic", onLoad = slice3Nearest, 16, 96 },
   { path = "UI/tab_3slice.png", name = "ui.3slice.tab", onLoad = slice3Nearest, 128, 130 },

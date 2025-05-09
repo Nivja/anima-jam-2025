@@ -624,7 +624,7 @@ end
 settingsMenu.draw = function()
   lg.push("all")
   lg.origin()
-  lg.setColor(.1,.1,.1, .3)
+  lg.setColor(0,0,0, .8)
   lg.rectangle("fill", 0, 0, lg.getDimensions())
   lg.pop()
 end

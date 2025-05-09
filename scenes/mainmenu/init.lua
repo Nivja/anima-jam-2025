@@ -5,6 +5,7 @@ local assetManager = require("util.assetManager")
 local settings = require("util.settings")
 local logger = require("util.logger")
 local cursor = require("util.cursor")
+local assets = require("util.assets")
 local input = require("util.input")
 local lang = require("util.lang")
 local flux = require("libs.flux")
@@ -82,9 +83,21 @@ scene.resize = function(w, h)
   cursor.setScale(scene.scale)
 end
 
+local logoBounceTimer, logoBounceTimerFlip = 0, true
+
 local inputTimer, inputTimeout = 0, 0
 local inputType = nil
 scene.update = function(dt)
+  logoBounceTimer = logoBounceTimer + dt * (logoBounceTimerFlip and 1 or -1)
+  if logoBounceTimer >= 1 then
+    logoBounceTimer = 1
+    logoBounceTimerFlip = false
+  end
+  if logoBounceTimer <= -1 then
+    logoBounceTimer = -1
+    logoBounceTimerFlip = true
+  end
+
   if scene.menu == "main" then
     if not suit.gamepadActive then
       if input.baton:pressed("menuNavUp") or input.baton:pressed("menuNavDown") then
@@ -268,6 +281,12 @@ end
 
 scene.draw = function()
   lg.clear(201/255, 118/255, 34/255)
+  local ww, wh = lg.getDimensions()
+  -- local bg = assets["ui.game.menu.BG"]
+  -- local bgw, bgh = bg:getDimensions()
+  -- lg.draw(bg, 0,0, 0, ww/bgw, wh/bgh)
+  local logo = assets["ui.game.title"]
+  lg.draw(logo, ww/2, wh/2+(logoBounceTimer*10*scene.scale)-20*scene.scale, 0, 1/4*scene.scale, 1/4*scene.scale, logo:getWidth()/2, logo:getHeight()/2)
   if scene.menu == "prompt" then
     local windowW, windowH = lg.getDimensions()
     local offset = windowH/10

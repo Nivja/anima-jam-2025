@@ -10,8 +10,11 @@ local ui = require("util.ui")
 local lg = love.graphics
 local floor, rad = math.floor, math.rad
 
-local logo = lg.newImage("assets/UI/logoES.png")
-logo:setFilter("nearest")
+-- local logo = lg.newImage("assets/UI/logoES.png")
+-- logo:setFilter("nearest")
+
+local logo = lg.newImage("assets/UI/Logo.png")
+logo:setFilter("linear")
 
 local assets = require("util.assets")
 
@@ -87,7 +90,8 @@ end
 local barW, barH = 400, 20
 local lineWidth = 2
 local lineWidth2, lineWidth4 = lineWidth*2, lineWidth*4
-local scale = 12
+-- local scale = 12
+local scale = 1/4
 
 scene.draw = function()
   lg.clear(bgColor)
@@ -114,7 +118,7 @@ scene.draw = function()
       lg.pop()
     if scene.lily then
       local str = scene.lily:getLoadedCount().." / "..scene.lily:getCount()
-      lg.print(str, -lg.getFont():getWidth(str)/2, lg.getFont():getHeight()+logo:getHeight()*scale/1.5)
+      lg.print(str, -lg.getFont():getWidth(str)/2, logo:getHeight()*scale/2)
     end
     lg.pop()
   end
