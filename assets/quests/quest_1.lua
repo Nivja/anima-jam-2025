@@ -68,7 +68,7 @@ return {
     { "goto", "end_option_one" },
     { "tag", "neutral_design" },
     { "setCharacter", "zyla" },
-    "This will do, thank you for your service, young man",
+    "This will do, thank you for your service, young man.",
     { "goto", "end_option_one" },
     { "tag", "fancy_design" },
     { "setCharacter", "zyla" },
