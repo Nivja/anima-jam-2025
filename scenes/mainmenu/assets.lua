@@ -6,6 +6,8 @@ return {
   "ui.3slice.basic",
 
 -- audios
+  "audio.sfx.door",
+  "audio.sfx.interact",
   "audio.ui.select",
   "audio.ui.click",
 

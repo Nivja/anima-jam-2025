@@ -1,9 +1,10 @@
 local lg = love.graphics
 
+local audioManager = require("util.audioManager")
+local logger = require("util.logger")
 local flux = require("libs.flux")
 local g3d = require("libs.g3d")
 
-local logger = require("util.logger")
 
 local door = {
   model = g3d.newModel("assets/models/door.obj"),
@@ -47,30 +48,35 @@ door.getCB = function(self, character, useEntry)
   if not useEntry and character.world == self.worldA or useEntry == self.entryA then -- moveTo worldB
     return function()
       character:setWorld(self.worldB, unpack(self.entryB))
-    end
+    end, self.worldB
   elseif not useEntry and character.world == self.worldB or useEntry == self.entryB then -- moveTo worldA
     return function()
       character:setWorld(self.worldA, unpack(self.entryA))
-    end
+    end, self.worldA
   else
     logger.warn("Character tried to interact with door in world they were not in. Character:", character.world, ". Door:", self.worldA, self.worldB)
   end
-  return nil
+  return nil, nil
 end
 
 door.use = function(self, character, useEntry)
-  local cb = self:getCB(character, useEntry)
+  local cb, toWorld = self:getCB(character, useEntry)
   local fluxTween
   if character.isPlayer then
     local time = 0.5
     fluxTween = flux.to(require("src.worldManager").doorTransition, time, { radius = 1 })
       :oncomplete(cb)
       :after(time, { radius = 0 })
+    audioManager.play("audio.sfx.door")
   else
     local time = 0.4
     fluxTween = flux.to(character, time, { alpha = 0 })
       :oncomplete(cb)
       :after(time, { alpha = 1 })
+    local p = require("src.characterManager").get("player")
+    if p.world == toWorld or p.world == character.world then
+      audioManager.play("audio.sfx.door")
+    end
   end
   return fluxTween
 end

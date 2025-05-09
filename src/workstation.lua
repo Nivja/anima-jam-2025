@@ -734,7 +734,8 @@ workstation.drawUI = function(scale)
       lg.pop()
       if patchLevel == 1 then
         lg.push()
-        lg.draw(spriteSheet, textBadge, 920, 850-76/2)
+        local ____n = arrowButtons.left.offsetX - arrowButtons.right.offsetX
+        lg.draw(spriteSheet, textBadge, 920+____n, 850-76/2-math.abs(____n))
         lg.push()
         lg.translate(429+1223/2, 347+618/2.5)
         lg.draw(spriteSheet, darkBGCenterSquare, -391/2, -391/2)
@@ -759,7 +760,20 @@ workstation.drawUI = function(scale)
         lg.pop()
         lg.pop()
       elseif patchLevel == 2 then
-
+        lg.push()
+        local key = fabricTexturesOrder[fabricArrowPosition]
+        if key then
+        local fabric = fabricTextures[key]
+        if fabric then
+          -- local _, _, w, h = darkBGCenterSquare:getViewport()
+          local tw, th = fabric.texture:getDimensions()
+          w, h = w - 20, h - 20
+          lg.draw(fabric.texture, 429+160, 347+618)
+        end
+        end
+        local tear = assets["damage.zyla_dress"]
+        -- lg.draw(tear, )
+        lg.pop()
       end
     else
       lg.draw(spriteSheet, crystalBG, 429, 347)
@@ -867,11 +881,11 @@ workstation.drawUI = function(scale)
         str = "Patching"
         if love.timer.getTime() - sideButtons[1].activateTime >= 1.25 then
           if patchLevel == 1 then
-            str = "Choose Fabric..."
+            str = "Pick Fabric..."
           elseif patchLevel == 2 then
-            str = "Stitch"
+            str = "Align..."
           elseif patchLevel == 3 then
-            str = "Cut"
+            str = "Stitch Fabric..."
           end
         end
       end
@@ -894,7 +908,8 @@ workstation.drawUI = function(scale)
         local fabric = fabricTextures[key]
         if fabric then
           lg.translate(tw/2+80*textureScale, 850*textureScale)
-          lg.print(fabric.name, font, -font:getWidth(str)/2, -font:getHeight()/2)
+          local str = "Pick " .. fabric.name
+          lg.print(str, font, -font:getWidth(str)/2, -font:getHeight()/2)
         end
         end
       end

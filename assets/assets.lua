@@ -40,6 +40,8 @@ return {
 
   -- SFX
   { path = "audio/sfx/SFX_Sewing_Loop_V2.wav", name = "audio.sfx.sewing", sourceType = "static", audioType = "sfx", volume = 1.0, onLoad = loopSource },
+  { path = "audio/sfx/SFX_Door.wav", name = "audio.sfx.door.1", sourceType = "static", audioType = "sfx", key = "audio.sfx.door", volume = .3 },
+  { path = "audio/sfx/SFX_Interaction.wav", name = "audio.sfx.interact.1", sourceType = "static", audioType = "sfx", key = "audio.sfx.interact", volume = 1.0 },
   { path = "audio/sfx/SFX_FootFall_01.wav", name = "audio.sfx.foot.1", sourceType = "static", audioType = "sfx", key = "audio.sfx.foot", volume = .3 },
   { path = "audio/sfx/SFX_FootFall_02.wav", name = "audio.sfx.foot.2", sourceType = "static", audioType = "sfx", key = "audio.sfx.foot", volume = .3 },
   { path = "audio/sfx/SFX_FootFall_03.wav", name = "audio.sfx.foot.3", sourceType = "static", audioType = "sfx", key = "audio.sfx.foot", volume = .3 },
@@ -83,6 +85,8 @@ return {
   { path = "fabric/neutral_4.png", name = "fabric.neutral_4", onLoad = filterLinear },
   { path = "fabric/silly_1.png", name = "fabric.silly_1", onLoad = filterLinear },
   
+  { path = "textures/zyla_dress_damage.png", name = "damage.zyla_dress", onLoad = filterLinear },
+
   { path = "textures/Outside_Assets_1.png", name = "img.town.1", onLoad = filterLinear },
   { path = "textures/Outside_Assets_2.png", name = "img.town.2", onLoad = filterLinear },
 -- UI

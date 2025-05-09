@@ -2,6 +2,8 @@ return {
   "audio.ui.select",
   "audio.ui.click",
 
+  "audio.sfx.door",
+  "audio.sfx.interact",
   "audio.sfx.foot",
   "audio.sfx.voice",
 
@@ -21,4 +23,6 @@ return {
   "fabric.neutral_3",
   "fabric.neutral_4",
   "fabric.silly_1",
+
+  "damage.zyla_dress",
 }

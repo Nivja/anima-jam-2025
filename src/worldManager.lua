@@ -1,5 +1,6 @@
 local lfs, lg = love.filesystem, love.graphics
 
+local audioManager = require("util.audioManager")
 local logger = require("util.logger")
 local flux = require("libs.flux")
 local file = require("util.file")
@@ -85,6 +86,9 @@ worldManager.getWorldLimit = function(worldId)
 end
 
 worldManager.checkForDoor = function(character, axis)
+  if character.doorTween then
+    return
+  end
   local enterDoor, useEntry = false, nil
   for _, door in ipairs(worldManager.doors) do
     if door.worldA == character.world then
@@ -117,13 +121,17 @@ worldManager.checkForDoor = function(character, axis)
     end
   end
   if enterDoor then
-    enterDoor:use(character, useEntry)
+    character.doorTween = enterDoor:use(character, useEntry)
+    character.doorTween:oncomplete(function()
+      character.doorTween = nil
+    end)
   end
 end
 
 worldManager.interact = function(playerX, playerZ, playerWorld)
   for _, object in ipairs(worldManager.interactable) do
     if object.world == playerWorld and object:interact(playerX, playerZ) then
+      audioManager.play("audio.sfx.interact")
       return true, object -- event consumed
     end
   end
