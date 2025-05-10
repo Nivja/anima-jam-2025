@@ -81,10 +81,10 @@ world.get3DObjects = function()
   }
 end
 
-local door_wall = g3d.newModel("assets/models/door_wall.obj", "assets/textures/door_wall.png", { 10.5, 0, 4 }, nil, nil, false, true)
-local side_wall = g3d.newModel("assets/models/door_wall.obj", "assets/textures/side_wall.png", { -1.5, 0, 4 }, nil, nil, false, true)
+local door_wall = g3d.newModel("assets/models/door_wall.obj", "assets/textures/Door_Wall.png", { 10.5, 0, 4 }, nil, nil, false, true)
+local side_wall = g3d.newModel("assets/models/door_wall.obj", "assets/textures/Side_Wall.png", { -1.5, 0, 4 }, nil, nil, false, true)
 local door = g3d.newModel("assets/models/workshop_door.obj", "assets/textures/Door.png", { 10.4, 0, 4.65 }, nil, nil, false, true)
-local backwall = g3d.newModel("assets/models/workshop_backwall.obj", "assets/textures/front_wall.png", { .5, 0, 6, }, nil, nil, false, false)
+local backwall = g3d.newModel("assets/models/workshop_backwall.obj", "assets/textures/Front_Wall.png", { .5, 0, 6, }, nil, nil, false, false)
 local roof = g3d.newModel("assets/models/workshop_floor.obj", "assets/textures/Roof.png", { .5, 4, 4 }, nil, nil, true, true)
 
 local plant, _halfH = createPlaneForQuad(12, 315, 181, 474, workshop_assets, 200)
