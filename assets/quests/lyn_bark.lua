@@ -4,33 +4,44 @@ return {
   noShow = true,
   repeatCheck = false,
   dialogue = {
-    { "tag", "one" },
+    { "setState", "entry" },
+    { "tag", "entry" },
     { "freeze", "player" },
     { "setCharacter", "lyn" },
-
-    { "setState", "two" },
-    { "unfreeze", "player" },
-    { "end" },
-    { "tag", "two" },
-    { "freeze", "player" },
+    "Hey! How's my favourite artisan doing? Do you need more materials from the RRE?",
+    { "tag", "choice" },
+    { "choice", {
+      { "Yes! Have you got any for me?", "material" },
+      { "What is the RRE?", "RRE_what" },
+      -- { "I'm doing well!", "hi" }, -- could be exit?
+    } },
+    { "tag", "material" },
+    { "if", "item", "RRE_material", "hasTag", "fabric", "order" }, -- already gained material from Lyn
     { "setCharacter", "lyn" },
-
-    { "setState", "three" },
+    "Here you go! I got these in on last night's train. Let me know if you need more and I'll order it in.",
+    { "addItem", {
+      { name = "RRE Material", id = "RRE_material", tags = { "fabric", "neutral", "texture.neutral_3" }, },
+    } },
+    { "setCharacter", nil },
+    "[b][bounce=5]Added Item to Inventory[/bounce][/b][newline][newline]RRE Material",
     { "unfreeze", "player" },
     { "end" },
-    { "tag", "three" },
-    { "freeze", "player" },
+    { "tag", "order" },
     { "setCharacter", "lyn" },
-
-    { "setState", "four" },
+    "I'll put an order in, and see what we can get in!",
     { "unfreeze", "player" },
     { "end" },
-    { "tag", "four" },
-    { "freeze", "player" },
+    { "tag", "RRE_what" },
     { "setCharacter", "lyn" },
-    
-    { "setState", "one" },
+    "Did the solar flares get to you? The Regional Resource Exchange is just our way of keeping good stuff circulating across the region.",
+    "We handle the logistics, reusing our current transit networks, like the trains, for efficient transport, prioritizing routes and minimizing unnecessary fuel consumption.",
+    "Essentially, it's where communities share extra bits and pieces, second-hand treasures and even some new eco-friendly materials.",
+    { "setCharacter", "player" },
+    "Thanks for reminding me Lyn!",
+    { "setCharacter", "lyn" },
+    "No problem, I'll be seeing you around town. Perhaps you should make some sun hats.",
     { "unfreeze", "player" },
     { "end" },
+    -- { "goto", "choice" }, -- make it loop back to selection?
   }
 }

@@ -26,10 +26,13 @@ questManager.unlockQuest("child_bark")
 questManager.activateQuest("child_bark")
 questManager.unlockQuest("electrician_bark")
 questManager.activateQuest("electrician_bark")
+questManager.unlockQuest("lyn_bark")
+questManager.activateQuest("lyn_bark")
 questManager.unlockQuest("sami_bark")
 questManager.activateQuest("sami_bark")
 questManager.unlockQuest("zyla_bark")
 questManager.activateQuest("zyla_bark")
+
 
 ------------------------------------
 

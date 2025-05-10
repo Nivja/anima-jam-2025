@@ -13,10 +13,10 @@ return {
       { name = "Childish Fabric", tags = { "fabric", "silly", "texture.silly_1" }, },
       { name = "Neutral Fabric", tags = { "fabric", "neutral", "texture.neutral_1" }, },
       { name = "Fancy Fabric", tags = { "fabric", "fancy", "texture.fancy_1" }, },
-      -- { name = "n", tags = { "fabric", "texture.neutral_2" }, },
-      -- { name = "n", tags = { "fabric", "texture.heirloom_1" }, },
-      -- { name = "n", tags = { "fabric", "texture.heirloom_2" }, },
-      -- { name = "n", tags = { "fabric", "texture.neutral_3" }, },
+      -- { name = "n", tags = { "fabric", "texture.neutral_2" }, }, --- Taken
+      -- { name = "n", tags = { "fabric", "texture.heirloom_1" }, }, ---
+      -- { name = "n", tags = { "fabric", "texture.heirloom_2" }, }, ---
+      -- { name = "n", tags = { "fabric", "texture.neutral_3" }, }, ---
       -- { name = "n", tags = { "fabric", "texture.neutral_4" }, },
     } },
     { "setState", "state_intro"},
