@@ -28,7 +28,7 @@ return {
     { "tag", "four" },
     { "freeze", "player" },
     { "setCharacter", "zyla" },
-    "I should  get the little runner-bike fixed for my granddaughter’s birthday",
+    "I should  get the little runner-bike fixed for my granddaughter’s birthday.",
     { "setState", "one" },
     { "unfreeze", "player" },
     { "end" },
