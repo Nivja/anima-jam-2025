@@ -27,7 +27,7 @@ local loopSource = function(source)
   return source
 end
 
-local voiceVolume = 1.0
+local voiceVolume = 0.9
 
 return {
 -- Audio | sourceType = "static"/"stream"
@@ -46,7 +46,7 @@ return {
   { path = "audio/ui/SFX_ExitButtonInteraction.wav", name = "audio.ui.exit_minigame.interact.1", sourceType = "static", audioType = "ui", key = "audio.ui.exit_minigame.interact", volume = 1.5 },
 
   -- SFX
-  { path = "audio/sfx/SFX_Sewing_Loop_V2.wav", name = "audio.sfx.sewing", sourceType = "static", audioType = "sfx", volume = 1.0, onLoad = loopSource },
+  { path = "audio/sfx/SFX_Sewing_Loop_V2.wav", name = "audio.sfx.sewing", sourceType = "static", audioType = "sfx", volume = 0.6, onLoad = loopSource },
   { path = "audio/sfx/SFX_Door.wav", name = "audio.sfx.door.1", sourceType = "static", audioType = "sfx", key = "audio.sfx.door", volume = .3 },
   { path = "audio/sfx/SFX_Interaction.wav", name = "audio.sfx.interact.1", sourceType = "static", audioType = "sfx", key = "audio.sfx.interact", volume = 1.0 },
   { path = "audio/sfx/SFX_FootFall_01.wav", name = "audio.sfx.foot.1", sourceType = "static", audioType = "sfx", key = "audio.sfx.foot", volume = .3 },
@@ -98,11 +98,14 @@ return {
   { path = "fabric/neutral_3.png", name = "fabric.neutral_3", onLoad = filterLinear },
   { path = "fabric/neutral_4.png", name = "fabric.neutral_4", onLoad = filterLinear },
   { path = "fabric/silly_1.png", name = "fabric.silly_1", onLoad = filterLinear },
-  
+
   { path = "textures/zyla_dress_damage.png", name = "damage.zyla_dress", onLoad = filterLinear },
   { path = "textures/zyla_dress_damage_outline.png", name = "damage.zyla_dress.outline", onLoad = filterLinear },
   { path = "textures/sami_pants_damage.png", name = "damage.sami_pants", onLoad = filterLinear },
   { path = "textures/sami_pants_damage_outline.png", name = "damage.sami_pants.outline", onLoad = filterLinear },
+
+  { path = "textures/pad_empty_damage.png", name = "damage.pad", onLoad = filterNearest },
+  { path = "textures/pad_outline.png", name = "damage.pad.outline", onLoad = filterLinear },
 
   { path = "textures/Outside_Assets_1.png", name = "img.town.1", onLoad = filterLinear },
   { path = "textures/Outside_Assets_2.png", name = "img.town.2", onLoad = filterLinear },

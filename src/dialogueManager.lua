@@ -16,6 +16,8 @@ local _ignoreCommand = function(self)
   return self:next()
 end
 
+local endingWalkTween
+
 local commandLookup = {
   ["end"] = function(self)
     self.ready = true
@@ -74,15 +76,31 @@ local commandLookup = {
   end,
   ["questFinished"] = function(self)
     self.quest:finish()
-    flux.to({ }, 4, { }):oncomplete(function() -- after n seconds; start the next quest
+    local f
+    f = function() -- after n seconds; start the next quest
       for _, newQuest in ipairs(self.quest.unlock) do
-        local _, questState = require("src.questManager").get(newQuest)
+        local _q, questState = require("src.questManager").get(newQuest)
         if questState == "unlocked" then
-          require("src.questManager").activateQuest(newQuest, true)
-          break
+          local result = require("src.questManager").activateQuest(newQuest, true)
+          if result then
+            break
+          else
+            logger.warn("Retrying to activate quest in 10s; expect errors as this was last minute fix")
+            flux.to({ }, 10, { }):oncomplete(f) -- reentry
+          end
+        elseif questState == "active" then -- reentry
+          logger.info("Hit re-entry attempt")
+          if not require("src.questManager").activeQuestScene then
+            require("src.questManager").activeQuestScene = _q
+            return
+          else
+            logger.warn("Retrying to activate quest in 10s; expect errors as this was last minute fix")
+            flux.to({ }, 10, { }):oncomplete(f)
+          end
         end
       end
-    end)
+    end
+    flux.to({ }, 4, { }):oncomplete(f)
     return self:next()
   end,
   ["teleportToDoor"] = function(self, commandTbl, commandType)
@@ -307,6 +325,32 @@ local commandLookup = {
     end
     character:teleportHome()
   end,
+  [ "ending" ] = function(self)
+    if not endingWalkTween then
+      local player = characterManager.get("player")
+      player:setWorld("town", 14, 3.5, false)
+      local totalTime = math.abs(-24 / (player.speedX * 0.2))
+      player:moveX(0)
+      local previous = 0
+      endingWalkTween = flux.to({}, totalTime, {})
+      :onupdate(function()
+          local current = -28 * endingWalkTween.progress 
+          local delta = current - previous
+          previous = current
+          player:moveX(delta)
+        end)
+      :oncomplete(function()
+        player.x = 0.1
+        player:moveX(0)
+      end)
+    else
+      if endingWalkTween.progress < 1 then
+        endingWalkTween:stop()
+        endingWalkTween._oncomplete()
+      end
+    end
+    return self:next()
+  end
 }
 
 dialogue.next = function(self)

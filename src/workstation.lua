@@ -282,6 +282,7 @@ local closeTimer, closeTimeMax, closeMouseTimer = 0, 2.5, 0
 local leavesX, leavesY, leavesFlipX, leavesFlipY = 0, 0, true, false
 local blinkTimer, patchLevelTwoTimer = 0, 0
 local sashikoArrows, sashikoArrowIndex, sashikoArrowTimer, sashikoArrowTimerStart = { }, 1, 0, 0
+local sashikoArrowsHitCounter = 0
 workstation.update = function(dt, scale, isGamepadActive)
   local inputConsumed = false
 
@@ -644,7 +645,8 @@ workstation.update = function(dt, scale, isGamepadActive)
           if patchLevelTwoTimer >= 3 then
             patchLevel = 3
             sashikoArrows = { }
-            for n = 1, 15 do
+            sashikoArrowsHitCounter = 0
+            for n = 1, 150 do -- PAUL HERE 150
               local arrow = { rotation = 0 }
               local r = love.math.random(1, 4)
               if r == 1 then
@@ -684,6 +686,10 @@ workstation.update = function(dt, scale, isGamepadActive)
     elseif patchLevel == 3 then
       sashikoArrowTimerStart = sashikoArrowTimerStart + dt
       if sashikoArrowTimerStart > 2 then
+        local aaa = assets["audio.sfx.sewing"]
+        if not aaa:isPlaying() then
+          aaa:play()
+        end
         sashikoArrowTimer = sashikoArrowTimer + dt
         if not inputConsumed and not isDraggingCloseButton then
           local currentArrow, index
@@ -694,13 +700,15 @@ workstation.update = function(dt, scale, isGamepadActive)
               break
             end
           end
-          if currentArrow then
-            local speed, distBetween = 250, 250
+          -- if currentArrow then
+          if sashikoArrowsHitCounter < 10 and currentArrow then -- PAUL HERE, if they get through and fail 150 arrows; let them go
+            local speed, distBetween = 300, 250
             local n = 500 + sashikoArrowTimer*-speed + distBetween * (index-1)
             if input.baton:pressed(currentArrow.key) then
               if n <= 260 then
                 currentArrow.noShow = true
                 audioManager.play("audio.ui.click")
+                sashikoArrowsHitCounter = sashikoArrowsHitCounter + 1
               else
                 currentArrow.passed = true -- too early
                 audioManager.play("audio.ui.select")
@@ -708,17 +716,21 @@ workstation.update = function(dt, scale, isGamepadActive)
               inputConsumed = true
             end
           else
+            aaa:stop()
             -- end of minigame
-            local hit, missed = 0, 0
-            for _, a in ipairs(sashikoArrows) do
-              if a.noShow then
-                hit = hit + 1
-              elseif a.passed then
-                missed = missed + 1
-              end
-            end
-            logger.info("Hit:", hit, ". Missed:", missed, "todo; implement failing")
+            -- local hit, missed = 0, 0
+            local hit = sashikoArrowsHitCounter
+            -- for _, a in ipairs(sashikoArrows) do
+            --   if a.noShow then
+            --     hit = hit + 1
+            --   elseif a.passed then
+            --     missed = missed + 1
+            --   end
+            -- end
+            -- logger.info("Hit:", hit, ". Missed:", missed, "todo; implement failing")
+            logger.info("Arrows hit:", hit)
             patchLevel = 4
+            sashikoArrowsHitCounter = 0
             -- hard coded, oops - we don't have a working inventory so who cares
             local patchTag = "patch."
             local key = fabricTexturesOrder[fabricArrowPosition]
@@ -924,7 +936,7 @@ workstation.drawUI = function(scale)
         lg.pop()
         lg.push()
         lg.translate(429+100+500, 348+(618)/2)
-        local speed, distBetween = 250, 250
+        local speed, distBetween = 300, 250
         lg.translate(sashikoArrowTimer*-speed, 0)
         for i, arrow in ipairs(sashikoArrows) do
           if not arrow.noShow then

@@ -10,6 +10,8 @@ return {
   "audio.sfx.foot",
   "audio.sfx.voice",
 
+  "audio.sfx.sewing",
+
   "audio.music.menu",
   "audio.music.town",
   "audio.music.workshop",
@@ -36,4 +38,7 @@ return {
 
   "damage.sami_pants",
   "damage.sami_pants.outline",
+  
+  "damage.pad",
+  "damage.pad.outline",
 }

@@ -94,12 +94,13 @@ questManager.activateQuest = function(questId, execute)
   if execute then
     if questManager.activeQuestScene then
       logger.warn("QuestManager: Tried to activate & execute quest; but a quest is already actively running. Conflict:", questId, ", currently running:", questManager.activeQuestScene)
-      return
+      return false
     end
     questManager.activeQuestScene = quest
   else
     quest.dialogue.is_finished = true -- so it can continue
   end
+  return true
 end
 
 questManager.finishQuest = function(questId)

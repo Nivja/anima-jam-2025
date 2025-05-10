@@ -16,8 +16,8 @@ return {
       -- { name = "n", tags = { "fabric", "texture.neutral_2" }, }, --- Taken
       -- { name = "n", tags = { "fabric", "texture.heirloom_1" }, }, ---
       -- { name = "n", tags = { "fabric", "texture.heirloom_2" }, }, ---
-      -- { name = "n", tags = { "fabric", "texture.neutral_3" }, }, ---
-      -- { name = "n", tags = { "fabric", "texture.neutral_4" }, },
+      -- { name = "n", tags = { "fabric", "texture.neutral_3" }, }, --- lyn bark
+      -- { name = "n", tags = { "fabric", "texture.neutral_4" }, }, ---
     } },
     { "setState", "state_intro"},
     { "tag", "state_intro" },
@@ -45,7 +45,7 @@ return {
       },
     } },
     { "setCharacter", nil },
-    "[b][bounce=5]Added Item to Inventory[/bounce][/b][newline][newline]Zyla's Dress",
+    "[b][bounce=7]Added Item to Inventory[/bounce][/b][newline][newline]Zyla's Dress",
     { "unfreeze", "player" },
     { "setState", "patch_time" },
     { "setObjective", "Patch Zyla's Dress" },
@@ -77,13 +77,18 @@ return {
       { name = "Zyla's Heirloom fabric", tags = { "fabric", "heirloom", "texture.heirloom_2", }, },
     } },
     { "setCharacter", nil },
-    "[b][bounce=5]Added Item to Inventory[/bounce][/b][newline][newline]Zyla's Heirloom fabric x2",
+    "[b][bounce=7]Added Item to Inventory[/bounce][/b][newline][newline]Zyla's Heirloom fabric x2",
     { "goto", "end_option_one" },
     { "tag", "end_option_one" },
     { "removeItem", {
       "zyla_dress",
     }},
     { "questFinished" },
+    { "if", "item", "RRE_material", "hasTag", "fabric", "skipLyn" },
+    { "if", "item", "RRE_material_2", "hasTag", "fabric", "skipLyn" },
+    { "setCharacter", "zyla" },
+    "I understand Lyn received new materials last night. You ought to speak with her.",
+    { "tag", "skipLyn" },
     { "unfreeze", "player" },
     { "moveX", "zyla", 2 },
     { "useDoor", "zyla", "town-workshop" },

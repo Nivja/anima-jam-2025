@@ -28,7 +28,7 @@ return {
     { "tag", "four" },
     { "freeze", "player" },
     { "setCharacter", "sami" },
-    "What’s for dinner? I am starving...",
+    "What's for dinner? I am starving...",
     { "setState", "one" },
     { "unfreeze", "player" },
     { "end" },

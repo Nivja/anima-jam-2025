@@ -13,17 +13,18 @@ return {
     { "choice", {
       { "Yes! Have you got any for me?", "material" },
       { "What is the RRE?", "RRE_what" },
-      -- { "I'm doing well!", "hi" }, -- could be exit?
     } },
     { "tag", "material" },
     { "if", "item", "RRE_material", "hasTag", "fabric", "order" }, -- already gained material from Lyn
+    { "if", "item", "RRE_material_2", "hasTag", "fabric", "order" }, -- already gained material from Lyn
     { "setCharacter", "lyn" },
     "Here you go! I got these in on last night's train. Let me know if you need more and I'll order it in.",
     { "addItem", {
       { name = "RRE Material", id = "RRE_material", tags = { "fabric", "neutral", "texture.neutral_3" }, },
+      { name = "RRE Material", id = "RRE_material_2", tags = { "fabric", "neutral", "texture.neutral_4" }, },
     } },
     { "setCharacter", nil },
-    "[b][bounce=5]Added Item to Inventory[/bounce][/b][newline][newline]RRE Material",
+    "[b][bounce=7]Added Item to Inventory[/bounce][/b][newline][newline]RRE Material x2",
     { "unfreeze", "player" },
     { "end" },
     { "tag", "order" },
@@ -39,9 +40,8 @@ return {
     { "setCharacter", "player" },
     "Thanks for reminding me Lyn!",
     { "setCharacter", "lyn" },
-    "No problem, I'll be seeing you around town. Perhaps you should make some sun hats.",
+    "No problem, I'll be seeing you around town.",
     { "unfreeze", "player" },
     { "end" },
-    -- { "goto", "choice" }, -- make it loop back to selection?
   }
 }
