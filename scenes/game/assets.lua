@@ -2,6 +2,8 @@ return {
   "audio.ui.select",
   "audio.ui.click",
   "audio.ui.spring",
+  "audio.ui.exit_minigame",
+  "audio.ui.exit_minigame.interact",
 
   "audio.sfx.door",
   "audio.sfx.interact",
@@ -30,5 +32,8 @@ return {
   "fabric.silly_1",
 
   "damage.zyla_dress",
-  "damage.zyla_dress.outline"
+  "damage.zyla_dress.outline",
+
+  "damage.sami_pants",
+  "damage.sami_pants.outline",
 }

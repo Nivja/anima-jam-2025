@@ -27,7 +27,7 @@ local loopSource = function(source)
   return source
 end
 
-local voiceVolume = 0.2
+local voiceVolume = 1.0
 
 return {
 -- Audio | sourceType = "static"/"stream"
@@ -41,6 +41,10 @@ return {
   { path = "audio/ui/SFX_SpringButtons_01.wav", name = "audio.ui.spring.1", sourceType = "static", audioType = "ui", key = "audio.ui.spring", volume = 0.6 },
   { path = "audio/ui/SFX_SpringButtons_02.wav", name = "audio.ui.spring.2", sourceType = "static", audioType = "ui", key = "audio.ui.spring", volume = 0.6 },
   { path = "audio/ui/SFX_SpringButtons_03.wav", name = "audio.ui.spring.3", sourceType = "static", audioType = "ui", key = "audio.ui.spring", volume = 0.6 },
+
+  { path = "audio/ui/SFX_ExitMinigame.wav", name = "audio.ui.exit_minigame.1", sourceType = "static", audioType = "ui", key = "audio.ui.exit_minigame", volume = 1.5 },
+  { path = "audio/ui/SFX_ExitButtonInteraction.wav", name = "audio.ui.exit_minigame.interact.1", sourceType = "static", audioType = "ui", key = "audio.ui.exit_minigame.interact", volume = 1.5 },
+
   -- SFX
   { path = "audio/sfx/SFX_Sewing_Loop_V2.wav", name = "audio.sfx.sewing", sourceType = "static", audioType = "sfx", volume = 1.0, onLoad = loopSource },
   { path = "audio/sfx/SFX_Door.wav", name = "audio.sfx.door.1", sourceType = "static", audioType = "sfx", key = "audio.sfx.door", volume = .3 },
@@ -51,13 +55,20 @@ return {
   { path = "audio/sfx/SFX_FootFall_04.wav", name = "audio.sfx.foot.4", sourceType = "static", audioType = "sfx", key = "audio.sfx.foot", volume = .3 },
   { path = "audio/sfx/SFX_FootFall_05.wav", name = "audio.sfx.foot.5", sourceType = "static", audioType = "sfx", key = "audio.sfx.foot", volume = .3 },
   -- Voice
-  { path = "audio/sfx/voice/SFX_Voice_01.wav", name = "audio.sfx.voice.1", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
-  { path = "audio/sfx/voice/SFX_Voice_02.wav", name = "audio.sfx.voice.2", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
-  { path = "audio/sfx/voice/SFX_Voice_03.wav", name = "audio.sfx.voice.3", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
-  { path = "audio/sfx/voice/SFX_Voice_04.wav", name = "audio.sfx.voice.4", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
-  { path = "audio/sfx/voice/SFX_Voice_05.wav", name = "audio.sfx.voice.5", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
-  { path = "audio/sfx/voice/SFX_Voice_06.wav", name = "audio.sfx.voice.6", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
-  { path = "audio/sfx/voice/SFX_Voice_07.wav", name = "audio.sfx.voice.7", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
+  -- { path = "audio/sfx/voice/SFX_Voice_01.wav", name = "audio.sfx.voice.1", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
+  -- { path = "audio/sfx/voice/SFX_Voice_02.wav", name = "audio.sfx.voice.2", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
+  -- { path = "audio/sfx/voice/SFX_Voice_03.wav", name = "audio.sfx.voice.3", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
+  -- { path = "audio/sfx/voice/SFX_Voice_04.wav", name = "audio.sfx.voice.4", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
+  -- { path = "audio/sfx/voice/SFX_Voice_05.wav", name = "audio.sfx.voice.5", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
+  -- { path = "audio/sfx/voice/SFX_Voice_06.wav", name = "audio.sfx.voice.6", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
+  -- { path = "audio/sfx/voice/SFX_Voice_07.wav", name = "audio.sfx.voice.7", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
+  
+  { path = "audio/sfx/voice/SFX_VoiceSoft_01.wav", name = "audio.sfx.voice.1.soft", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
+  { path = "audio/sfx/voice/SFX_VoiceSoft_02.wav", name = "audio.sfx.voice.2.soft", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
+  { path = "audio/sfx/voice/SFX_VoiceSoft_03.wav", name = "audio.sfx.voice.3.soft", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
+  { path = "audio/sfx/voice/SFX_VoiceSoft_04.wav", name = "audio.sfx.voice.4.soft", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
+  { path = "audio/sfx/voice/SFX_VoiceSoft_05.wav", name = "audio.sfx.voice.5.soft", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
+  { path = "audio/sfx/voice/SFX_VoiceSoft_06.wav", name = "audio.sfx.voice.6.soft", sourceType = "static", audioType = "sfx", key = "audio.sfx.voice", volume = voiceVolume },
 
   -- Music
   { path = "audio/music/Solarpunk_Menu_Loop.wav", name = "audio.music.menu", sourceType = "stream", audioType = "music", volume = 1.0, onLoad = loopSource },
@@ -90,6 +101,8 @@ return {
   
   { path = "textures/zyla_dress_damage.png", name = "damage.zyla_dress", onLoad = filterLinear },
   { path = "textures/zyla_dress_damage_outline.png", name = "damage.zyla_dress.outline", onLoad = filterLinear },
+  { path = "textures/sami_pants_damage.png", name = "damage.sami_pants", onLoad = filterLinear },
+  { path = "textures/sami_pants_damage_outline.png", name = "damage.sami_pants.outline", onLoad = filterLinear },
 
   { path = "textures/Outside_Assets_1.png", name = "img.town.1", onLoad = filterLinear },
   { path = "textures/Outside_Assets_2.png", name = "img.town.2", onLoad = filterLinear },

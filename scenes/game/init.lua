@@ -190,7 +190,7 @@ scene.draw = function()
   lg.pop()
 
   if love.keyboard.isScancodeDown("tab") then
-    local str = love.timer.getFPS().." FPS"
+    local str = love.timer.getFPS().." FPS  "..scene.playerChar.z
     lg.setColor(1,1,1,1)
     lg.rectangle("fill", 10, 10, lg.getFont():getWidth(str), lg.getFont():getHeight())
     lg.setColor(0,0,0,1)

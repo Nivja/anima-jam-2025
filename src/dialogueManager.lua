@@ -74,6 +74,15 @@ local commandLookup = {
   end,
   ["questFinished"] = function(self)
     self.quest:finish()
+    flux.to({ }, 4, { }):oncomplete(function() -- after n seconds; start the next quest
+      for _, newQuest in ipairs(self.quest.unlock) do
+        local _, questState = require("src.questManager").get(newQuest)
+        if questState == "unlocked" then
+          require("src.questManager").activateQuest(newQuest, true)
+          break
+        end
+      end
+    end)
     return self:next()
   end,
   ["teleportToDoor"] = function(self, commandTbl, commandType)
@@ -174,6 +183,77 @@ local commandLookup = {
     character.zTween:oncomplete(function()
       self.ready = true
     end)
+    return nil
+  end,
+  ["moveToDoor"] = function(self, commandTbl, commandType)
+    local character = characterManager.get(commandTbl[2])
+    if not character then
+      logger.warn("Dialogue["..self.dirName.."@"..self.index.."]: Couldn't find character to", commandType, ", gave character ID:", commandTbl[2])
+      return self:next()
+    end
+    local door = worldManager.getDoor(commandTbl[3])
+    if not door then
+      logger.warn("Dialogue["..self.dirName.."@"..self.index.."]: Couldn't find door to", commandType, ", gave door ID:", commandTbl[3])
+      return self:next()
+    end
+    local world, x, z, flip
+    if door.worldA == character.world then
+      world = door.worldA
+      x, z, flip = unpack(door.entryA)
+    elseif door.worldB == character.world then
+      world = door.worldB
+      x, z, flip = unpack(door.entryB)
+    end
+    if not world then
+      logger.warn("Dialogue["..self.dirName.."@"..self.index.."]: Given door[", commandTbl[3], "] doesn't have matching world that character is in:", character.world)
+      return self:next()
+    end
+    -- Move along X first; then Z - Unless in town, then go onto path
+    local tween
+    if world == "town" and (character.z > 4 or character.z < 3) then
+      local delta = 0
+      if character.z > 4 then delta = character.z - 4 end
+      if character.z < 3 then delta = 3 - character.z end
+      character:moveZ(delta)
+      tween = character.zTween
+      print(delta)
+    else
+      tween = flux.to({}, 0, {}) -- dummy
+    end
+    local targetX = x - character.x
+    if targetX ~= 0 then -- Move X
+      local totalTime = math.abs(targetX / (character.speedX * (commandTbl[2] ~= "player" and 0.8 or 1)))
+      character:moveX(0)
+      local previous = 0
+      tween = tween:after(totalTime, {})
+        :onupdate(function()
+            local current = targetX * tween.progress 
+            local delta = current - previous
+            previous = current
+            character:moveX(delta)
+          end)
+        :oncomplete(function()
+          character:moveX(0)
+        end)
+    end
+    do -- Move Z
+      tween:oncomplete(function()
+        local useDoor = function()
+          tween = door:use(character)
+          tween:oncomplete(function()
+            self.ready = true
+          end)
+        end
+        local targetZ = z - character.z
+        if targetZ ~= 0 then
+          character:moveZ(targetZ)
+          character.zTween:oncomplete(useDoor)
+        else
+          useDoor() -- skip and use door
+        end
+      end)
+    end
+    self.ready = false
     return nil
   end,
   ["freeze"] = function(self, commandTbl, commandType)

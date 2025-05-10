@@ -4,12 +4,11 @@ return {
   description = "Help Zyla with her dress!",
   npc = "zyla", -- Who to talk to to activate the dialogue; isn't needed if repeatCheck is active
   unlock = {
-    "quest_2",
+    "quest_3",
   },
-  repeatCheck = false,
+  repeatCheck = false, -- not implemented in the end
   dialogue = {
     { "freeze", "player" },
-    { "setState", "state_intro"},
     { "addItem", { -- starting items
       { name = "Childish Fabric", tags = { "fabric", "silly", "texture.silly_1" }, },
       { name = "Neutral Fabric", tags = { "fabric", "neutral", "texture.neutral_1" }, },
@@ -20,6 +19,7 @@ return {
       -- { name = "n", tags = { "fabric", "texture.neutral_3" }, },
       -- { name = "n", tags = { "fabric", "texture.neutral_4" }, },
     } },
+    { "setState", "state_intro"},
     { "tag", "state_intro" },
     { "setQuestNPC", "zyla" },
     { "setObjective", "Listen to Zyla's request" },
@@ -27,7 +27,7 @@ return {
     { "useDoor", "zyla", "town-workshop" },
     { "moveX", "zyla", -2 },
     { "setCharacter", "zyla" },
-    "Good morning, I am here to see Rosetta. Is she around? I need my dress repaired.",
+    "Good morning, I am here to see Rosetta. Is she around? I need my [b][rainbow]fancy[/rainbow][/b] dress repaired.",
     { "setCharacter", "player" },
     "Rosetta is not here this morning. I am here to take care of all sewing and mending and would love to help!",
     { "setCharacter", "zyla" },
@@ -37,7 +37,6 @@ return {
       { "I have just the thing for it!", "option_one" }
     } },
     { "tag", "option_one" },
-    { "setObjective", "Find fabric to use" },
     { "addItem", {
       {
         name = "Zyla's Dress",
@@ -46,25 +45,25 @@ return {
       },
     } },
     { "setCharacter", nil },
-    "[b][bounce=5]Added Item to Inventory[/bounce][/b][newline][newline][blink=2]Zyla's Dress[/blink]",
+    "[b][bounce=5]Added Item to Inventory[/bounce][/b][newline][newline]Zyla's Dress",
     { "unfreeze", "player" },
     { "setState", "patch_time" },
     { "setObjective", "Patch Zyla's Dress" },
-    { "highlight", "interact.patch" }, -- todo highlight patch machine
+    -- { "highlight", "interact.patch" }, -- todo highlight patch machine
     { "end" },
     { "tag", "patch_time" },
     { "freeze", "player" },
     { "if", "item", "zyla_dress", "hasTag", "patch.silly", "silly_design" }, -- So the patching minigame would add the "patched.<patchType>" tag to the dress
     { "if", "item", "zyla_dress", "hasTag", "patch.neutral", "neutral_design" },
     { "if", "item", "zyla_dress", "hasTag", "patch.fancy", "fancy_design" },
-    { "tag", "not_finished" },
+    -- { "tag", "not_finished" },
     { "setCharacter", "zyla" },
     "Have you finished my dress?",
     { "unfreeze", "player" },
     { "end" },
     { "tag", "silly_design" },
     { "setCharacter", "zyla" },
-    "Rosetta will hear about this!",
+    "How dare you ruin my [b][rainbow]fancy[/rainbow][/b] dress with that silly patch! Rosetta will hear about this!",
     { "goto", "end_option_one" },
     { "tag", "neutral_design" },
     { "setCharacter", "zyla" },
@@ -73,10 +72,12 @@ return {
     { "tag", "fancy_design" },
     { "setCharacter", "zyla" },
     "Well, this is quite stylish, you know, I do have a few heirloom fabrics just sitting around my place, I think you might be the person to make good use of them. Can't wait to see what you will make.",
-    { "addItem",
-      { name = "Old Lady's Heirloom fabric", tags = { "fabric", "heirloom", "texture.heirloom_1", }, },
-      { name = "Old Lady's Heirloom fabric", tags = { "fabric", "heirloom", "texture.heirloom_2", }, },
-    },
+    { "addItem", {
+      { name = "Zyla's Heirloom fabric", tags = { "fabric", "heirloom", "texture.heirloom_1", }, },
+      { name = "Zyla's Heirloom fabric", tags = { "fabric", "heirloom", "texture.heirloom_2", }, },
+    } },
+    { "setCharacter", nil },
+    "[b][bounce=5]Added Item to Inventory[/bounce][/b][newline][newline]Zyla's Heirloom fabric x2",
     { "goto", "end_option_one" },
     { "tag", "end_option_one" },
     { "removeItem", {
@@ -84,7 +85,6 @@ return {
     }},
     { "questFinished" },
     { "unfreeze", "player" },
-    -- todo send Zyla back
     { "moveX", "zyla", 2 },
     { "useDoor", "zyla", "town-workshop" },
     { "goHome", "zyla" }, -- teleport back to home location

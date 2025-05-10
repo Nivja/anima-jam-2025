@@ -88,8 +88,10 @@ audioManager.play = function(assetKey)
   end
   if audioInfo.audioType == "ui" or audioInfo.audioType == "sfx" then
     local s = audioInfo[love.math.random(1, #audioInfo)]
-    s.asset:play()
+    local played = s.asset
+    played:play()
     s.asset = s.asset:clone()
+    return played
   elseif audioInfo.audioType == "music" then
     local s = audioInfo[1]
     s.asset:play()

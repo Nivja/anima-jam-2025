@@ -212,9 +212,9 @@ character.moveZ = function(self, deltaZ)
     return
   end
   if math.abs(deltaZ) > moveUnitZ then
-    local direction = math.sign(deltaZ) -- 1 or -1
+    local direction = math.sign(deltaZ)-- 1 or -1
     while math.abs(deltaZ) >= moveUnitZ - moveUnitZEpsilon do
-      self:moveZ(moveUnitZ * direction)
+      self:moveZ(moveUnitZ * -direction)
       deltaZ = deltaZ - moveUnitZ * direction
     end
     return
@@ -325,7 +325,7 @@ end
 
 character.setWorld = function(self, world, x, z, flipped)
   local oldWorld = self.world
-  self.world = world
+  self.world = world or oldWorld
   local min, max = require("src.worldManager").getWorldLimit(self.world)
   if x == min then x = x + 1 end
   if x == max then x = x - 1 end

@@ -9,6 +9,8 @@ return {
   "audio.ui.select",
   "audio.ui.click",
   "audio.ui.spring",
+  "audio.ui.exit_minigame",
+  "audio.ui.exit_minigame.interact",
 
   "audio.sfx.door",
   "audio.sfx.interact",

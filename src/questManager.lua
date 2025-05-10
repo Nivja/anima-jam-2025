@@ -103,8 +103,16 @@ questManager.activateQuest = function(questId, execute)
 end
 
 questManager.finishQuest = function(questId)
-  transitionQuest(questId, "active", "finished")
+  local _, quest = transitionQuest(questId, "active", "finished")
   logger.info("QuestManager: Finished quest,", questId)
+  if quest.unlock then
+    for _, newQuest in ipairs(quest.unlock) do
+      local _, questState = questManager.get(newQuest)
+      if questState == "locked" then
+        questManager.unlockQuest(newQuest)
+      end
+    end
+  end
 end
 
 local progress, flip = 0, true
@@ -133,7 +141,7 @@ questManager.resize = function(w, h, scale)
     default_underline_position = 0,
     character_sound = true,
     sound_number = 0,
-    sound_every = 7,
+    sound_every = 9,
     default_warble = 999,
   })
   if text then

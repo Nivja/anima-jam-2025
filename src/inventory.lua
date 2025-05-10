@@ -22,12 +22,12 @@ end
 inventoryItem.getTagStartingWith = function(self, startingWith)
   local pattern = "^" .. startingWith
   for _, tag in ipairs(self.tags) do
-    -- if tag:sub(1, #startingWith) == startingWith then
-    if tag:find(pattern) ~= nil then
-      return tag
+    local matchStart, matchEnd = tag:find(pattern)
+    if matchStart ~= nil then
+      return tag, tag:sub(matchEnd + 1)
     end
   end
-  return nil
+  return nil, nil
 end
 
 inventory.get = function(id)

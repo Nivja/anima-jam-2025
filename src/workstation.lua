@@ -354,8 +354,16 @@ workstation.update = function(dt, scale, isGamepadActive)
     end
   end
   if isDraggingCloseButton then
+    local interactSFX = assets["audio.ui.exit_minigame.interact.1"]
     if love.mouse.isDown(1) then
+      local previousOffset = closeDragOffset
       closeDragOffset = my / textureScale - 390 - closeDragOffsetY
+      if previousOffset ~= closeDragOffset then
+        interactSFX:setPitch(1.25)
+        if not interactSFX:isPlaying() then
+          interactSFX:play()
+        end
+      end
       if closeDragOffset < 0 then
         closeDragOffset = 0
       end
@@ -374,7 +382,7 @@ workstation.update = function(dt, scale, isGamepadActive)
         closeDragOffset = 0
         closeDragOffsetY = 0
         workstation.show = false
-        audioManager.play("audio.ui.click")
+        audioManager.play("audio.ui.exit_minigame")
         canMovePlayer(true)
         if closeInside then
           cursor.switch("arrow")
@@ -385,19 +393,30 @@ workstation.update = function(dt, scale, isGamepadActive)
   end
 
   if not isDraggingCloseButton then
+    local interactSFX = assets["audio.ui.exit_minigame.interact.1"]
     if input.baton:down("reject") then
       closeTimer = closeTimer + 2 *dt
+      if not interactSFX:isPlaying() then
+        interactSFX:play()
+      end
+      interactSFX:setPitch(1.0)
     elseif closeTimer > 0 then
       local slowDownFactor = math.min(1, math.max(0.05, closeTimer / (closeTimeMax/8)))
       closeTimer = closeTimer - 1 * dt * slowDownFactor
+      interactSFX:setPitch(0.75)
       if closeTimer < 0 then
         closeTimer = 0
+        if interactSFX:isPlaying() then
+          interactSFX:stop()
+        end
+      elseif not interactSFX:isPlaying() then
+        interactSFX:play()
       end
     end
     if closeTimer >= closeTimeMax then
       closeTimer = 0
       workstation.show = false
-      audioManager.play("audio.ui.click")
+      audioManager.play("audio.ui.exit_minigame")
       canMovePlayer(true)
       inputConsumed = true
     end
@@ -711,24 +730,24 @@ workstation.update = function(dt, scale, isGamepadActive)
             end
             patchItems[1].tags = {
               "clothing",
-              "dress",
-              "fabric.fancy",
-              -- "issue.patch", -- removed
-              -- "patch.zyla_dress"
+              patchItems[1].tags[2],
+              patchItems[1].tags[3],
               patchTag,
               "patched",
             }
             -- Should remove from patch items; but it's done with the below
-
-            patchItems = inventory.getPatchItems() or { }
-            patchItemsIndex = 1
-            -- patchLevel = 1
-            inventorySlotSelected = 1
-            fabricArrowPosition = 1
-            tearFabricPosition = { 0, 0 }
-            patchLevelTwoTimer = 0
-            sashikoArrows = { }
-            sashikoArrowIndex = 1
+            
+            flux.to({}, 3, {}):oncomplete(function()
+              patchItems = inventory.getPatchItems() or { }
+              patchItemsIndex = 1
+              patchLevel = 1
+              inventorySlotSelected = 1
+              fabricArrowPosition = 1
+              tearFabricPosition = { 0, 0 }
+              patchLevelTwoTimer = 0
+              sashikoArrows = { }
+              sashikoArrowIndex = 1
+            end)
           end
         end
       end
@@ -842,7 +861,7 @@ workstation.drawUI = function(scale)
     lg.setStencilState("keep", "greater", 0)
     lg.setColorMask(true)
 
-    if sideButtons[1].active and #patchItems ~= 0 then -- Patch
+    if sideButtons[1].active and (patchLevel == 1 and #patchItems ~= 0 or patchLevel ~= 1) then -- Patch
       local button = sideButtons[1]
       lg.draw(spriteSheet, darkBG, 429, 347)
 
@@ -857,14 +876,16 @@ workstation.drawUI = function(scale)
           lg.draw(fabric.texture, 0,0, 0, 1000/tw)
         end
         end
-        local tear = assets["damage.zyla_dress"]
+        local item = patchItems[1]
+        local _, asset = item:getTagStartingWith("patch.")
+        local tear = assets["damage."..asset]
         local tearW, tearH = tear:getDimensions()
         local tearScale = 1200/tearW
         lg.push()
         lg.translate(530-tearW*tearScale/2, 330-tearH*tearScale/2)
         lg.scale(tearScale)
         lg.draw(tear)
-        local outline = assets["damage.zyla_dress.outline"]
+        local outline = assets["damage."..asset..".outline"]
         if patchLevel == 2 then
           lg.setColor(1,.6,0,.8)
           if tearFabricPositionBlink then
@@ -1133,7 +1154,7 @@ workstation.drawUI = function(scale)
     lg.pop()
     lg.push()
       lg.setColor(0,0,0,1)
-      if sideButtons[1].active and patchLevel == 1 then -- Patch 1 choose fabric
+      if sideButtons[1].active and patchLevel == 1 and #patchItems ~= 0 then -- Patch 1 choose fabric
         local key = fabricTexturesOrder[fabricArrowPosition]
         if key then
         local fabric = fabricTextures[key]

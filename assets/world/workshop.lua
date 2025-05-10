@@ -16,6 +16,9 @@ local player = characterManager.get("player")
 player:setHome("workshop", 5, 4.5, true)
   :teleportHome()
 
+player.x = 1
+player:setFlip(false)
+
 questManager.unlockQuest("quest_1")
 
 -- Setup bark dialogue
@@ -39,20 +42,17 @@ workstationModel:setTranslation(wsX, 0, wsZ)
 local workstation = require("src.workstation")
 workstation.set(wsX+.2, wsZ, wsX+1, wsZ)
 
-local timer = 0
+local lock = false
 world.update = function(dt, scale, isGamepadActive)
-  if timer then
-    timer = timer + dt
-    if timer >= 0 then
-      timer = nil
-      local _, questState = questManager.get("quest_1")
-      if questState == "unlocked" then
-        questManager.activateQuest("quest_1", true)
-        player:moveX(0)
-      else
-        logger.error("quest_1 wasn't unlocked and was unable to activate tutorial quest!")
-      end
+  if player.x >= 5 and not lock then
+    local _, questState = questManager.get("quest_1")
+    if questState == "unlocked" then
+      questManager.activateQuest("quest_1", true)
+      player:moveX(0)
+    else
+      logger.error("quest_1 wasn't unlocked and was unable to activate tutorial quest!")
     end
+    lock = true
   end
 
   workstation.update(dt, scale, isGamepadActive)
