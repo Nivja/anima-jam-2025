@@ -877,7 +877,7 @@ workstation.drawUI = function(scale)
       local button = sideButtons[1]
       lg.draw(spriteSheet, darkBG, 429, 347)
 
-      if patchLevel >= 2 and patchLevel <= 3 then
+      if patchLevel >= 2 and patchLevel <= 3 and #patchItems ~= 0 then
         lg.push()
         lg.translate(429+100, 348)
         local key = fabricTexturesOrder[fabricArrowPosition]
